@@ -1,0 +1,19 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes"><div class="syntax-circus-fancy-noise-overlay__content">@ChildContent</div><span class="syntax-circus-fancy-noise-overlay__layer" aria-hidden="true"></span></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public double Opacity { get; set; } = .08;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose(
+        "syntax-circus-fancy-noise-overlay", CssClass,
+        $"--sc-fancy-noise-color:{Color};--sc-fancy-noise-opacity:{AttributeComposer.Number(AttributeComposer.Clamp(Opacity, 0, 1))}",
+        Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "noise-overlay", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

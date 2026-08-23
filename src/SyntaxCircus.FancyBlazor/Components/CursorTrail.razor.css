@@ -1,0 +1,5 @@
+.syntax-circus-fancy-cursor-trail { isolation: isolate; overflow: hidden; position: relative; }
+.syntax-circus-fancy-cursor-trail__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-cursor-trail__canvas { inset: 0; pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-cursor-trail[data-fancy-disabled="true"] .syntax-circus-fancy-cursor-trail__canvas { display: none; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-cursor-trail__canvas { display: none; } }

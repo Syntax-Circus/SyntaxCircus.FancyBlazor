@@ -1,0 +1,5 @@
+.syntax-circus-fancy-gradient-text, .syntax-circus-fancy-gradient-text ::deep * { background: linear-gradient(var(--sc-fancy-gradient-angle), var(--sc-fancy-primary), var(--sc-fancy-secondary), var(--sc-fancy-accent), var(--sc-fancy-background)); background-clip: text; -webkit-background-clip: text; background-size: 240% 240%; color: transparent; }
+.syntax-circus-fancy-gradient-text[data-fancy-animated="true"], .syntax-circus-fancy-gradient-text[data-fancy-animated="true"] ::deep * { animation: sc-fancy-gradient-text var(--sc-fancy-duration) ease-in-out infinite alternate; }
+.syntax-circus-fancy-gradient-text[data-fancy-disabled="true"], .syntax-circus-fancy-gradient-text[data-fancy-disabled="true"] ::deep * { animation: none; background: none; color: inherit; }
+@keyframes sc-fancy-gradient-text { to { background-position: 100% 100%; } }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-gradient-text { animation: none !important; } }

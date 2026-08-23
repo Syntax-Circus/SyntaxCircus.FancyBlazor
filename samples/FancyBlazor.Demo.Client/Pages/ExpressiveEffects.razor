@@ -1,0 +1,27 @@
+@page "/expressive-effects"
+<PageTitle>Expressive effects · FancyBlazor</PageTitle>
+
+<section class="demo-page expressive-effects-page">
+    <p class="kicker">TEXT / ATMOSPHERE / GESTURE</p>
+    <TextReveal Element="TextRevealElement.Heading1" Unit="TextRevealUnit.Word" Effect="RevealEffect.BlurUp" Text="Give the interface a pulse." data-testid="text-reveal-example" />
+    <p class="lede">A small group of effects for the places where content, atmosphere, and interaction meet. The visual layer stays decorative; the page stays yours.</p>
+
+    <AuroraBackground CssClass="aurora-stage" Palette="FancyPalettes.Witchlight" Intensity=".88" Duration="@TimeSpan.FromSeconds(9)">
+        <NoiseOverlay Opacity=".06">
+            <div class="aurora-copy">
+                <p class="specimen-label">AMBIENT SURFACE</p>
+                <GradientText Palette="FancyPalettes.Glacier" Animated="true"><h2>Atmosphere without a canvas.</h2></GradientText>
+                <p>Watch the color field drift slowly; the grain stays static to give the surface texture. Turn motion off and the composition holds its shape.</p>
+            </div>
+        </NoiseOverlay>
+    </AuroraBackground>
+
+    <section class="gesture-grid" aria-label="Pointer effect demonstrations">
+        <Ripple CssClass="gesture-card ripple-card" data-testid="ripple-example">
+            <button class="ripple-demo-button" type="button"><span class="specimen-label">TAP / CLICK</span><strong>Ripple</strong><small>A press sends one visible wave across this surface.</small></button>
+        </Ripple>
+        <CursorTrail CssClass="gesture-card trail-card" Color="#a7f3d0" data-testid="cursor-trail-example">
+            <div><span class="specimen-label">MOVE / LEAVE</span><strong>Cursor trail</strong><small>Particles vanish when the pointer stops.</small></div>
+        </CursorTrail>
+    </section>
+</section>

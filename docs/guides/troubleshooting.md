@@ -27,6 +27,21 @@ run the component in WebAssembly instead of the server circuit.
 FancyBlazor decorative layers are pointer-transparent. Inspect host styles for
 positioned overlays or `pointer-events` rules above the content.
 
+## TextReveal is not animated
+
+TextReveal intentionally accepts plain text through `Text`; it does not split
+arbitrary markup. Confirm JavaScript interactivity is available and that reduced
+motion is not active. The complete semantic text remains visible in either case.
+
+## Aurora, Ripple, or CursorTrail appears static
+
+Aurora drifts slowly by default; use a contrasting palette and a shorter
+`Duration` when motion must be immediately apparent. NoiseOverlay is static by
+design. Ripple appears on pointer press, but navigation can leave the page before
+its short wave is visible—use an in-place button to demonstrate it. CursorTrail
+appears only while a mouse or pen pointer moves over its surface. All three
+respect reduced-motion preferences.
+
 ## Inspecting lifecycle state in development
 
 Set `EnableDiagnostics = true` during registration to expose

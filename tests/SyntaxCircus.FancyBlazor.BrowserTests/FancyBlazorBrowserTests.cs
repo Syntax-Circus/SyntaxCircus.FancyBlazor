@@ -130,6 +130,26 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task ExpressiveEffects_EnhanceTextAndReleasePointerEffects()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/expressive-effects");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=text-reveal-example]')?.dataset.fancyReady === 'true'");
+
+        var text = page.Locator("[data-testid='text-reveal-example']");
+        (await text.GetAttributeAsync("aria-label")).ShouldBe("Accessible animated heading");
+        (await text.Locator(".syntax-circus-fancy-text-reveal__token").CountAsync()).ShouldBeGreaterThan(0);
+        await page.Locator("[data-testid='ripple-example'] button").ClickAsync();
+        await page.WaitForFunctionAsync("() => document.querySelectorAll('.syntax-circus-fancy-ripple__wave').length > 0");
+        await page.Locator("[data-testid='cursor-trail-example']").HoverAsync();
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount > 0");
+        await page.GotoAsync($"{fixture.TestHostUrl}/border");
+        await page.WaitForFunctionAsync("() => (globalThis.__syntaxCircusFancyBlazor?.instanceCount ?? 0) === 0");
+    }
+
+    [Fact]
     public async Task EnhancedNavigation_TwentyCycles_ReleasesEveryEffect()
     {
         await using var context = await fixture.Browser.NewContextAsync();

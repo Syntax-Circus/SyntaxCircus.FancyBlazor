@@ -61,6 +61,9 @@ const factories = {
     magnetic: createMagnetic,
     parallax: createParallax,
     stagger: createStagger,
+    'text-reveal': createTextReveal,
+    ripple: createRipple,
+    'cursor-trail': createCursorTrail,
 };
 
 async function createShaderBackground(element, initialOptions, defaults) {
@@ -297,6 +300,113 @@ function createStagger(element, initialOptions, defaults) {
     let options = initialOptions; let observer = null; let frame = null; let timer = null;
     const configure = (replay = false) => { observer?.disconnect(); if (timer !== null) clearTimeout(timer); [...element.children].forEach((child, index) => child.style.setProperty('--sc-fancy-index', index)); element.dataset.fancyReady = 'true'; if (motionReduced(defaults.motionPreference)) { element.dataset.fancyVisible = 'true'; return; } element.dataset.fancyVisible = 'false'; observer = new IntersectionObserver(entries => entries.forEach(entry => { element.dataset.fancyVisible = entry.isIntersecting ? 'true' : 'false'; if (entry.isIntersecting && options.once !== false) observer?.disconnect(); }), { threshold: .1 }); const observe = () => { frame = requestAnimationFrame(() => { frame = requestAnimationFrame(() => { frame = null; observer?.observe(element); }); }); }; if (replay) timer = setTimeout(() => { timer = null; observe(); }, 300); else observe(); };
     configure(); return { update(next) { const replay = next.replayToken !== options.replayToken; options = next; configure(replay); }, setDocumentVisible() {}, hasActiveAnimationFrame() { return frame !== null; }, destroy() { if (frame !== null) cancelAnimationFrame(frame); if (timer !== null) clearTimeout(timer); observer?.disconnect(); [...element.children].forEach(child => child.style.removeProperty('--sc-fancy-index')); delete element.dataset.fancyReady; delete element.dataset.fancyVisible; } };
+}
+
+function createTextReveal(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let observer = null;
+    let frame = null;
+    let timer = null;
+    let destroyed = false;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+
+    const tokens = () => {
+        element.replaceChildren();
+        element.setAttribute('aria-label', options.text ?? '');
+        const values = options.unit === 'Character' ? Array.from(options.text ?? '') : (options.text ?? '').split(/(\s+)/);
+        let index = 0;
+        for (const value of values) {
+            if (!value) continue;
+            if (/^\s+$/.test(value)) { element.append(document.createTextNode(value)); continue; }
+            const token = document.createElement('span');
+            token.className = 'syntax-circus-fancy-text-reveal__token';
+            token.setAttribute('aria-hidden', 'true');
+            token.style.setProperty('--sc-fancy-index', index++);
+            token.textContent = value;
+            element.append(token);
+        }
+    };
+    const configure = (replay = false) => {
+        observer?.disconnect(); observer = null;
+        if (frame !== null) cancelAnimationFrame(frame);
+        if (timer !== null) clearTimeout(timer);
+        tokens();
+        element.dataset.fancyReady = 'true';
+        if (motionReduced(defaults.motionPreference, media)) { element.dataset.fancyVisible = 'true'; return; }
+        element.dataset.fancyVisible = 'false';
+        observer = new IntersectionObserver(entries => entries.forEach(entry => {
+            element.dataset.fancyVisible = entry.isIntersecting ? 'true' : 'false';
+            if (entry.isIntersecting && options.once !== false) { observer?.disconnect(); observer = null; }
+        }), { threshold: .1 });
+        const observe = () => { frame = requestAnimationFrame(() => { frame = requestAnimationFrame(() => { frame = null; observer?.observe(element); }); }); };
+        if (replay) timer = setTimeout(() => { timer = null; observe(); }, 80); else observe();
+    };
+    const mediaHandler = () => { if (!destroyed) configure(); };
+    media?.addEventListener('change', mediaHandler);
+    configure();
+    return {
+        update(next) { const replay = next.replayToken !== options.replayToken; options = next; configure(replay); },
+        setDocumentVisible() {}, hasActiveAnimationFrame() { return frame !== null; },
+        destroy() { destroyed = true; if (frame !== null) cancelAnimationFrame(frame); if (timer !== null) clearTimeout(timer); observer?.disconnect(); media?.removeEventListener('change', mediaHandler); element.textContent = options.text ?? ''; element.removeAttribute('aria-label'); delete element.dataset.fancyReady; delete element.dataset.fancyVisible; },
+    };
+}
+
+function createRipple(element, initialOptions, defaults) {
+    let options = initialOptions;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const layer = element.querySelector('.syntax-circus-fancy-ripple__layer');
+    const ripple = event => {
+        if (motionReduced(defaults.motionPreference, media) || !layer) return;
+        const rect = element.getBoundingClientRect();
+        const diameter = Math.hypot(rect.width, rect.height) * 2;
+        const wave = document.createElement('span');
+        wave.className = 'syntax-circus-fancy-ripple__wave'; wave.setAttribute('aria-hidden', 'true');
+        wave.style.width = `${diameter}px`; wave.style.height = `${diameter}px`;
+        wave.style.left = `${event.clientX - rect.left}px`; wave.style.top = `${event.clientY - rect.top}px`;
+        layer.append(wave);
+        window.setTimeout(() => wave.remove(), Math.max(0, Number(options.duration) || 0));
+    };
+    element.addEventListener('pointerdown', ripple, { passive: true });
+    return { update(next) { options = next; }, setDocumentVisible() {}, hasActiveAnimationFrame() { return false; }, destroy() { element.removeEventListener('pointerdown', ripple); layer?.replaceChildren(); } };
+}
+
+function createCursorTrail(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let particles = [];
+    let frame = null;
+    let active = true;
+    const canvas = element.querySelector('.syntax-circus-fancy-cursor-trail__canvas');
+    const context = canvas?.getContext('2d');
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const resize = () => {
+        if (!canvas) return;
+        const rect = element.getBoundingClientRect(); const dpr = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = Math.max(1, Math.round(rect.width * dpr)); canvas.height = Math.max(1, Math.round(rect.height * dpr));
+        canvas.style.width = `${rect.width}px`; canvas.style.height = `${rect.height}px`; context?.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    const clear = () => { if (!canvas || !context) return; const rect = element.getBoundingClientRect(); context.clearRect(0, 0, rect.width, rect.height); };
+    const reset = () => { if (frame !== null) cancelAnimationFrame(frame); frame = null; particles = []; clear(); };
+    const draw = now => {
+        frame = null; clear();
+        const duration = Math.max(1, Number(options.duration) || 1); const rect = element.getBoundingClientRect();
+        const color = options.color === 'currentColor'
+            ? getComputedStyle(element).color
+            : (options.color || getComputedStyle(element).getPropertyValue('--sc-fancy-cursor-trail-color') || getComputedStyle(element).color);
+        particles = particles.filter(particle => now - particle.created < duration);
+        for (const particle of particles) { const age = (now - particle.created) / duration; context.fillStyle = color; context.globalAlpha = (1 - age) * .75; context.beginPath(); context.arc(particle.x, particle.y, Math.max(1, Number(options.size) * (1 - age) / 2), 0, Math.PI * 2); context.fill(); }
+        context.globalAlpha = 1;
+        if (particles.length) frame = requestAnimationFrame(draw);
+    };
+    const move = event => {
+        if (!active || motionReduced(defaults.motionPreference, media) || !canvas || !context) return;
+        const rect = element.getBoundingClientRect(); particles.push({ x: event.clientX - rect.left, y: event.clientY - rect.top, created: performance.now() });
+        const cap = clamp(options.particleCount, 1, 48); if (particles.length > cap) particles.splice(0, particles.length - cap);
+        if (frame === null) frame = requestAnimationFrame(draw);
+    };
+    const mediaHandler = () => { if (motionReduced(defaults.motionPreference, media)) reset(); };
+    const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(resize);
+    resize(); resizeObserver?.observe(element); element.addEventListener('pointermove', move, { passive: true }); media?.addEventListener('change', mediaHandler);
+    return { update(next) { options = next; resize(); }, setDocumentVisible(visible) { active = visible; if (!visible) reset(); }, hasActiveAnimationFrame() { return frame !== null; }, destroy() { element.removeEventListener('pointermove', move); media?.removeEventListener('change', mediaHandler); resizeObserver?.disconnect(); reset(); } };
 }
 
 function ensureVisibilityListener() {

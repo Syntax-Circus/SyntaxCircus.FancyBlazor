@@ -6,6 +6,8 @@ its WebGL renderer when the document is hidden. `Tilt` batches pointer movement
 into one animation-frame update. `Spotlight`, `Magnetic`, and `Parallax` use
 passive browser events and one animation-frame update; `Reveal` and `Stagger`
 use `IntersectionObserver`. Every component removes resources on disposal.
+`CursorTrail` uses one capped canvas particle set and draws only while particles
+remain; `Ripple` removes its short-lived decorative nodes after each wave.
 
 | Quality | Maximum shader DPR |
 | --- | --- |

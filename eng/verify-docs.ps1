@@ -54,16 +54,24 @@ $requiredDocumentation = @(
     "docs/components/parallax.md",
     "docs/components/stagger.md",
     "docs/components/shimmer.md",
+    "docs/components/gradient-text.md",
+    "docs/components/text-reveal.md",
+    "docs/components/aurora-background.md",
+    "docs/components/noise-overlay.md",
+    "docs/components/ripple.md",
+    "docs/components/cursor-trail.md",
     "docs/guides/accessibility.md",
     "docs/guides/performance.md",
     "docs/guides/hosting-modes.md",
     "docs/guides/palettes-and-styling.md",
     "docs/guides/troubleshooting.md",
+    "docs/guides/expressive-effects.md",
     "samples/FancyBlazor.Demo.Client/Pages/Background.razor",
     "samples/FancyBlazor.Demo.Client/Pages/Border.razor",
     "samples/FancyBlazor.Demo.Client/Pages/RevealPage.razor",
     "samples/FancyBlazor.Demo.Client/Pages/TiltPage.razor"
     ,"samples/FancyBlazor.Demo.Client/Pages/ExpandedEffects.razor"
+    ,"samples/FancyBlazor.Demo.Client/Pages/ExpressiveEffects.razor"
 )
 
 $missingDocumentation = @($requiredDocumentation | Where-Object {

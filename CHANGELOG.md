@@ -15,6 +15,7 @@ entries grouped under `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, or
 
 ### Added
 
+- Add `GradientText`, `TextReveal`, `AuroraBackground`, `NoiseOverlay`, `Ripple`, and `CursorTrail` to the FancyBlazor preview catalog.
 - Add `GradientBackground`, `Spotlight`, `Magnetic`, `Parallax`, `Stagger`, and
   `Shimmer` to the FancyBlazor preview catalog.
 

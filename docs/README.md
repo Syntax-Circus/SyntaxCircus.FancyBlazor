@@ -15,6 +15,12 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [Parallax](components/parallax.md)
 - [Stagger](components/stagger.md)
 - [Shimmer](components/shimmer.md)
+- [GradientText](components/gradient-text.md)
+- [TextReveal](components/text-reveal.md)
+- [AuroraBackground](components/aurora-background.md)
+- [NoiseOverlay](components/noise-overlay.md)
+- [Ripple](components/ripple.md)
+- [CursorTrail](components/cursor-trail.md)
 
 ## Guides
 
@@ -24,6 +30,7 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [Blazor hosting modes](guides/hosting-modes.md)
 - [Demo container deployment](guides/demo-container.md)
 - [Troubleshooting](guides/troubleshooting.md)
+- [Expressive effects: what to expect](guides/expressive-effects.md)
 
 ## Project references
 

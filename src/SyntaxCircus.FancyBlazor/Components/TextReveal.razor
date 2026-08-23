@@ -1,0 +1,29 @@
+@namespace SyntaxCircus.FancyBlazor
+
+@switch (Element)
+{
+    case TextRevealElement.Paragraph:
+        <p @ref="_element" @attributes="RootAttributes">@Text</p>
+        break;
+    case TextRevealElement.Heading1:
+        <h1 @ref="_element" @attributes="RootAttributes">@Text</h1>
+        break;
+    case TextRevealElement.Heading2:
+        <h2 @ref="_element" @attributes="RootAttributes">@Text</h2>
+        break;
+    case TextRevealElement.Heading3:
+        <h3 @ref="_element" @attributes="RootAttributes">@Text</h3>
+        break;
+    case TextRevealElement.Heading4:
+        <h4 @ref="_element" @attributes="RootAttributes">@Text</h4>
+        break;
+    case TextRevealElement.Heading5:
+        <h5 @ref="_element" @attributes="RootAttributes">@Text</h5>
+        break;
+    case TextRevealElement.Heading6:
+        <h6 @ref="_element" @attributes="RootAttributes">@Text</h6>
+        break;
+    default:
+        <span @ref="_element" @attributes="RootAttributes">@Text</span>
+        break;
+}
