@@ -64,6 +64,10 @@ const factories = {
     'text-reveal': createTextReveal,
     ripple: createRipple,
     'cursor-trail': createCursorTrail,
+    'scroll-scene': createScrollProgressEffect,
+    'scroll-indicator': createScrollProgressEffect,
+    'scroll-backdrop': createScrollProgressEffect,
+    'press-scale': createPressScale,
 };
 
 async function createShaderBackground(element, initialOptions, defaults) {
@@ -294,6 +298,99 @@ function createParallax(element, initialOptions, defaults) {
     const update = () => { if (!active || motionReduced(defaults.motionPreference, media)) return; if (frame !== null) return; frame = requestAnimationFrame(() => { const rect = element.getBoundingClientRect(); const distance = parseFloat(getComputedStyle(element).getPropertyValue('--sc-fancy-parallax-distance')) || 0; const offset = clamp((window.innerHeight / 2 - (rect.top + rect.height / 2)) / Math.max(window.innerHeight, 1), -1, 1) * distance; element.style.setProperty('--sc-fancy-parallax-y', `${offset}px`); element.dataset.fancyParallaxOffset = `${Math.round(offset)}`; frame = null; }); };
     addEventListener('scroll', update, { passive: true }); addEventListener('resize', update, { passive: true }); update();
     return { update, setDocumentVisible(visible) { active = visible; if (visible) update(); else { if (frame !== null) cancelAnimationFrame(frame); frame = null; } }, hasActiveAnimationFrame() { return frame !== null; }, destroy() { removeEventListener('scroll', update); removeEventListener('resize', update); if (frame !== null) cancelAnimationFrame(frame); element.style.removeProperty('--sc-fancy-parallax-y'); delete element.dataset.fancyParallaxOffset; } };
+}
+
+function createScrollProgressEffect(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let frame = null;
+    let intersecting = false;
+    let documentVisible = !document.hidden;
+    let destroyed = false;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+    const setStatic = () => {
+        element.style.removeProperty('--sc-fancy-scroll-progress');
+        element.style.removeProperty('--sc-fancy-scroll-distance');
+        delete element.dataset.fancyReady;
+        delete element.dataset.fancyScrollProgress;
+    };
+    const update = () => {
+        if (destroyed || !intersecting || !documentVisible || reduced() || frame !== null) return;
+        frame = requestAnimationFrame(() => {
+            frame = null;
+            if (destroyed || !intersecting || !documentVisible || reduced()) return;
+            const rect = element.getBoundingClientRect();
+            const progress = clamp((innerHeight - rect.top) / Math.max(innerHeight + rect.height, 1), 0, 1);
+            const distance = Math.abs(progress - .5) * 2;
+            element.style.setProperty('--sc-fancy-scroll-progress', `${progress}`);
+            element.style.setProperty('--sc-fancy-scroll-distance', `${distance}`);
+            element.dataset.fancyReady = 'true';
+            element.dataset.fancyScrollProgress = `${Math.round(progress * 100)}`;
+        });
+    };
+    const observer = new IntersectionObserver(entries => {
+        intersecting = entries.some(entry => entry.isIntersecting);
+        if (intersecting) update();
+        else if (frame !== null) { cancelAnimationFrame(frame); frame = null; }
+    }, { threshold: 0 });
+    const mediaHandler = () => { if (reduced()) setStatic(); else update(); };
+    observer.observe(element);
+    addEventListener('scroll', update, { passive: true });
+    addEventListener('resize', update, { passive: true });
+    media?.addEventListener('change', mediaHandler);
+    update();
+    return {
+        update(next) { options = next; update(); },
+        setDocumentVisible(visible) {
+            documentVisible = visible;
+            if (!visible) { if (frame !== null) cancelAnimationFrame(frame); frame = null; }
+            else update();
+        },
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            destroyed = true;
+            observer.disconnect();
+            removeEventListener('scroll', update);
+            removeEventListener('resize', update);
+            media?.removeEventListener('change', mediaHandler);
+            if (frame !== null) cancelAnimationFrame(frame);
+            setStatic();
+        },
+    };
+}
+
+function createPressScale(element, initialOptions, defaults) {
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const setPressed = pressed => {
+        if (motionReduced(defaults.motionPreference, media)) return;
+        if (pressed) element.dataset.fancyPressed = 'true';
+        else delete element.dataset.fancyPressed;
+    };
+    const pointerDown = () => setPressed(true);
+    const pointerUp = () => setPressed(false);
+    const keyDown = event => { if (event.key === ' ' || event.key === 'Enter') setPressed(true); };
+    const keyUp = event => { if (event.key === ' ' || event.key === 'Enter') setPressed(false); };
+    const mediaHandler = () => { if (motionReduced(defaults.motionPreference, media)) setPressed(false); };
+    element.addEventListener('pointerdown', pointerDown, { passive: true });
+    element.addEventListener('pointerup', pointerUp, { passive: true });
+    element.addEventListener('pointercancel', pointerUp, { passive: true });
+    element.addEventListener('pointerleave', pointerUp, { passive: true });
+    element.addEventListener('keydown', keyDown);
+    element.addEventListener('keyup', keyUp);
+    media?.addEventListener('change', mediaHandler);
+    return {
+        update() {}, setDocumentVisible() {}, hasActiveAnimationFrame() { return false; },
+        destroy() {
+            element.removeEventListener('pointerdown', pointerDown);
+            element.removeEventListener('pointerup', pointerUp);
+            element.removeEventListener('pointercancel', pointerUp);
+            element.removeEventListener('pointerleave', pointerUp);
+            element.removeEventListener('keydown', keyDown);
+            element.removeEventListener('keyup', keyUp);
+            media?.removeEventListener('change', mediaHandler);
+            delete element.dataset.fancyPressed;
+        },
+    };
 }
 
 function createStagger(element, initialOptions, defaults) {

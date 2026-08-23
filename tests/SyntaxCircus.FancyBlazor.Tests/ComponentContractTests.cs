@@ -214,6 +214,38 @@ public sealed class ComponentContractTests
         glow.ShouldContain("<a href=\"/next\">Continue</a>");
     }
 
+    [Fact]
+    public void NarrativeAndFeedbackEffects_PreserveSemanticsAndClampValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var scene = context.Render<ScrollScene>(p => p.Add(x => x.ChildContent, content).Add(x => x.Strength, 3).Add(x => x.Travel, 999)).Markup;
+        var indicator = context.Render<ScrollIndicator>(p => p.Add(x => x.ChildContent, content).Add(x => x.Thickness, 0)).Markup;
+        var backdrop = context.Render<ScrollBackdrop>(p => p.Add(x => x.ChildContent, content).Add(x => x.Intensity, -1)).Markup;
+        var hover = context.Render<HoverLift>(p => p.Add(x => x.ChildContent, content).Add(x => x.Distance, 99).Add(x => x.Scale, 2)).Markup;
+        var press = context.Render<PressScale>(p => p.Add(x => x.ChildContent, content).Add(x => x.Scale, 0)).Markup;
+        var focus = context.Render<FocusHalo>(p => p.Add(x => x.ChildContent, content).Add(x => x.Opacity, 2).Add(x => x.Spread, 99)).Markup;
+
+        scene.ShouldContain("data-fancy-scroll-scene=\"lift\"");
+        scene.ShouldContain("--sc-fancy-scroll-scene-strength:1");
+        scene.ShouldContain("--sc-fancy-scroll-scene-travel:300px");
+        indicator.ShouldContain("syntax-circus-fancy-scroll-indicator__line");
+        indicator.ShouldContain("aria-hidden=\"true\"");
+        indicator.ShouldContain("--sc-fancy-scroll-indicator-thickness:1px");
+        backdrop.ShouldContain("syntax-circus-fancy-scroll-backdrop__layer");
+        backdrop.ShouldContain("aria-hidden=\"true\"");
+        backdrop.ShouldContain("--sc-fancy-scroll-backdrop-intensity:0");
+        hover.ShouldContain("--sc-fancy-hover-lift-distance:32px");
+        hover.ShouldContain("--sc-fancy-hover-lift-scale:1.1");
+        press.ShouldContain("--sc-fancy-press-scale:0.9");
+        focus.ShouldContain("syntax-circus-fancy-focus-halo__halo");
+        focus.ShouldContain("aria-hidden=\"true\"");
+        focus.ShouldContain("--sc-fancy-focus-halo-opacity:1");
+        focus.ShouldContain("--sc-fancy-focus-halo-spread:16px");
+        focus.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();

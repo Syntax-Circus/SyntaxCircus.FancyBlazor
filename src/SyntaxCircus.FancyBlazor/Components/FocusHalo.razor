@@ -1,0 +1,17 @@
+@namespace SyntaxCircus.FancyBlazor
+<div @attributes="RootAttributes"><div class="syntax-circus-fancy-focus-halo__content">@ChildContent</div><span class="syntax-circus-fancy-focus-halo__halo" aria-hidden="true"></span></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public double Opacity { get; set; } = .32;
+    [Parameter] public double Spread { get; set; } = 4;
+    [Parameter] public TimeSpan Duration { get; set; } = TimeSpan.FromMilliseconds(150);
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-focus-halo", CssClass,
+        $"--sc-fancy-focus-halo-color:{Color};--sc-fancy-focus-halo-opacity:{AttributeComposer.Number(AttributeComposer.Clamp(Opacity, 0, 1))};--sc-fancy-focus-halo-spread:{AttributeComposer.Number(AttributeComposer.Clamp(Spread, 0, 16))}px;--sc-fancy-focus-halo-duration:{AttributeComposer.Number(AttributeComposer.NonNegative(Duration).TotalMilliseconds)}ms", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "focus-halo", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

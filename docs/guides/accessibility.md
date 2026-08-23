@@ -15,6 +15,7 @@
 - TextReveal keeps the requested heading, paragraph, or span semantic and exposes
   its complete text name; its visual word/character tokens are hidden from assistive technology.
 - GridBackground, DotPattern, and OrbitalGlow layers are decorative, `aria-hidden`, and pointer-transparent. GlassSurface and BorderBeam add no role or tab stop and retain their child content unchanged.
+- ScrollBackdrop and ScrollIndicator layers are decorative, `aria-hidden`, and pointer-transparent; ScrollScene never hides its semantic content. HoverLift and PressScale add no roles or tab stops. FocusHalo is decorative and supplements rather than removes the host focus outline.
 - `FancyMotionPreference.RespectSystem` is the default. Continuous motion becomes
   a static/final state when `prefers-reduced-motion: reduce` is active.
 - `IgnoreSystem` is an explicit host decision; use it only when motion is

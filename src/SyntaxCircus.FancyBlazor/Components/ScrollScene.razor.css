@@ -1,0 +1,5 @@
+.syntax-circus-fancy-scroll-scene__content { transition: opacity 120ms linear, transform 120ms linear, filter 120ms linear; }
+.syntax-circus-fancy-scroll-scene[data-fancy-ready="true"][data-fancy-scroll-scene="fade"] .syntax-circus-fancy-scroll-scene__content { opacity: calc(1 - var(--sc-fancy-scroll-scene-strength) * var(--sc-fancy-scroll-distance, 0)); }
+.syntax-circus-fancy-scroll-scene[data-fancy-ready="true"][data-fancy-scroll-scene="lift"] .syntax-circus-fancy-scroll-scene__content { transform: translateY(calc((.5 - var(--sc-fancy-scroll-progress, .5)) * var(--sc-fancy-scroll-scene-travel))); }
+.syntax-circus-fancy-scroll-scene[data-fancy-ready="true"][data-fancy-scroll-scene="blur"] .syntax-circus-fancy-scroll-scene__content { filter: blur(calc(var(--sc-fancy-scroll-scene-strength) * var(--sc-fancy-scroll-distance, 0) * 12px)); }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-scroll-scene__content { filter: none !important; opacity: 1 !important; transform: none !important; transition: none !important; } }

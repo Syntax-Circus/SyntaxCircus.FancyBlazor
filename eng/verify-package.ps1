@@ -32,6 +32,7 @@ try {
     $entryNames = @($archive.Entries | ForEach-Object FullName)
     $requiredEntries = @(
         "README.md",
+        "docs/assets/fancyblazor-marketing-640.png",
         "THIRD-PARTY-NOTICES.md",
         "licenses/shader-gallery-LICENSE",
         "lib/net10.0/SyntaxCircus.FancyBlazor.dll",

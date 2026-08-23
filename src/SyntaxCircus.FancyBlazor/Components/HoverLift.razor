@@ -1,0 +1,16 @@
+@namespace SyntaxCircus.FancyBlazor
+<div @attributes="RootAttributes"><div class="syntax-circus-fancy-hover-lift__content">@ChildContent</div></div>
+
+@code {
+    [Parameter] public double Distance { get; set; } = 4;
+    [Parameter] public double Scale { get; set; } = 1.01;
+    [Parameter] public TimeSpan Duration { get; set; } = TimeSpan.FromMilliseconds(150);
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-hover-lift", CssClass,
+        $"--sc-fancy-hover-lift-distance:{AttributeComposer.Number(AttributeComposer.Clamp(Distance, 0, 32))}px;--sc-fancy-hover-lift-scale:{AttributeComposer.Number(AttributeComposer.Clamp(Scale, .95, 1.1))};--sc-fancy-hover-lift-duration:{AttributeComposer.Number(AttributeComposer.NonNegative(Duration).TotalMilliseconds)}ms", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "hover-lift", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

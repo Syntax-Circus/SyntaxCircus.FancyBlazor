@@ -26,6 +26,12 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [GridBackground](components/grid-background.md)
 - [DotPattern](components/dot-pattern.md)
 - [OrbitalGlow](components/orbital-glow.md)
+- [ScrollScene](components/scroll-scene.md)
+- [ScrollIndicator](components/scroll-indicator.md)
+- [ScrollBackdrop](components/scroll-backdrop.md)
+- [HoverLift](components/hover-lift.md)
+- [PressScale](components/press-scale.md)
+- [FocusHalo](components/focus-halo.md)
 
 ## Guides
 
@@ -37,6 +43,8 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [Troubleshooting](guides/troubleshooting.md)
 - [Expressive effects: what to expect](guides/expressive-effects.md)
 - [Spatial surfaces](guides/spatial-surfaces.md)
+- [Narrative motion](guides/narrative-motion.md)
+- [Interaction feedback](guides/interaction-feedback.md)
 
 ## Project references
 

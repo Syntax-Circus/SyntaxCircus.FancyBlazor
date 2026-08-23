@@ -1,0 +1,54 @@
+@page "/narrative-motion"
+
+<PageTitle>Narrative motion · FancyBlazor</PageTitle>
+
+<section class="demo-page narrative-motion-page">
+    <p class="kicker">NARRATIVE MOTION / IN FLOW</p>
+    <h1>Let the scroll carry the story.</h1>
+    <p class="lede">These effects move with an ordinary document section. They do not pin, trap, or take over the reader’s scroll.</p>
+
+    <ScrollBackdrop CssClass="narrative-stage" Palette="FancyPalettes.Viridian" Intensity=".42" data-testid="scroll-backdrop-example">
+        <ScrollScene Effect="ScrollSceneEffect.Lift" Strength=".42" Travel="72" data-testid="scroll-scene-example">
+            <article class="narrative-copy">
+                <p class="specimen-label">SCENE / LIFT</p>
+                <h2>Content stays in the document flow.</h2>
+                <p>As this section crosses the viewport, its treatment follows local progress while its heading, text, and link remain ordinary semantic HTML.</p>
+                <a class="primary-action" href="/background">See a backdrop at rest</a>
+            </article>
+        </ScrollScene>
+    </ScrollBackdrop>
+
+    <ScrollIndicator Color="#a7f3d0" CssClass="narrative-reading" data-testid="scroll-indicator-example">
+        <article>
+            <p class="specimen-label">LOCAL READING PROGRESS</p>
+            <h2>ScrollIndicator</h2>
+            <p>The fine line below this short chapter fills as the chapter moves through the viewport. It is decorative, so it never changes the reading order or accessibility tree.</p>
+        </article>
+    </ScrollIndicator>
+
+    <section class="surface-recipe" aria-labelledby="narrative-recipe-heading">
+        <div class="surface-recipe__copy">
+            <p class="specimen-label">COMPOSITION / THREE COMPONENTS</p>
+            <h2 id="narrative-recipe-heading">A scroll scene without scroll-jacking.</h2>
+            <p>The live specimen uses a scroll-reactive background behind a continuous in-flow scene. Add an indicator when local progress helps frame a chapter.</p>
+        </div>
+        <pre class="surface-recipe__code"><code>&lt;ScrollBackdrop CssClass="narrative-stage" Palette="FancyPalettes.Viridian" Intensity=".42" data-testid="scroll-backdrop-example"&gt;
+    &lt;ScrollScene Effect="ScrollSceneEffect.Lift" Strength=".42" Travel="72" data-testid="scroll-scene-example"&gt;
+        &lt;article class="narrative-copy"&gt;
+            &lt;p class="specimen-label"&gt;SCENE / LIFT&lt;/p&gt;
+            &lt;h2&gt;Content stays in the document flow.&lt;/h2&gt;
+            &lt;p&gt;As this section crosses the viewport, its treatment follows local progress while its heading, text, and link remain ordinary semantic HTML.&lt;/p&gt;
+            &lt;a class="primary-action" href="/background"&gt;See a backdrop at rest&lt;/a&gt;
+        &lt;/article&gt;
+    &lt;/ScrollScene&gt;
+&lt;/ScrollBackdrop&gt;
+
+&lt;ScrollIndicator Color="#a7f3d0" CssClass="narrative-reading" data-testid="scroll-indicator-example"&gt;
+    &lt;article&gt;
+        &lt;p class="specimen-label"&gt;LOCAL READING PROGRESS&lt;/p&gt;
+        &lt;h2&gt;ScrollIndicator&lt;/h2&gt;
+        &lt;p&gt;The fine line below this short chapter fills as the chapter moves through the viewport. It is decorative, so it never changes the reading order or accessibility tree.&lt;/p&gt;
+    &lt;/article&gt;
+&lt;/ScrollIndicator&gt;</code></pre>
+    </section>
+</section>
