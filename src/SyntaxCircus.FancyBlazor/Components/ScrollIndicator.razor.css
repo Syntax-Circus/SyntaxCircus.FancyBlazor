@@ -1,0 +1,3 @@
+.syntax-circus-fancy-scroll-indicator { position: relative; }
+.syntax-circus-fancy-scroll-indicator__line { background: var(--sc-fancy-scroll-indicator-color); bottom: 0; height: var(--sc-fancy-scroll-indicator-thickness); left: 0; pointer-events: none; position: absolute; right: 0; transform: scaleX(var(--sc-fancy-scroll-progress, 0)); transform-origin: left center; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-scroll-indicator__line { transform: scaleX(1); } }

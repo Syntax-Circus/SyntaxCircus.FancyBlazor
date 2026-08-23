@@ -168,6 +168,59 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task NarrativeMotion_TracksVisibleProgressAndKeepsDecorationsHidden()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/narrative-motion");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=scroll-scene-example]')?.dataset.fancyReady === 'true'");
+
+        var scene = page.Locator("[data-testid='scroll-scene-example']");
+        var progress = await scene.GetAttributeAsync("data-fancy-scroll-progress");
+        int.Parse(progress!).ShouldBeInRange(0, 100);
+        (await page.Locator("[data-testid='scroll-backdrop-example'] .syntax-circus-fancy-scroll-backdrop__layer").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await page.Locator("[data-testid='scroll-indicator-example'] .syntax-circus-fancy-scroll-indicator__line").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await scene.Locator("a").GetAttributeAsync("href")).ShouldBe("/border");
+
+        await scene.EvaluateAsync("element => element.style.transform = 'translateY(2000px)'");
+        await page.WaitForTimeoutAsync(150);
+        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount")).ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task InteractionFeedback_RespondsWithoutReplacingSemantics()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/interaction-feedback");
+
+        var hover = page.Locator("[data-testid='hover-lift-example']");
+        await hover.HoverAsync();
+        (await hover.Locator(".syntax-circus-fancy-hover-lift__content").EvaluateAsync<string>("element => getComputedStyle(element).transform")).ShouldNotBe("none");
+
+        var press = page.Locator("[data-testid='press-scale-example']");
+        await press.Locator("button").FocusAsync();
+        await page.Keyboard.DownAsync("Enter");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=press-scale-example]')?.dataset.fancyPressed === 'true'");
+        await page.Keyboard.UpAsync("Enter");
+        await page.WaitForFunctionAsync("() => !document.querySelector('[data-testid=press-scale-example]')?.dataset.fancyPressed");
+
+        var focus = page.Locator("[data-testid='focus-halo-example']");
+        await focus.Locator("a").FocusAsync();
+        (await focus.GetAttributeAsync("tabindex")).ShouldBeNull();
+        (await focus.Locator("a").GetAttributeAsync("href")).ShouldBe("/border");
+        (await focus.Locator("a").EvaluateAsync<string>("element => getComputedStyle(element).outlineStyle")).ShouldNotBe("none");
+        await page.WaitForFunctionAsync("() => Number.parseFloat(getComputedStyle(document.querySelector('[data-testid=focus-halo-example] .syntax-circus-fancy-focus-halo__halo')).opacity) > 0");
+        (await focus.Locator(".syntax-circus-fancy-focus-halo__halo").EvaluateAsync<float>("element => Number.parseFloat(getComputedStyle(element).opacity)")).ShouldBeGreaterThan(0);
+        (await focus.Locator(".syntax-circus-fancy-focus-halo__halo").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+
+        var field = page.Locator("[data-testid='focus-halo-input-example']");
+        await field.Locator("input").FocusAsync();
+        await page.WaitForFunctionAsync("() => Number.parseFloat(getComputedStyle(document.querySelector('[data-testid=focus-halo-input-example] .syntax-circus-fancy-focus-halo__halo')).opacity) > 0");
+        (await field.Locator("input").InputValueAsync()).ShouldBeEmpty();
+    }
+
+    [Fact]
     public async Task EnhancedNavigation_TwentyCycles_ReleasesEveryEffect()
     {
         await using var context = await fixture.Browser.NewContextAsync();

@@ -1,0 +1,3 @@
+.syntax-circus-fancy-hover-lift__content { transition: transform var(--sc-fancy-hover-lift-duration) cubic-bezier(.2,.75,.2,1); }
+@media (hover: hover) and (pointer: fine) { .syntax-circus-fancy-hover-lift:not([data-fancy-disabled="true"]):hover .syntax-circus-fancy-hover-lift__content { transform: translateY(calc(-1 * var(--sc-fancy-hover-lift-distance))) scale(var(--sc-fancy-hover-lift-scale)); } }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-hover-lift__content { transition: none; transform: none !important; } }

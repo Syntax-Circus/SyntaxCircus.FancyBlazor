@@ -1,0 +1,47 @@
+@page "/interaction-feedback"
+
+<PageTitle>Interaction feedback · FancyBlazor</PageTitle>
+
+<section class="demo-page interaction-feedback-page">
+    <p class="kicker">INTERACTION FEEDBACK / ADDITIVE</p>
+    <h1>Make response feel immediate.</h1>
+    <p class="lede">Hover, press, and focus details add warmth around your controls without replacing their behavior, focus styles, or semantics.</p>
+
+    <section class="feedback-grid" aria-label="Interaction feedback demonstrations">
+        <HoverLift CssClass="feedback-card" Distance="8" Scale="1.02" data-testid="hover-lift-example">
+            <a href="/tilt"><span class="specimen-label">FINE POINTER</span><strong>HoverLift</strong><small>Hover with a mouse or pen to lift this link surface.</small></a>
+        </HoverLift>
+        <PressScale CssClass="feedback-card" Scale=".96" data-testid="press-scale-example">
+            <button type="button"><span class="specimen-label">POINTER / KEYBOARD</span><strong>PressScale</strong><small>Click, press Enter, or hold Space for a compact response.</small></button>
+        </PressScale>
+        <FocusHalo CssClass="feedback-card" Color="#67e8f9" Spread="5" data-testid="focus-halo-example">
+            <button type="button"><span class="specimen-label">FOCUS / CLICK / TAB</span><strong>FocusHalo</strong><small>Click or tab here to add a halo while the browser outline remains.</small></button>
+        </FocusHalo>
+        <FocusHalo CssClass="feedback-card feedback-card--field" Color="#c4b5fd" Spread="5" data-testid="focus-halo-input-example">
+            <label for="focus-halo-name"><span class="specimen-label">FOCUSABLE FIELD</span><strong>Keep the cursor.</strong><small>Click, tap, or tab into the field to hold the halo while you type.</small><input id="focus-halo-name" type="text" placeholder="Type something" /></label>
+        </FocusHalo>
+    </section>
+
+    <section class="surface-recipe" aria-labelledby="feedback-recipe-heading">
+        <div class="surface-recipe__copy">
+            <p class="specimen-label">COMPOSITION / CONTROL FEEDBACK</p>
+            <h2 id="feedback-recipe-heading">Wrap the control; keep the control.</h2>
+            <p>These wrappers compose around the consumer’s existing button or link. They never add a role, tab stop, or click handler of their own.</p>
+        </div>
+        <pre class="surface-recipe__code"><code>&lt;HoverLift CssClass="feedback-card" Distance="8" Scale="1.02" data-testid="hover-lift-example"&gt;
+    &lt;a href="/tilt"&gt;&lt;span class="specimen-label"&gt;FINE POINTER&lt;/span&gt;&lt;strong&gt;HoverLift&lt;/strong&gt;&lt;small&gt;Hover with a mouse or pen to lift this link surface.&lt;/small&gt;&lt;/a&gt;
+&lt;/HoverLift&gt;
+
+&lt;PressScale CssClass="feedback-card" Scale=".96" data-testid="press-scale-example"&gt;
+    &lt;button type="button"&gt;&lt;span class="specimen-label"&gt;POINTER / KEYBOARD&lt;/span&gt;&lt;strong&gt;PressScale&lt;/strong&gt;&lt;small&gt;Click, press Enter, or hold Space for a compact response.&lt;/small&gt;&lt;/button&gt;
+&lt;/PressScale&gt;
+
+&lt;FocusHalo CssClass="feedback-card" Color="#67e8f9" Spread="5" data-testid="focus-halo-example"&gt;
+    &lt;button type="button"&gt;&lt;span class="specimen-label"&gt;FOCUS / CLICK / TAB&lt;/span&gt;&lt;strong&gt;FocusHalo&lt;/strong&gt;&lt;small&gt;Click or tab here to add a halo while the browser outline remains.&lt;/small&gt;&lt;/button&gt;
+&lt;/FocusHalo&gt;
+
+&lt;FocusHalo CssClass="feedback-card feedback-card--field" Color="#c4b5fd" Spread="5" data-testid="focus-halo-input-example"&gt;
+    &lt;label for="focus-halo-name"&gt;&lt;span class="specimen-label"&gt;FOCUSABLE FIELD&lt;/span&gt;&lt;strong&gt;Keep the cursor.&lt;/strong&gt;&lt;small&gt;Click, tap, or tab into the field to hold the halo while you type.&lt;/small&gt;&lt;input id="focus-halo-name" type="text" placeholder="Type something" /&gt;&lt;/label&gt;
+&lt;/FocusHalo&gt;</code></pre>
+    </section>
+</section>

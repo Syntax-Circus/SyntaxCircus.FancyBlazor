@@ -4,6 +4,10 @@
 [![NuGet](https://img.shields.io/nuget/v/SyntaxCircus.FancyBlazor.svg)](https://www.nuget.org/packages/SyntaxCircus.FancyBlazor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
+<p align="center">
+  <img src="docs/assets/fancyblazor-marketing-640.png" width="320" alt="FancyBlazor optical mark" />
+</p>
+
 Composable visual effects for Blazor: backgrounds, borders, viewport reveals,
 pointer motion, parallax, and shimmer—without React islands, a runtime CDN, or
 consumer JavaScript tooling.
@@ -78,6 +82,12 @@ palette-derived CSS background and leaves the content usable.
 | `GridBackground` | CSS-first | Faded line grid behind semantic content |
 | `DotPattern` | CSS-first | Faded dot field behind semantic content |
 | `OrbitalGlow` | CSS-first | Palette-derived ambient orbital light |
+| `ScrollScene` | CSS + scroll JavaScript | Continuous in-flow semantic section treatment |
+| `ScrollIndicator` | CSS + scroll JavaScript | Decorative local reading-progress line |
+| `ScrollBackdrop` | CSS + scroll JavaScript | Palette-derived local scroll backdrop |
+| `HoverLift` | CSS-first | Fine-pointer hover elevation around existing content |
+| `PressScale` | CSS + activation JavaScript | Pointer and keyboard press response around existing content |
+| `FocusHalo` | CSS-first | Additive focus halo around focused child content |
 
 Components intentionally compose:
 
@@ -124,6 +134,10 @@ continuous rendering stops while hidden or offscreen.
 - [Expressive-effects demo](samples/FancyBlazor.Demo.Client/Pages/ExpressiveEffects.razor)
 - [Spatial surfaces](docs/guides/spatial-surfaces.md)
 - [Spatial-surfaces demo](samples/FancyBlazor.Demo.Client/Pages/SpatialSurfaces.razor)
+- [Narrative motion](docs/guides/narrative-motion.md)
+- [Narrative-motion demo](samples/FancyBlazor.Demo.Client/Pages/NarrativeMotion.razor)
+- [Interaction feedback](docs/guides/interaction-feedback.md)
+- [Interaction-feedback demo](samples/FancyBlazor.Demo.Client/Pages/InteractionFeedback.razor)
 - [Changelog](CHANGELOG.md)
 - [Compiling Interactive Auto demo](samples/FancyBlazor.Demo.Client/Pages/Home.razor)
 

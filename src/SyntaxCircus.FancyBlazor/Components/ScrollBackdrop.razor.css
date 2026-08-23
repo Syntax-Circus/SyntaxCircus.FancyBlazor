@@ -1,0 +1,4 @@
+.syntax-circus-fancy-scroll-backdrop { isolation: isolate; overflow: hidden; position: relative; }
+.syntax-circus-fancy-scroll-backdrop__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-scroll-backdrop__layer { background: radial-gradient(circle at calc(20% + var(--sc-fancy-scroll-progress, .5) * 60%) 35%, var(--sc-fancy-primary), transparent 42%), radial-gradient(circle at calc(80% - var(--sc-fancy-scroll-progress, .5) * 55%) 75%, var(--sc-fancy-secondary), transparent 46%), var(--sc-fancy-background); inset: 0; opacity: var(--sc-fancy-scroll-backdrop-intensity); pointer-events: none; position: absolute; transform: scale(1.08); z-index: 0; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-scroll-backdrop__layer { background: radial-gradient(circle at 50% 50%, var(--sc-fancy-primary), transparent 48%), var(--sc-fancy-background); } }

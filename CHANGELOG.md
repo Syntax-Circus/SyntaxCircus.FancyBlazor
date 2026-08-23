@@ -7,15 +7,25 @@ Until 1.0, changes that alter public components, parameters, defaults, rendered
 markup hooks, CSS custom properties, registration, or hosting behavior must be
 called out clearly as potentially breaking.
 
-## [Unreleased]
-
-Use this section for changes merged after the latest published package. Keep
-entries grouped under `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, or
-`Security`; move them to a dated version section during release preparation.
+## [0.1.4] - 2026-08-23
 
 ### Added
 
-- No pending changes.
+- Add `ScrollScene`, `ScrollIndicator`, and `ScrollBackdrop` for semantic,
+  normal-flow narrative motion with static reduced-motion fallbacks.
+- Add `HoverLift`, `PressScale`, and `FocusHalo` for additive fine-pointer,
+  pointer/keyboard, and keyboard-visible focus feedback.
+- Add compiling Narrative Motion and Interaction Feedback demo pages with live
+  examples and matching source snippets.
+- Document both collections for consumers and contributors, including lifecycle,
+  accessibility, device behavior, performance, and future roadmap work.
+- Add component and browser lifecycle coverage for scroll, feedback, and
+  accessibility behavior.
+
+### Changed
+
+- Make `FocusHalo` appear for pointer, touch, and keyboard focus while retaining
+  the browser's native focus outline.
 
 ## [0.1.3] - 2026-08-22
 

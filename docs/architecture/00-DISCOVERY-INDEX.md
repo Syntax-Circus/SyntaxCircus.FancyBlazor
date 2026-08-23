@@ -1,6 +1,6 @@
 # FancyBlazor Discovery Index
 
-- **Status:** Six implementation phases complete; preview gates passed
+- **Status:** Eight implementation phases complete; preview gates passed
 - **Project brief:** [../PROJECT-PLAN.md](../PROJECT-PLAN.md)
 - **Requirements:** [01-REQUIREMENTS.md](01-REQUIREMENTS.md)
 - **Architecture:** [02-ARCHITECTURE.md](02-ARCHITECTURE.md)
@@ -19,6 +19,8 @@
 4. [Hardening and Preview](PHASE-04-hardening-and-preview.md)
 5. Expressive Catalog Expansion
 6. [Spatial Surfaces](PHASE-06-spatial-surfaces.md)
+7. [Narrative Motion](PHASE-07-narrative-motion.md)
+8. [Interaction Feedback](PHASE-08-interaction-feedback.md)
 
 ## Approval record
 

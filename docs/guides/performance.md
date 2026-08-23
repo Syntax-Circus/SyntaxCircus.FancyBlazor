@@ -8,6 +8,10 @@ passive browser events and one animation-frame update; `Reveal` and `Stagger`
 use `IntersectionObserver`. Every component removes resources on disposal.
 `CursorTrail` uses one capped canvas particle set and draws only while particles
 remain; `Ripple` removes its short-lived decorative nodes after each wave.
+ScrollScene, ScrollIndicator, and ScrollBackdrop use passive scroll/resize
+events, an intersection gate, and at most one pending animation frame per
+wrapper; they do not run a continuous rendering loop. PressScale owns only
+short-lived activation listeners, while HoverLift and FocusHalo are CSS-first.
 GridBackground, DotPattern, GlassSurface, and BorderBeam use scoped CSS only;
 OrbitalGlow is a single CSS light layer. Prefer static grids and dots for dense
 lists, and reserve continuously animated OrbitalGlow and BorderBeam for focal surfaces.

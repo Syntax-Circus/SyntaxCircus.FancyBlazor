@@ -11,7 +11,7 @@ This repository produces one `net10.0` Razor Class Library containing visual
 effects for Blazor. The preview catalog includes shader and gradient backgrounds,
 glow and shimmer surfaces, reveal and stagger entrances, and pointer/scroll
 motion effects, including semantic text entrances, ambient overlays, bounded
-pointer particles, and CSS-first spatial surfaces. FancyBlazor owns effect markup, scoped styles, coarse
+pointer particles, CSS-first spatial surfaces, in-flow narrative motion, and additive interaction feedback. FancyBlazor owns effect markup, scoped styles, coarse
 Blazor-to-JavaScript lifecycle calls, and the JavaScript rendering loop.
 
 It is not a general UI framework. Do not add buttons, inputs, layouts, routing,
@@ -101,6 +101,12 @@ dated GitVersion package-version section.
   element selectors or assume Bootstrap, Tailwind, MudBlazor, Radzen, or Fluent.
 - Default visuals should be subtle and overridable through documented CSS
   custom properties.
+- Scroll effects must stay in normal document flow, use passive/event-batched
+  progress work only while intersecting, and release pending frames while
+  hidden, offscreen, disabled, or disposed.
+- Hover effects must target fine pointers only. Press and focus treatments must
+  preserve child activation and the native focus outline; reduced motion removes
+  decorative transforms without removing useful focus visibility.
 - CSS-first surface effects must retain a useful static fallback when an
   optional CSS feature such as `backdrop-filter` or masking is unavailable.
 
@@ -130,6 +136,8 @@ folder.
   accessible text; visual tokens are decorative only.
 - Pointer-generated DOM and canvas effects must cap their transient work and
   clear it for reduced motion, hidden documents, and disposal.
+- Add browser coverage for new scroll progress, hidden/offscreen cleanup,
+  fine-pointer gating, keyboard press behavior, and additive focus feedback.
 - Keep documentation snippets linked to compiling sample components.
 - Run restore, Release build, all tests, browser tests, pack, and package-content
   inspection before declaring completion.

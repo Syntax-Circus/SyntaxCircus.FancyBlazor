@@ -8,8 +8,12 @@
 | 4 | Hardening and Preview | Complete | All prior phases | Passing test/package/release audit |
 | 5 | Expressive Catalog Expansion | Complete | Hardening and Preview | Six documented, tested text, ambient, and pointer effects |
 | 6 | Spatial Surfaces | Complete | Expressive Catalog Expansion | Five documented, tested CSS-first surface effects |
-| 7 | Narrative Motion | Planned | Spatial Surfaces | Semantic storytelling effects; API deferred |
-| 8 | Interaction Feedback | Planned | Narrative Motion | Decorative state and focus feedback; API deferred |
+| 7 | Narrative Motion | Complete | Spatial Surfaces | Three documented, tested in-flow semantic storytelling effects |
+| 8 | Interaction Feedback | Complete | Narrative Motion | Three documented, tested decorative hover, press, and focus wrappers |
+| 9 | Quality, Accessibility, and Compatibility | Planned | Interaction Feedback | Browser fallback matrix, performance budgets, visual regression, and public-API review |
+| 10 | Composition and Authoring | Candidate | Quality, Accessibility, and Compatibility | Compile-tested composition recipes and named visual presets |
+| 11 | CSS-First Catalog Expansion | Candidate | Quality, Accessibility, and Compatibility | Selected typography, separator, and surface treatments |
+| 12 | 1.0 Stabilization | Candidate | All prior phases | Resolved preview API, migration notes, and release-readiness evidence |
 
 A phase is complete only when its task boxes and validation gate are supported by current command output or inspected artifacts.
 
