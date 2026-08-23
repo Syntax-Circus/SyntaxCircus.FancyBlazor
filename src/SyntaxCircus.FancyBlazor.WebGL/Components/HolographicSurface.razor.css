@@ -1,0 +1,21 @@
+.syntax-circus-fancy-holographic-surface {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--sc-fancy-primary) calc(var(--sc-fancy-holographic-intensity) * 45%), var(--sc-fancy-background)),
+        radial-gradient(circle at 80% 15%, color-mix(in srgb, var(--sc-fancy-accent) calc(var(--sc-fancy-holographic-sheen) * 45%), transparent), transparent 55%);
+}
+
+.syntax-circus-fancy-holographic-surface__canvas {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.syntax-circus-fancy-holographic-surface__content { position: relative; }
+
+.syntax-circus-fancy-holographic-surface[data-fancy-disabled="true"] .syntax-circus-fancy-holographic-surface__canvas { display: none; }

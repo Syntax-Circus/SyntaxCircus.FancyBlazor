@@ -16,6 +16,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj" />
+    <Project Path="src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/FancyBlazor.Demo/FancyBlazor.Demo.csproj" />
@@ -23,6 +24,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/SyntaxCircus.FancyBlazor.Tests/SyntaxCircus.FancyBlazor.Tests.csproj" />
+    <Project Path="tests/SyntaxCircus.FancyBlazor.WebGL.Tests/SyntaxCircus.FancyBlazor.WebGL.Tests.csproj" />
     <Project Path="tests/SyntaxCircus.FancyBlazor.BrowserTests/SyntaxCircus.FancyBlazor.BrowserTests.csproj" />
     <Project Path="tests/SyntaxCircus.FancyBlazor.TestHost/SyntaxCircus.FancyBlazor.TestHost.csproj" />
     <Project Path="tests/SyntaxCircus.FancyBlazor.StandaloneHost/SyntaxCircus.FancyBlazor.StandaloneHost.csproj" />
