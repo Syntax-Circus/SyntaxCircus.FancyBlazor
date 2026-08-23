@@ -1,1 +1,126 @@
-# SyntaxCircus.FancyBlazor
+# FancyBlazor
+
+[![Build](https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor/actions/workflows/build.yml/badge.svg)](https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor/actions/workflows/build.yml)
+[![NuGet](https://img.shields.io/nuget/v/SyntaxCircus.FancyBlazor.svg)](https://www.nuget.org/packages/SyntaxCircus.FancyBlazor)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+Composable visual effects for Blazor: an iridescent shader background, animated
+glow border, viewport reveal, and pointer tilt—without React islands, a runtime
+CDN, or consumer JavaScript tooling.
+
+FancyBlazor targets `net10.0` and works with static SSR, Interactive Server,
+Interactive WebAssembly, Interactive Auto, and standalone WebAssembly. It is
+CSS-framework-agnostic and keeps meaningful child content as ordinary semantic DOM.
+
+> **Preview software.** The API may change before 1.0. Published as-is and
+> maintained on a best-effort basis; there is no support SLA.
+
+## Install and register
+
+```bash
+dotnet add package SyntaxCircus.FancyBlazor
+```
+
+Register the shared runtime in every executable host. Interactive Auto apps
+register it in both server and client `Program.cs` files.
+
+```csharp
+using SyntaxCircus.FancyBlazor;
+
+builder.Services.AddFancyBlazor();
+```
+
+Import the root namespace in `_Imports.razor`:
+
+```razor
+@using SyntaxCircus.FancyBlazor
+```
+
+No script tag, npm package, CDN, or manual stylesheet import is required.
+
+## First effect
+
+```razor
+<ShaderBackground Effect="ShaderEffect.Nacre"
+                  Palette="FancyPalettes.Witchlight">
+    <section class="hero">
+        <h1>Build something that catches light.</h1>
+        <p>This remains semantic HTML before and after WebGL initializes.</p>
+    </section>
+</ShaderBackground>
+```
+
+Before interactivity—or when WebGL is unavailable—the component displays a
+palette-derived CSS background and leaves the content usable.
+
+## Preview components
+
+| Component | Rendering path | Purpose |
+| --- | --- | --- |
+| `ShaderBackground` | Vendored WebGL runtime + Nacre GLSL | Decorative animated background behind real DOM |
+| `GlowBorder` | CSS-first | Animated edge light around existing content |
+| `Reveal` | CSS + `IntersectionObserver` | Viewport-aware fade/translate/blur entrance |
+| `Tilt` | CSS + pointer JavaScript | Perspective motion and optional glare |
+
+Components intentionally compose:
+
+```razor
+<ShaderBackground>
+    <Reveal Effect="RevealEffect.BlurUp">
+        <Tilt Glare>
+            <GlowBorder Color="currentColor">
+                <article>Existing content</article>
+            </GlowBorder>
+        </Tilt>
+    </Reveal>
+</ShaderBackground>
+```
+
+## Global defaults
+
+```csharp
+builder.Services.AddFancyBlazor(options =>
+{
+    options.MotionPreference = FancyMotionPreference.RespectSystem;
+    options.Quality = FancyQuality.Auto;
+    options.PauseWhenHidden = true;
+    options.PauseWhenOffscreen = true;
+    options.EnableDiagnostics = false;
+});
+```
+
+Reduced motion is respected by default. Decorative canvases and glare layers
+are hidden from assistive technology, wrapper components add no tab stops, and
+continuous rendering stops while hidden or offscreen.
+
+## Documentation and examples
+
+- [Getting started](docs/getting-started.md)
+- [Component guides and API tables](docs/README.md#components)
+- [Palettes and styling](docs/guides/palettes-and-styling.md)
+- [Accessibility](docs/guides/accessibility.md)
+- [Performance](docs/guides/performance.md)
+- [Hosting modes](docs/guides/hosting-modes.md)
+- [Troubleshooting](docs/guides/troubleshooting.md)
+- [Changelog](CHANGELOG.md)
+- [Compiling Interactive Auto demo](samples/FancyBlazor.Demo.Client/Pages/Home.razor)
+
+## Validation
+
+```bash
+dotnet restore SyntaxCircus.FancyBlazor.slnx
+dotnet build SyntaxCircus.FancyBlazor.slnx --no-restore --configuration Release
+dotnet test SyntaxCircus.FancyBlazor.slnx --no-build --configuration Release
+dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release
+pwsh eng/verify-docs.ps1
+pwsh eng/verify-package.ps1
+```
+
+Install the Playwright browser once before the first local browser-test run;
+the exact command is documented in [AGENTS.md](AGENTS.md#commands).
+
+## Contributing and license
+
+Read [AGENTS.md](AGENTS.md) before changing public behavior or vendored assets.
+FancyBlazor is MIT licensed; see [LICENSE](LICENSE). Bundled shader.gallery
+notices are in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

@@ -1,0 +1,14 @@
+@page "/background"
+
+<PageTitle>ShaderBackground · FancyBlazor</PageTitle>
+<section class="demo-page component-page">
+    <p class="kicker">01 / WEBGL + PROGRESSIVE ENHANCEMENT</p>
+    <h1>ShaderBackground</h1>
+    <p class="lede">Nacre renders behind ordinary DOM and falls back to a palette-derived CSS field.</p>
+    <ShaderBackground Palette="FancyPalettes.Glacier" CssClass="component-stage" data-testid="background-example">
+        <div class="stage-content"><strong>Real HTML above a decorative canvas.</strong><span>Disable WebGL and this remains intact.</span></div>
+    </ShaderBackground>
+    <pre><code>&lt;ShaderBackground Palette="FancyPalettes.Glacier"&gt;
+    &lt;HeroContent /&gt;
+&lt;/ShaderBackground&gt;</code></pre>
+</section>

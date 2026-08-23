@@ -1,0 +1,12 @@
+<Router AppAssembly="typeof(ClientAssemblyMarker).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="typeof(MainLayout)">
+            <PageTitle>Not found · FancyBlazor</PageTitle>
+            <section class="demo-page"><p class="kicker">404 / REFRACTION LOST</p><h1>That specimen is not in the tray.</h1><a href="/">Return to the gallery</a></section>
+        </LayoutView>
+    </NotFound>
+</Router>

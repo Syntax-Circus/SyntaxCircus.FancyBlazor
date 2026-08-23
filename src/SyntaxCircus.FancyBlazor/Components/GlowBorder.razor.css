@@ -1,0 +1,49 @@
+@property --sc-fancy-glow-angle {
+    inherits: false;
+    initial-value: 0deg;
+    syntax: "<angle>";
+}
+
+.syntax-circus-fancy-glow-border {
+    border-radius: var(--sc-fancy-radius);
+    isolation: isolate;
+    padding: 1px;
+    position: relative;
+}
+
+.syntax-circus-fancy-glow-border::before {
+    background: conic-gradient(from var(--sc-fancy-glow-angle), transparent 5%, var(--sc-fancy-glow-color), transparent 32%, var(--sc-fancy-glow-color), transparent 74%);
+    border-radius: inherit;
+    content: "";
+    filter: blur(calc(2px + 10px * var(--sc-fancy-glow-intensity)));
+    inset: 0;
+    opacity: calc(.22 + .58 * var(--sc-fancy-glow-intensity));
+    pointer-events: none;
+    position: absolute;
+    z-index: -1;
+}
+
+.syntax-circus-fancy-glow-border[data-fancy-animated="true"]::before {
+    animation: syntax-circus-fancy-glow-spin var(--sc-fancy-duration) linear infinite;
+}
+
+.syntax-circus-fancy-glow-border__content {
+    border-radius: inherit;
+    min-width: 0;
+}
+
+.syntax-circus-fancy-glow-border[data-fancy-disabled="true"] {
+    padding: 0;
+}
+
+.syntax-circus-fancy-glow-border[data-fancy-disabled="true"]::before {
+    display: none;
+}
+
+@keyframes syntax-circus-fancy-glow-spin {
+    to { --sc-fancy-glow-angle: 360deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .syntax-circus-fancy-glow-border::before { animation: none !important; }
+}

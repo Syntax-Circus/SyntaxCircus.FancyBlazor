@@ -1,0 +1,29 @@
+.syntax-circus-fancy-reveal {
+    transition-delay: var(--sc-fancy-delay);
+    transition-duration: var(--sc-fancy-duration);
+    transition-property: opacity, filter, transform;
+    transition-timing-function: cubic-bezier(.2, .75, .2, 1);
+}
+
+.syntax-circus-fancy-reveal[data-fancy-ready="true"][data-fancy-visible="false"] {
+    opacity: 0;
+}
+
+.syntax-circus-fancy-reveal[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="fadeup"],
+.syntax-circus-fancy-reveal[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="blurup"] {
+    transform: translateY(var(--sc-fancy-distance));
+}
+
+.syntax-circus-fancy-reveal[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="blurup"] {
+    filter: blur(10px);
+}
+
+.syntax-circus-fancy-reveal[data-fancy-visible="true"] {
+    filter: none;
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .syntax-circus-fancy-reveal { transition: none !important; }
+}
