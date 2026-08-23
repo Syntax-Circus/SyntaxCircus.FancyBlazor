@@ -1,0 +1,3 @@
+.syntax-circus-fancy-magnetic__content { transform: translate(var(--sc-fancy-magnetic-x, 0), var(--sc-fancy-magnetic-y, 0)); transition: transform var(--sc-fancy-reset-duration) cubic-bezier(.2,.75,.2,1); }
+.syntax-circus-fancy-magnetic[data-fancy-engaged="true"] .syntax-circus-fancy-magnetic__content { transition-duration: 60ms; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-magnetic__content { transform: none !important; transition: none !important; } }

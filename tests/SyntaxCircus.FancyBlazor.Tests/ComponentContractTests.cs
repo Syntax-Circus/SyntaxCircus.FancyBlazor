@@ -115,6 +115,41 @@ public sealed class ComponentContractTests
         markup.ShouldContain("<button type=\"button\">Launch</button>");
     }
 
+    [Fact]
+    public void ExpandedCssEffects_RenderStableHooksAndClampValues()
+    {
+        using var context = new BunitContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<article>Readable</article>");
+
+        var gradient = context.Render<GradientBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Angle, 999)).Markup;
+        var shimmer = context.Render<Shimmer>(p => p.Add(x => x.ChildContent, content).Add(x => x.Intensity, 3)).Markup;
+
+        gradient.ShouldContain("syntax-circus-fancy-gradient-background");
+        gradient.ShouldContain("--sc-fancy-gradient-angle:360deg");
+        shimmer.ShouldContain("syntax-circus-fancy-shimmer__layer");
+        shimmer.ShouldContain("aria-hidden=\"true\"");
+        shimmer.ShouldContain("--sc-fancy-shimmer-intensity:1");
+    }
+
+    [Fact]
+    public void ExpandedRuntimeEffects_PreserveSemanticContentAndAccessibility()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var spotlight = context.Render<Spotlight>(p => p.Add(x => x.ChildContent, content)).Markup;
+        var magnetic = context.Render<Magnetic>(p => p.Add(x => x.ChildContent, content).Add(x => x.Strength, -1)).Markup;
+        var parallax = context.Render<Parallax>(p => p.Add(x => x.ChildContent, content).Add(x => x.Distance, 999)).Markup;
+        var stagger = context.Render<Stagger>(p => p.Add(x => x.ChildContent, content)).Markup;
+
+        spotlight.ShouldContain("syntax-circus-fancy-spotlight__light");
+        spotlight.ShouldContain("aria-hidden=\"true\"");
+        magnetic.ShouldContain("--sc-fancy-magnetic-strength:0");
+        parallax.ShouldContain("--sc-fancy-parallax-distance:300px");
+        stagger.ShouldContain("data-fancy-effect=\"stagger\"");
+        stagger.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();

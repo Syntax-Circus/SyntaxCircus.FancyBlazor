@@ -9,6 +9,12 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [GlowBorder](components/glow-border.md)
 - [Reveal](components/reveal.md)
 - [Tilt](components/tilt.md)
+- [GradientBackground](components/gradient-background.md)
+- [Spotlight](components/spotlight.md)
+- [Magnetic](components/magnetic.md)
+- [Parallax](components/parallax.md)
+- [Stagger](components/stagger.md)
+- [Shimmer](components/shimmer.md)
 
 ## Guides
 

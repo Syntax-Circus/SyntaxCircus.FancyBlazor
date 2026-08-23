@@ -1,0 +1,18 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes"><div class="syntax-circus-fancy-shimmer__content">@ChildContent</div><span class="syntax-circus-fancy-shimmer__layer" aria-hidden="true"></span></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public double Intensity { get; set; } = .2;
+    [Parameter] public bool Animated { get; set; } = true;
+    [Parameter] public TimeSpan Duration { get; set; } = TimeSpan.FromSeconds(2);
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-shimmer", CssClass,
+        $"--sc-fancy-shimmer-color:{Color};--sc-fancy-shimmer-intensity:{AttributeComposer.Number(AttributeComposer.Clamp(Intensity, 0, 1))};--sc-fancy-duration:{AttributeComposer.Number(AttributeComposer.NonNegative(Duration).TotalMilliseconds)}ms", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "shimmer", ["data-fancy-animated"] = Animated && !Disabled ? "true" : "false", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

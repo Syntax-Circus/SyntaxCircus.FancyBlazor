@@ -48,6 +48,12 @@ $requiredDocumentation = @(
     "docs/components/glow-border.md",
     "docs/components/reveal.md",
     "docs/components/tilt.md",
+    "docs/components/gradient-background.md",
+    "docs/components/spotlight.md",
+    "docs/components/magnetic.md",
+    "docs/components/parallax.md",
+    "docs/components/stagger.md",
+    "docs/components/shimmer.md",
     "docs/guides/accessibility.md",
     "docs/guides/performance.md",
     "docs/guides/hosting-modes.md",
@@ -57,6 +63,7 @@ $requiredDocumentation = @(
     "samples/FancyBlazor.Demo.Client/Pages/Border.razor",
     "samples/FancyBlazor.Demo.Client/Pages/RevealPage.razor",
     "samples/FancyBlazor.Demo.Client/Pages/TiltPage.razor"
+    ,"samples/FancyBlazor.Demo.Client/Pages/ExpandedEffects.razor"
 )
 
 $missingDocumentation = @($requiredDocumentation | Where-Object {

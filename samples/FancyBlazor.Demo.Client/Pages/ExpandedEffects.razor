@@ -1,0 +1,12 @@
+@page "/expanded-effects"
+<PageTitle>More effects · FancyBlazor</PageTitle>
+<section class="demo-page component-page expanded-effects-page"><p class="kicker">EXPANDED PREVIEW CATALOG</p><h1>CSS, pointer, scroll, and viewport effects.</h1>
+<GradientBackground CssClass="component-stage expanded-gradient"><div class="effect-copy"><h2>Gradient background</h2><p>Palette-derived CSS stays visible without JavaScript.</p></div></GradientBackground>
+<Spotlight CssClass="component-stage quiet interactive-stage"><div class="effect-copy"><h2>Spotlight</h2><p>Move your pointer across this surface to steer the light.</p></div></Spotlight>
+<Magnetic CssClass="magnetic-demo"><a class="magnetic-link" href="/expanded-effects">Hover this magnetic link</a></Magnetic>
+<section class="parallax-runway" aria-label="Parallax demonstration"><p class="effect-caption">Scroll through the depth window. The far field, color field, and foreground title travel at different rates, creating visible depth without taking over the page.</p><div class="parallax-window"><Parallax CssClass="depth-layer depth-far" Distance="36"><div class="depth-art" aria-hidden="true"></div></Parallax><Parallax CssClass="depth-layer depth-mid" Distance="96"><div class="depth-orb" aria-hidden="true"></div></Parallax><Parallax CssClass="depth-layer depth-near" Distance="180"><div class="depth-copy"><span>THREE MOTION PLANES</span><h2>Parallax</h2><p>Scroll slowly: nearby content travels farther than the distant field.</p></div></Parallax></div></section>
+<section class="stagger-section"><div class="reveal-demo-header"><p class="lede">Replay the direct-child entrance to see each item enter 260 ms after the last.</p><button class="replay-button" type="button" @onclick="ReplayStagger">Replay stagger</button></div><Stagger CssClass="component-stage quiet stagger-stack" ReplayToken="@_staggerRun" Delay="@TimeSpan.FromMilliseconds(260)" Duration="@TimeSpan.FromMilliseconds(900)" data-replay-run="@_staggerRun"><article class="strip">First direct child</article><article class="strip">Second direct child</article><a class="strip" href="/">Third direct child is still a link</a></Stagger></section>
+<Shimmer CssClass="component-stage quiet shimmer-stage"><div class="effect-copy"><h2>Shimmer</h2><p>A decorative sweep above semantic content.</p></div></Shimmer>
+</section>
+
+@code { private int _staggerRun; private void ReplayStagger() => _staggerRun++; }
