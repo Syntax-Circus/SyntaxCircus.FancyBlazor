@@ -246,6 +246,41 @@ public sealed class ComponentContractTests
         focus.ShouldContain("<a href=\"/next\">Continue</a>");
     }
 
+    [Fact]
+    public void CssFirstCatalogAndPresets_PreserveSemanticsAndRequireNoRuntime()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<button type=\"button\">Save</button>");
+
+        var stroke = context.Render<TextStroke>(p => p.Add(x => x.ChildContent, content).Add(x => x.Width, 99)).Markup;
+        var highlight = context.Render<HighlightText>(p => p.Add(x => x.ChildContent, content).Add(x => x.Opacity, -1)).Markup;
+        var gradient = context.Render<GradientDivider>(p => p.Add(x => x.Thickness, 0)).Markup;
+        var wave = context.Render<WaveDivider>(p => p.Add(x => x.Amplitude, 99)).Markup;
+        var section = context.Render<SectionDivider>(p => p.Add(x => x.Inset, -1)).Markup;
+        var mesh = context.Render<MeshBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Intensity, 2)).Markup;
+        var corners = context.Render<CornerAccents>(p => p.Add(x => x.ChildContent, content).Add(x => x.Length, 0)).Markup;
+        var paper = context.Render<PaperSurface>(p => p.Add(x => x.ChildContent, content).Add(x => x.TextureOpacity, 2)).Markup;
+        var glow = context.Render<EdgeGlow>(p => p.Add(x => x.ChildContent, content).Add(x => x.Placement, EdgeGlowPlacement.End).Add(x => x.Size, 0)).Markup;
+        var action = context.Render<ActionCard>(p => p.Add(x => x.ChildContent, content)).Markup;
+        var reading = context.Render<ReadingSurface>(p => p.Add(x => x.ChildContent, content)).Markup;
+
+        stroke.ShouldContain("--sc-fancy-text-stroke-width:8px");
+        highlight.ShouldContain("--sc-fancy-highlight-opacity:0");
+        gradient.ShouldContain("aria-hidden=\"true\"");
+        gradient.ShouldContain("--sc-fancy-divider-thickness:1px");
+        wave.ShouldContain("--sc-fancy-wave-amplitude:32px");
+        section.ShouldContain("--sc-fancy-section-divider-inset:0px");
+        mesh.ShouldContain("syntax-circus-fancy-mesh-background__layer");
+        corners.ShouldContain("aria-hidden=\"true\"");
+        paper.ShouldContain("syntax-circus-fancy-paper-surface__texture");
+        glow.ShouldContain("data-fancy-placement=\"end\"");
+        glow.ShouldContain("--sc-fancy-edge-glow-size:4px");
+        action.ShouldContain("data-fancy-preset=\"action-card\"");
+        action.ShouldContain("<button type=\"button\">Save</button>");
+        reading.ShouldContain("data-fancy-preset=\"reading-surface\"");
+        reading.ShouldContain("syntax-circus-fancy-grid-background");
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();

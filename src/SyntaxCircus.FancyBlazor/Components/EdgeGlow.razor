@@ -1,0 +1,19 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes"><div class="syntax-circus-fancy-edge-glow__content">@ChildContent</div><span class="syntax-circus-fancy-edge-glow__layer" aria-hidden="true"></span></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public EdgeGlowPlacement Placement { get; set; } = EdgeGlowPlacement.Top;
+    [Parameter] public double Intensity { get; set; } = .45;
+    [Parameter] public double Size { get; set; } = 28;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-edge-glow", CssClass,
+        $"--sc-fancy-edge-glow-color:{Color};--sc-fancy-edge-glow-intensity:{AttributeComposer.Number(AttributeComposer.Clamp(Intensity, 0, 1))};--sc-fancy-edge-glow-size:{AttributeComposer.Number(AttributeComposer.Clamp(Size, 4, 96))}px", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "edge-glow", ["data-fancy-placement"] = Placement.ToString().ToLowerInvariant(), ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

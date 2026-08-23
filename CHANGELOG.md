@@ -7,6 +7,22 @@ Until 1.0, changes that alter public components, parameters, defaults, rendered
 markup hooks, CSS custom properties, registration, or hosting behavior must be
 called out clearly as potentially breaking.
 
+## [0.1.5] - 2026-08-23
+
+### Added
+
+- Add nine CSS-first typography, separator, and surface effects: `TextStroke`,
+  `HighlightText`, `GradientDivider`, `WaveDivider`, `SectionDivider`,
+  `MeshBackground`, `CornerAccents`, `PaperSurface`, and `EdgeGlow`.
+- Add five typed composition presets: `AuroraHero`, `ReadingSurface`,
+  `ActionCard`, `EditorialHero`, and `FeaturePanel`.
+- Add compiling CSS-first Catalog and Composition and Authoring demo pages,
+  documentation samples, component guides, and contributor guidance.
+- Add a complete grouped footer sitemap plus `robots.txt` and `sitemap.xml` to
+  the demo so every route is discoverable by visitors and compliant crawlers.
+- Add the focused Phase 9 compatibility, fallback, public-API, and visual
+  baseline release gate for the new catalog.
+
 ## [0.1.4] - 2026-08-23
 
 ### Added

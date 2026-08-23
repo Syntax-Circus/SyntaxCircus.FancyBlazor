@@ -1,0 +1,10 @@
+.syntax-circus-fancy-edge-glow { isolation: isolate; position: relative; }
+.syntax-circus-fancy-edge-glow__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-edge-glow__layer { background: radial-gradient(ellipse, color-mix(in srgb, var(--sc-fancy-edge-glow-color) calc(var(--sc-fancy-edge-glow-intensity) * 100%), transparent), transparent 70%); filter: blur(calc(var(--sc-fancy-edge-glow-size) / 3)); pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-edge-glow[data-fancy-placement="top"] .syntax-circus-fancy-edge-glow__layer, .syntax-circus-fancy-edge-glow[data-fancy-placement="bottom"] .syntax-circus-fancy-edge-glow__layer { block-size: var(--sc-fancy-edge-glow-size); inline-size: 80%; inset-inline: 10%; }
+.syntax-circus-fancy-edge-glow[data-fancy-placement="top"] .syntax-circus-fancy-edge-glow__layer { inset-block-start: calc(var(--sc-fancy-edge-glow-size) * -.45); }
+.syntax-circus-fancy-edge-glow[data-fancy-placement="bottom"] .syntax-circus-fancy-edge-glow__layer { inset-block-end: calc(var(--sc-fancy-edge-glow-size) * -.45); }
+.syntax-circus-fancy-edge-glow[data-fancy-placement="start"] .syntax-circus-fancy-edge-glow__layer, .syntax-circus-fancy-edge-glow[data-fancy-placement="end"] .syntax-circus-fancy-edge-glow__layer { block-size: 80%; inline-size: var(--sc-fancy-edge-glow-size); inset-block: 10%; }
+.syntax-circus-fancy-edge-glow[data-fancy-placement="start"] .syntax-circus-fancy-edge-glow__layer { inset-inline-start: calc(var(--sc-fancy-edge-glow-size) * -.45); }
+.syntax-circus-fancy-edge-glow[data-fancy-placement="end"] .syntax-circus-fancy-edge-glow__layer { inset-inline-end: calc(var(--sc-fancy-edge-glow-size) * -.45); }
+.syntax-circus-fancy-edge-glow[data-fancy-disabled="true"] .syntax-circus-fancy-edge-glow__layer { display: none; }

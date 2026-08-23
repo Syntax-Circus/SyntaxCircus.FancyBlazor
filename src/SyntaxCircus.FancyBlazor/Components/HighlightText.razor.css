@@ -1,0 +1,2 @@
+.syntax-circus-fancy-highlight-text ::deep :is(h1, h2, h3, h4, h5, h6, p, span, strong, em) { background: linear-gradient(var(--sc-fancy-highlight-angle), transparent 34%, color-mix(in srgb, var(--sc-fancy-highlight-color) calc(var(--sc-fancy-highlight-opacity) * 100%), transparent) 34% 84%, transparent 84%); box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.syntax-circus-fancy-highlight-text[data-fancy-disabled="true"] ::deep :is(h1, h2, h3, h4, h5, h6, p, span, strong, em) { background: none; }

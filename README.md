@@ -88,6 +88,16 @@ palette-derived CSS background and leaves the content usable.
 | `HoverLift` | CSS-first | Fine-pointer hover elevation around existing content |
 | `PressScale` | CSS + activation JavaScript | Pointer and keyboard press response around existing content |
 | `FocusHalo` | CSS-first | Additive focus halo around focused child content |
+| `TextStroke` | CSS-first | Decorative text outline around semantic content |
+| `HighlightText` | CSS-first | Editorial marker wash behind semantic text |
+| `GradientDivider` | CSS-first | Decorative gradient separator |
+| `WaveDivider` | CSS-first | Decorative static wave separator |
+| `SectionDivider` | CSS-first | Decorative centered section marker |
+| `MeshBackground` | CSS-first | Palette-derived static color field behind content |
+| `CornerAccents` | CSS-first | Decorative opposing corners around content |
+| `PaperSurface` | CSS-first | Tinted, lightly textured reading plane |
+| `EdgeGlow` | CSS-first | Focused decorative edge bloom |
+| `AuroraHero`, `ReadingSurface`, `ActionCard`, `EditorialHero`, `FeaturePanel` | Composition presets | Named, typed decorative stacks around semantic child content |
 
 Components intentionally compose:
 
@@ -138,6 +148,10 @@ continuous rendering stops while hidden or offscreen.
 - [Narrative-motion demo](samples/FancyBlazor.Demo.Client/Pages/NarrativeMotion.razor)
 - [Interaction feedback](docs/guides/interaction-feedback.md)
 - [Interaction-feedback demo](samples/FancyBlazor.Demo.Client/Pages/InteractionFeedback.razor)
+- [CSS-first catalog](docs/guides/css-first-catalog.md)
+- [CSS-first catalog demo](samples/FancyBlazor.Demo.Client/Pages/CssFirstCatalog.razor)
+- [Composition and authoring](docs/guides/composition-and-authoring.md)
+- [Composition-and-authoring demo](samples/FancyBlazor.Demo.Client/Pages/CompositionAuthoring.razor)
 - [Changelog](CHANGELOG.md)
 - [Compiling Interactive Auto demo](samples/FancyBlazor.Demo.Client/Pages/Home.razor)
 

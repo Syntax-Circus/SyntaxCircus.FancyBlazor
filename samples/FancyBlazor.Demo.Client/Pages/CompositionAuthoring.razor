@@ -1,0 +1,24 @@
+@page "/composition-authoring"
+
+<PageTitle>Composition and authoring · FancyBlazor</PageTitle>
+
+<section class="demo-page authoring-page">
+    <p class="kicker">COMPOSITION / NAMED PRESETS</p>
+    <h1>Start with a clear visual role.</h1>
+    <p class="lede">Presets bundle a small, stable layer stack. They never supply application structure, copy, roles, or control behavior—only the decorative treatment around your content.</p>
+
+    <section class="preset-grid" aria-label="Named preset demonstrations">
+        <AuroraHero CssClass="preset-card preset-card--aurora" Palette="FancyPalettes.Witchlight" data-testid="aurora-hero-example"><article><p class="specimen-label">AURORA HERO</p><h2>Set a generous opening field.</h2><p>Ambient color and grain stay behind the message.</p></article></AuroraHero>
+        <ReadingSurface CssClass="preset-card preset-card--reading" Palette="FancyPalettes.Viridian" data-testid="reading-surface-example"><article><p class="specimen-label">READING SURFACE</p><h2>Protect the copy.</h2><p>A field, glass, and edge line give the article room to breathe.</p></article></ReadingSurface>
+        <ActionCard CssClass="preset-card preset-card--action" Color="#67e8f9" data-testid="action-card-example"><button type="button"><span class="specimen-label">ACTION CARD</span><strong>Keep the real button.</strong><small>Hover, press, and focus feedback remain additive.</small></button></ActionCard>
+        <EditorialHero CssClass="preset-card preset-card--editorial" data-testid="editorial-hero-example"><article><p class="specimen-label">EDITORIAL HERO</p><h2>Make a warm, inked interruption.</h2><p>The surface is decorative; the heading remains a heading.</p></article></EditorialHero>
+        <FeaturePanel CssClass="preset-card preset-card--feature" Color="#c4b5fd" data-testid="feature-panel-example"><article><p class="specimen-label">FEATURE PANEL</p><h2>Mark the focal detail.</h2><p>Corner accents and one edge glow keep the panel restrained.</p></article></FeaturePanel>
+    </section>
+
+    <section class="surface-recipe" aria-labelledby="preset-recipe-heading">
+        <div class="surface-recipe__copy"><p class="specimen-label">COMPILED SAMPLE / PRESET</p><h2 id="preset-recipe-heading">Let the content stay yours.</h2><p>The preset owns only its effect stack. Supply semantic elements, labels, links, and actions as child content.</p></div>
+        <pre class="surface-recipe__code"><code>&lt;ActionCard Color="#67e8f9"&gt;
+    &lt;button type="button"&gt;Save changes&lt;/button&gt;
+&lt;/ActionCard&gt;</code></pre>
+    </section>
+</section>

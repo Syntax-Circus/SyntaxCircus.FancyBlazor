@@ -19,6 +19,11 @@ middleware, authentication, SEO policy, a CSS framework, global resets, host
 typography, or product-specific content. Meaningful consumer content must remain
 semantic DOM; canvas and glare layers are decorative.
 
+Use the relevant `SyntaxCircus.*` shared package for common host concerns rather
+than reimplementing them in an application. In particular, demo-host crawler
+discovery uses `SyntaxCircus.AspNetCore.Common`'s `MapRobotsTxt` and
+`MapSitemap` endpoints, not hand-authored static files.
+
 ## Repository map
 
 ```text
@@ -109,6 +114,12 @@ dated GitVersion package-version section.
   decorative transforms without removing useful focus visibility.
 - CSS-first surface effects must retain a useful static fallback when an
   optional CSS feature such as `backdrop-filter` or masking is unavailable.
+- CSS-first typography, divider, and surface effects must require no JavaScript
+  lifecycle work. Decorative dividers are `aria-hidden`; consumers retain native
+  `<hr>` semantics when a thematic break must be announced.
+- Named composition presets may combine existing effects but must expose only
+  typed, stable presentation controls and child content. They never provide
+  roles, tab stops, click handlers, or consumer content.
 
 ## Third-party assets
 
@@ -138,6 +149,10 @@ folder.
   clear it for reduced motion, hidden documents, and disposal.
 - Add browser coverage for new scroll progress, hidden/offscreen cleanup,
   fine-pointer gating, keyboard press behavior, and additive focus feedback.
+- For new CSS-first effects, add browser coverage that confirms static rendering,
+  reduced-motion usability, feature fallback, and zero effect-runtime entries.
+- Composition presets require bUnit coverage for nested stable hooks and child
+  semantics, plus browser coverage for any included interactive behavior.
 - Keep documentation snippets linked to compiling sample components.
 - Run restore, Release build, all tests, browser tests, pack, and package-content
   inspection before declaring completion.

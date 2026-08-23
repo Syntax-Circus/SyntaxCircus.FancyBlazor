@@ -44,3 +44,11 @@ The response must be `200 OK` with a JavaScript content type. The demo project
 sets `RequiresAspNetWebAssets` and its Docker build asserts that the published
 file exists. Rebuild and redeploy the image if the direct request returns 404;
 the reverse proxy can only relay the application's response.
+
+## Crawler discovery
+
+The demo maps its permissive `/robots.txt` and generated `/sitemap.xml` through
+`SyntaxCircus.AspNetCore.Common`, covering the homepage and every demo route.
+Preserve both endpoints through the reverse proxy; they make the full catalog
+discoverable to search engines and compliant AI crawlers. They do not guarantee
+that a particular AI product will fetch or index the site immediately.

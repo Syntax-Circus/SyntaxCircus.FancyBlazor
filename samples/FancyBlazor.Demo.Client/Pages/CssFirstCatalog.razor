@@ -1,0 +1,33 @@
+@page "/css-first-catalog"
+
+<PageTitle>CSS-first catalog · FancyBlazor</PageTitle>
+
+<section class="demo-page catalog-page">
+    <p class="kicker">CSS-FIRST CATALOG / 0.1.5</p>
+    <h1>Structure, then atmosphere.</h1>
+    <p class="lede">Nine static-first treatments for editorial type, section rhythm, and quiet surfaces. They add decoration around ordinary Razor; no browser runtime is required.</p>
+
+    <section class="catalog-grid" aria-label="CSS-first component demonstrations">
+        <TextStroke CssClass="catalog-card catalog-card--ink" Color="#67e8f9" Width="1.5" data-testid="text-stroke-example"><h2>TextStroke</h2><p>Make a title carry an outline without replacing its semantic heading.</p></TextStroke>
+        <HighlightText CssClass="catalog-card catalog-card--ink catalog-card--compact-title" Color="#fbbf24" data-testid="highlight-text-example"><h2>HighlightText</h2><p>Mark a phrase with a soft editorial wash.</p></HighlightText>
+        <MeshBackground CssClass="catalog-card catalog-card--mesh catalog-card--compact-title" Palette="FancyPalettes.Viridian" data-testid="mesh-background-example"><h2>MeshBackground</h2><p>A static color field stays useful when animation is unavailable.</p></MeshBackground>
+        <PaperSurface CssClass="catalog-card catalog-card--paper" Ink="#1f2937" data-testid="paper-surface-example"><h2>PaperSurface</h2><p>A calm tinted reading plane with a decorative paper grain.</p></PaperSurface>
+        <CornerAccents CssClass="catalog-card catalog-card--ink catalog-card--compact-title" Color="#c4b5fd" data-testid="corner-accents-example"><h2>CornerAccents</h2><p>Frame a feature without changing the content inside it.</p></CornerAccents>
+        <EdgeGlow CssClass="catalog-card catalog-card--ink" Color="#67e8f9" Placement="EdgeGlowPlacement.Top" data-testid="edge-glow-example"><h2>EdgeGlow</h2><p>Give one edge a low, focused bloom.</p></EdgeGlow>
+    </section>
+
+    <section class="divider-specimens" aria-label="CSS-first divider demonstrations">
+        <article><p class="specimen-label">GRADIENT DIVIDER</p><GradientDivider Color="#67e8f9" Thickness="2" data-testid="gradient-divider-example" /><p>Decorative separators are hidden from assistive technology; use an ordinary <code>&lt;hr&gt;</code> when a semantic thematic break is needed.</p></article>
+        <article><p class="specimen-label">WAVE DIVIDER</p><WaveDivider Color="#a7f3d0" Amplitude="10" data-testid="wave-divider-example" /><p>Static CSS creates the edge rhythm with no script lifecycle.</p></article>
+        <article><p class="specimen-label">SECTION DIVIDER</p><SectionDivider Color="#c4b5fd" Inset="12" data-testid="section-divider-example" /><p>A centered marker creates a quiet transition between visual sections.</p></article>
+    </section>
+
+    <section class="surface-recipe" aria-labelledby="catalog-recipe-heading">
+        <div class="surface-recipe__copy"><p class="specimen-label">COMPILED SAMPLE / QUIET DEPTH</p><h2 id="catalog-recipe-heading">Layer a reading field.</h2><p>Use one background treatment and one edge treatment. The article stays ordinary semantic content.</p></div>
+        <pre class="surface-recipe__code"><code>&lt;MeshBackground Palette="FancyPalettes.Viridian"&gt;
+    &lt;CornerAccents Color="#a7f3d0"&gt;
+        &lt;article&gt;Readable content&lt;/article&gt;
+    &lt;/CornerAccents&gt;
+&lt;/MeshBackground&gt;</code></pre>
+    </section>
+</section>

@@ -1,0 +1,13 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes"><HoverLift Distance="6" Scale="1.01" Disabled="Disabled"><PressScale Scale=".97" Disabled="Disabled"><FocusHalo Color="Color" Spread="5" Disabled="Disabled">@ChildContent</FocusHalo></PressScale></HoverLift></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-action-card", CssClass, null, Style, AdditionalAttributes, new Dictionary<string, object> { ["data-fancy-preset"] = "action-card", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

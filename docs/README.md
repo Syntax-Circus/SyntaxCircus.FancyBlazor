@@ -32,6 +32,15 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [HoverLift](components/hover-lift.md)
 - [PressScale](components/press-scale.md)
 - [FocusHalo](components/focus-halo.md)
+- [TextStroke](components/text-stroke.md)
+- [HighlightText](components/highlight-text.md)
+- [GradientDivider](components/gradient-divider.md)
+- [WaveDivider](components/wave-divider.md)
+- [SectionDivider](components/section-divider.md)
+- [MeshBackground](components/mesh-background.md)
+- [CornerAccents](components/corner-accents.md)
+- [PaperSurface](components/paper-surface.md)
+- [EdgeGlow](components/edge-glow.md)
 
 ## Guides
 
@@ -45,6 +54,8 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [Spatial surfaces](guides/spatial-surfaces.md)
 - [Narrative motion](guides/narrative-motion.md)
 - [Interaction feedback](guides/interaction-feedback.md)
+- [Composition and authoring](guides/composition-and-authoring.md)
+- [CSS-first catalog](guides/css-first-catalog.md)
 
 ## Project references
 

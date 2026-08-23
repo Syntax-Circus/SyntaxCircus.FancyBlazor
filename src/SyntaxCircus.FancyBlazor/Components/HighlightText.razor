@@ -1,0 +1,18 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes">@ChildContent</div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "#fbbf24";
+    [Parameter] public double Opacity { get; set; } = .45;
+    [Parameter] public double Angle { get; set; } = -2;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-highlight-text", CssClass,
+        $"--sc-fancy-highlight-color:{Color};--sc-fancy-highlight-opacity:{AttributeComposer.Number(AttributeComposer.Clamp(Opacity, 0, 1))};--sc-fancy-highlight-angle:{AttributeComposer.Number(AttributeComposer.Clamp(Angle, -12, 12))}deg", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "highlight-text", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

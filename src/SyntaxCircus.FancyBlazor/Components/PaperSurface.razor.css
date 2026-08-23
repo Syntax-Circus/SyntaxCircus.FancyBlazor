@@ -1,0 +1,5 @@
+.syntax-circus-fancy-paper-surface { background: var(--sc-fancy-paper-tint); border: 1px solid color-mix(in srgb, var(--sc-fancy-paper-ink) calc(var(--sc-fancy-paper-border-opacity) * 100%), transparent); color: var(--sc-fancy-paper-ink); isolation: isolate; position: relative; }
+.syntax-circus-fancy-paper-surface__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-paper-surface__texture { background-image: repeating-linear-gradient(0deg, transparent 0 3px, color-mix(in srgb, var(--sc-fancy-paper-ink) 10%, transparent) 4px), repeating-linear-gradient(90deg, transparent 0 5px, color-mix(in srgb, var(--sc-fancy-paper-ink) 8%, transparent) 6px); inset: 0; opacity: var(--sc-fancy-paper-texture-opacity); pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-paper-surface[data-fancy-disabled="true"] { background: transparent; border-color: transparent; }
+.syntax-circus-fancy-paper-surface[data-fancy-disabled="true"] .syntax-circus-fancy-paper-surface__texture { display: none; }

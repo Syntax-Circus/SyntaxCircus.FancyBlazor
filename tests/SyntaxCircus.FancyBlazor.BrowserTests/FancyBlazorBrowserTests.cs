@@ -243,6 +243,39 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task CssFirstCatalog_UsesStaticDecorationsWithoutRuntimeInstances()
+    {
+        await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/css-first-catalog");
+
+        (await page.Locator("[data-testid='text-stroke-example'] h1").InnerTextAsync()).ShouldBe("Outlined semantic heading");
+        (await page.Locator("[data-testid='gradient-divider-example']").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await page.Locator("[data-testid='wave-divider-example']").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await page.Locator("[data-testid='mesh-background-example'] .syntax-circus-fancy-mesh-background__layer").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await page.Locator("[data-testid='corner-accents-example'] [aria-hidden='true']").CountAsync()).ShouldBe(2);
+        (await page.Locator("[data-testid='edge-glow-example'] a").GetAttributeAsync("href")).ShouldBe("/border");
+        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount ?? 0")).ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task CompositionPresets_KeepSemanticControlsAndOnlyPressScaleInitializesRuntime()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/composition-authoring");
+        await page.WaitForFunctionAsync("() => (globalThis.__syntaxCircusFancyBlazor?.instanceCount ?? 0) === 1");
+
+        (await page.Locator("[data-testid='aurora-hero-example'] article").InnerTextAsync()).ShouldBe("Aurora content");
+        (await page.Locator("[data-testid='reading-surface-example'] article").InnerTextAsync()).ShouldBe("Reading content");
+        var action = page.Locator("[data-testid='action-card-example']");
+        await action.Locator("button").FocusAsync();
+        (await action.GetAttributeAsync("tabindex")).ShouldBeNull();
+        await action.Locator("button").PressAsync("Enter");
+        (await page.Locator("[data-testid='feature-panel-example'] a").GetAttributeAsync("href")).ShouldBe("/border");
+    }
+
+    [Fact]
     public async Task ReducedMotionPages_ProduceNonEmptyDeterministicVisualArtifacts()
     {
         await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions
@@ -254,7 +287,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         var artifactDirectory = Path.Combine(Environment.CurrentDirectory, "TestResults", "visual");
         Directory.CreateDirectory(artifactDirectory);
 
-        foreach (var route in new[] { "/background", "/border", "/reveal", "/tilt", "/spatial-surfaces" })
+        foreach (var route in new[] { "/background", "/border", "/reveal", "/tilt", "/spatial-surfaces", "/css-first-catalog", "/composition-authoring" })
         {
             await page.GotoAsync(fixture.TestHostUrl + route);
             await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
