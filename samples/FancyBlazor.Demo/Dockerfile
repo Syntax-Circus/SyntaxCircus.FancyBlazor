@@ -15,6 +15,7 @@ RUN dotnet publish "samples/FancyBlazor.Demo/FancyBlazor.Demo.csproj" \
     --no-restore \
     --output /app/publish \
     -p:DisableGitVersionTask=true
+RUN test -f /app/publish/wwwroot/_framework/blazor.web.js
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app

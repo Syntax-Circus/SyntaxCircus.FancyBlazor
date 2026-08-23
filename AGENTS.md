@@ -10,8 +10,8 @@ consumer-facing contract. Architecture decisions and phase status live in
 This repository produces one `net10.0` Razor Class Library containing visual
 effects for Blazor. The preview catalog includes shader and gradient backgrounds,
 glow and shimmer surfaces, reveal and stagger entrances, and pointer/scroll
-motion effects, including semantic text entrances, ambient overlays, and bounded
-pointer particles. FancyBlazor owns effect markup, scoped styles, coarse
+motion effects, including semantic text entrances, ambient overlays, bounded
+pointer particles, and CSS-first spatial surfaces. FancyBlazor owns effect markup, scoped styles, coarse
 Blazor-to-JavaScript lifecycle calls, and the JavaScript rendering loop.
 
 It is not a general UI framework. Do not add buttons, inputs, layouts, routing,
@@ -87,8 +87,8 @@ custom property, and setup step is consumer API.
 When public behavior changes, update the README, applicable user guide,
 compiling demo, bUnit/browser coverage, `CHANGELOG.md`, and this file in the
 same change. Keep unreleased entries under the correct Keep a Changelog
-category; during release preparation, move them into the dated GitVersion
-package-version section.
+category, unless the merge is release-bound; in that case write directly to its
+dated GitVersion package-version section.
 
 ## JavaScript and CSS rules
 
@@ -101,6 +101,8 @@ package-version section.
   element selectors or assume Bootstrap, Tailwind, MudBlazor, Radzen, or Fluent.
 - Default visuals should be subtle and overridable through documented CSS
   custom properties.
+- CSS-first surface effects must retain a useful static fallback when an
+  optional CSS feature such as `backdrop-filter` or masking is unavailable.
 
 ## Third-party assets
 

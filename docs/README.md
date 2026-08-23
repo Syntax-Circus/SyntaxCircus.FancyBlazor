@@ -21,6 +21,11 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [NoiseOverlay](components/noise-overlay.md)
 - [Ripple](components/ripple.md)
 - [CursorTrail](components/cursor-trail.md)
+- [GlassSurface](components/glass-surface.md)
+- [BorderBeam](components/border-beam.md)
+- [GridBackground](components/grid-background.md)
+- [DotPattern](components/dot-pattern.md)
+- [OrbitalGlow](components/orbital-glow.md)
 
 ## Guides
 
@@ -31,6 +36,7 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [Demo container deployment](guides/demo-container.md)
 - [Troubleshooting](guides/troubleshooting.md)
 - [Expressive effects: what to expect](guides/expressive-effects.md)
+- [Spatial surfaces](guides/spatial-surfaces.md)
 
 ## Project references
 

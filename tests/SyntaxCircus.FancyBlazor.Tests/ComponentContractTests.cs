@@ -186,6 +186,34 @@ public sealed class ComponentContractTests
         trail.ShouldContain("--sc-fancy-cursor-trail-size:4px");
     }
 
+    [Fact]
+    public void SpatialSurfaceEffects_PreserveSemanticsAndClampValues()
+    {
+        using var context = new BunitContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var glass = context.Render<GlassSurface>(p => p.Add(x => x.ChildContent, content).Add(x => x.Blur, 99).Add(x => x.BorderOpacity, -1)).Markup;
+        var beam = context.Render<BorderBeam>(p => p.Add(x => x.ChildContent, content).Add(x => x.Thickness, 0).Add(x => x.Duration, TimeSpan.FromMilliseconds(725))).Markup;
+        var grid = context.Render<GridBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.CellSize, 999).Add(x => x.Opacity, 3).Add(x => x.Disabled, true)).Markup;
+        var dots = context.Render<DotPattern>(p => p.Add(x => x.ChildContent, content).Add(x => x.Spacing, -1).Add(x => x.DotSize, 99)).Markup;
+        var glow = context.Render<OrbitalGlow>(p => p.Add(x => x.ChildContent, content).Add(x => x.Intensity, 3)).Markup;
+
+        glass.ShouldContain("--sc-fancy-glass-blur:64px");
+        glass.ShouldContain("--sc-fancy-glass-border-opacity:0");
+        beam.ShouldContain("--sc-fancy-border-beam-thickness:1px");
+        beam.ShouldContain("--sc-fancy-duration:725ms");
+        grid.ShouldContain("syntax-circus-fancy-grid-background__layer");
+        grid.ShouldContain("aria-hidden=\"true\"");
+        grid.ShouldContain("--sc-fancy-grid-cell-size:128px");
+        grid.ShouldContain("data-fancy-disabled=\"true\"");
+        dots.ShouldContain("--sc-fancy-dot-spacing:8px");
+        dots.ShouldContain("--sc-fancy-dot-size:8px");
+        glow.ShouldContain("syntax-circus-fancy-orbital-glow__layer");
+        glow.ShouldContain("aria-hidden=\"true\"");
+        glow.ShouldContain("--sc-fancy-orbital-glow-intensity:1");
+        glow.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();

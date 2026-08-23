@@ -150,6 +150,24 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task SpatialSurfaces_PreserveSemanticControlsAndReducedMotionStaticState()
+    {
+        await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions
+        {
+            ReducedMotion = ReducedMotion.Reduce,
+        });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/spatial-surfaces");
+
+        var grid = page.Locator("[data-testid='spatial-grid-example']");
+        (await grid.Locator("a").GetAttributeAsync("href")).ShouldBe("/background");
+        (await grid.Locator(".syntax-circus-fancy-grid-background__layer").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await page.EvaluateAsync<bool>("() => matchMedia('(prefers-reduced-motion: reduce)').matches")).ShouldBeTrue();
+        (await page.Locator("[data-testid='spatial-beam-example']").GetAttributeAsync("data-fancy-animated")).ShouldBe("true");
+        (await page.Locator("[data-testid='dot-pattern-example'] .syntax-circus-fancy-dot-pattern__layer").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+    }
+
+    [Fact]
     public async Task EnhancedNavigation_TwentyCycles_ReleasesEveryEffect()
     {
         await using var context = await fixture.Browser.NewContextAsync();
@@ -183,7 +201,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         var artifactDirectory = Path.Combine(Environment.CurrentDirectory, "TestResults", "visual");
         Directory.CreateDirectory(artifactDirectory);
 
-        foreach (var route in new[] { "/background", "/border", "/reveal", "/tilt" })
+        foreach (var route in new[] { "/background", "/border", "/reveal", "/tilt", "/spatial-surfaces" })
         {
             await page.GotoAsync(fixture.TestHostUrl + route);
             await page.WaitForLoadStateAsync(LoadState.NetworkIdle);

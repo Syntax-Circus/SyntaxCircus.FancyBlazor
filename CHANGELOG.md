@@ -15,10 +15,27 @@ entries grouped under `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, or
 
 ### Added
 
-- Add `GradientText`, `TextReveal`, `AuroraBackground`, `NoiseOverlay`, `Ripple`, and `CursorTrail` to the FancyBlazor preview catalog.
-- Add `GradientBackground`, `Spotlight`, `Magnetic`, `Parallax`, `Stagger`, and
-  `Shimmer` to the FancyBlazor preview catalog.
+- No pending changes.
 
+## [0.1.3] - 2026-08-22
+
+### Added
+
+- Add `GlassSurface`, `BorderBeam`, `GridBackground`, `DotPattern`, and
+  `OrbitalGlow` to the FancyBlazor preview catalog.
+- Add a documented, compiling spatial-surfaces demo and reduced-motion browser
+  coverage for the CSS-first surface collection.
+
+### Fixed
+
+- Publish the Interactive Auto demo's `blazor.web.js` boot asset so it remains
+  available through a standard reverse proxy such as Caddy.
+
+## [0.1.2] - 2026-08-22
+
+### Added
+
+- Add `GradientText`, `TextReveal`, `AuroraBackground`, `NoiseOverlay`, `Ripple`, and `CursorTrail` to the FancyBlazor preview catalog.
 - Publish the Interactive Auto demo as a public GHCR image from successful
   `main` builds, with `latest` and immutable commit-SHA tags.
 - Document local image builds and deployment behind a user-managed reverse
@@ -40,6 +57,13 @@ entries grouped under `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, or
 
 - Make the Reveal demo's sequence longer, staggered, and replayable so its
   viewport behavior is observable rather than easy to miss on initial load.
+
+## [0.1.1] - 2026-08-22
+
+### Added
+
+- Add `GradientBackground`, `Spotlight`, `Magnetic`, `Parallax`, `Stagger`, and
+  `Shimmer` to the FancyBlazor preview catalog.
 
 ## [0.1.0-preview.1] - 2026-08-22
 

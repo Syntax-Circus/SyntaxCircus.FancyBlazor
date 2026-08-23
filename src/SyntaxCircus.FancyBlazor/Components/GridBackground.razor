@@ -1,0 +1,19 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes"><div class="syntax-circus-fancy-grid-background__content">@ChildContent</div><span class="syntax-circus-fancy-grid-background__layer" aria-hidden="true"></span></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public double CellSize { get; set; } = 32;
+    [Parameter] public double Opacity { get; set; } = .12;
+    [Parameter] public bool Faded { get; set; } = true;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-grid-background", CssClass,
+        $"--sc-fancy-grid-color:{Color};--sc-fancy-grid-cell-size:{AttributeComposer.Number(AttributeComposer.Clamp(CellSize, 8, 128))}px;--sc-fancy-grid-opacity:{AttributeComposer.Number(AttributeComposer.Clamp(Opacity, 0, 1))}", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "grid-background", ["data-fancy-faded"] = Faded ? "true" : "false", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

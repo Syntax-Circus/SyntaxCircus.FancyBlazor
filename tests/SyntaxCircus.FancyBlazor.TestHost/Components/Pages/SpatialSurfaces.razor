@@ -1,0 +1,19 @@
+@page "/spatial-surfaces"
+
+<PageTitle>Spatial surfaces browser test</PageTitle>
+
+<main>
+    <GridBackground Color="#67e8f9" data-testid="spatial-grid-example">
+        <OrbitalGlow Palette="FancyPalettes.Viridian" Intensity=".72">
+            <GlassSurface Tint="rgba(7,17,31,.66)" Blur="20">
+                <BorderBeam Color="#a7f3d0" data-testid="spatial-beam-example">
+                    <a href="/background">Explore the shader</a>
+                </BorderBeam>
+            </GlassSurface>
+        </OrbitalGlow>
+    </GridBackground>
+
+    <DotPattern Color="#c4b5fd" DotSize="2" data-testid="dot-pattern-example">
+        <p>Static texture.</p>
+    </DotPattern>
+</main>

@@ -3,6 +3,7 @@
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <RequiresAspNetWebAssets>true</RequiresAspNetWebAssets>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\FancyBlazor.Demo.Client\FancyBlazor.Demo.Client.csproj" />

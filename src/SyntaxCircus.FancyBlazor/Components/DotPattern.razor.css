@@ -1,0 +1,5 @@
+.syntax-circus-fancy-dot-pattern { isolation: isolate; overflow: hidden; position: relative; }
+.syntax-circus-fancy-dot-pattern__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-dot-pattern__layer { background-image: radial-gradient(circle, color-mix(in srgb, var(--sc-fancy-dot-color) calc(var(--sc-fancy-dot-opacity) * 100%), transparent) var(--sc-fancy-dot-size), transparent var(--sc-fancy-dot-size)); background-size: var(--sc-fancy-dot-spacing) var(--sc-fancy-dot-spacing); inset: 0; pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-dot-pattern[data-fancy-faded="true"] .syntax-circus-fancy-dot-pattern__layer { mask-image: radial-gradient(ellipse at center, black, transparent 78%); }
+.syntax-circus-fancy-dot-pattern[data-fancy-disabled="true"] .syntax-circus-fancy-dot-pattern__layer { display: none; }

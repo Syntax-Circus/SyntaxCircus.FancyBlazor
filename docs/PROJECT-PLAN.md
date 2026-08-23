@@ -31,8 +31,10 @@ requirements.
 - The preview exposes internal extension seams only. Custom shaders, public
 providers, additional engines, and the larger effect catalog are backlog.
 
-The next catalog expansion adds text, ambient-surface, and pointer-interaction
-effects while retaining the same single-package, progressive-enhancement model.
+The completed catalog expansions add text, ambient-surface, pointer-interaction,
+and spatial-surface effects while retaining the same single-package,
+progressive-enhancement model. The next planned passes are narrative motion and
+interaction feedback; their public APIs remain intentionally undecided.
 
 ## Delivery plan
 
