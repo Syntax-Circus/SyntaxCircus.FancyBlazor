@@ -29,6 +29,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
         var threeRequests = 0;
+        var coreStatus = 0;
         page.Request += (_, request) =>
         {
             if (request.Url.Contains("/vendor/three/build/three.module", StringComparison.Ordinal))
@@ -36,11 +37,19 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
                 threeRequests++;
             }
         };
+        page.Response += (_, response) =>
+        {
+            if (response.Url.Contains("/vendor/three/build/three.core", StringComparison.Ordinal))
+            {
+                coreStatus = response.Status;
+            }
+        };
 
         await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
         await page.WaitForTimeoutAsync(750);
 
         threeRequests.ShouldBe(1);
+        coreStatus.ShouldBe(200);
         (await page.EvaluateAsync<string?>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().lastFailure")).ShouldBeNull();
         (await page.EvaluateAsync<bool>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().threeLoaded")).ShouldBeTrue();
         (await page.Locator("[data-testid='holographic-first']").GetAttributeAsync("data-webgl-state")).ShouldBe("active");
@@ -61,8 +70,10 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.intensity === 0.8)");
 
         await surface.Locator("button").FocusAsync();
-        (await surface.Locator("button").EvaluateAsync<string>("element => getComputedStyle(element).outlineStyle")).ShouldNotBe("none");
+        (await surface.Locator("button").GetAttributeAsync("tabindex")).ShouldBeNull();
+        (await surface.Locator("button").EvaluateAsync<bool>("element => document.activeElement === element")).ShouldBeTrue();
         await surface.Locator("button").ClickAsync();
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-activation]')?.textContent === 'Activated'");
         (await page.Locator("[data-testid='holographic-activation']").InnerTextAsync()).ShouldBe("Activated");
     }
 
