@@ -67,6 +67,12 @@ palette-derived CSS background and leaves the content usable.
 | `Parallax` | CSS + scroll JavaScript | Viewport-relative content offset |
 | `Stagger` | CSS + `IntersectionObserver` | Sequential direct-child viewport entry |
 | `Shimmer` | CSS-first | Decorative highlight sweep |
+| `GradientText` | CSS-first | Palette-derived text color treatment |
+| `TextReveal` | CSS + `IntersectionObserver` | Semantic word or character entrance |
+| `AuroraBackground` | CSS-first | Palette-derived ambient light behind content |
+| `NoiseOverlay` | CSS-first | Decorative grain behind content |
+| `Ripple` | CSS + pointer JavaScript | Decorative tap/click wave around content |
+| `CursorTrail` | Canvas + pointer JavaScript | Bounded decorative pointer particles |
 
 Components intentionally compose:
 
@@ -109,6 +115,8 @@ continuous rendering stops while hidden or offscreen.
 - [Hosting modes](docs/guides/hosting-modes.md)
 - [Deploy the interactive demo container](docs/guides/demo-container.md)
 - [Troubleshooting](docs/guides/troubleshooting.md)
+- [Expressive effects: what to expect](docs/guides/expressive-effects.md)
+- [Expressive-effects demo](samples/FancyBlazor.Demo.Client/Pages/ExpressiveEffects.razor)
 - [Changelog](CHANGELOG.md)
 - [Compiling Interactive Auto demo](samples/FancyBlazor.Demo.Client/Pages/Home.razor)
 

@@ -11,5 +11,9 @@ FancyBlazor ships only structural/effect styling. Use `CssClass`, `Style`, and
 unmatched attributes for host integration. Stable outer classes begin with
 `syntax-circus-fancy-`; documented variables begin with `--sc-fancy-`.
 
+`GradientText` and `AuroraBackground` accept `FancyPalette`; their palette
+variables follow the same primary, secondary, accent, and background mapping as
+the existing gradient effects.
+
 Do not target generated CSS-isolation attributes. Host CSS remains responsible
 for typography, spacing, surfaces, focus, responsive layout, and contrast.

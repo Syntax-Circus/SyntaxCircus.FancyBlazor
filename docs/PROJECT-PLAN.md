@@ -29,7 +29,10 @@ requirements.
   content and a palette-derived fallback.
 - Effect styles are scoped and CSS-framework-agnostic.
 - The preview exposes internal extension seams only. Custom shaders, public
-  providers, additional engines, and the larger effect catalog are backlog.
+providers, additional engines, and the larger effect catalog are backlog.
+
+The next catalog expansion adds text, ambient-surface, and pointer-interaction
+effects while retaining the same single-package, progressive-enhancement model.
 
 ## Delivery plan
 

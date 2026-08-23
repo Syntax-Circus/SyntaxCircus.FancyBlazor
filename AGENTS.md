@@ -10,7 +10,8 @@ consumer-facing contract. Architecture decisions and phase status live in
 This repository produces one `net10.0` Razor Class Library containing visual
 effects for Blazor. The preview catalog includes shader and gradient backgrounds,
 glow and shimmer surfaces, reveal and stagger entrances, and pointer/scroll
-motion effects. FancyBlazor owns effect markup, scoped styles, coarse
+motion effects, including semantic text entrances, ambient overlays, and bounded
+pointer particles. FancyBlazor owns effect markup, scoped styles, coarse
 Blazor-to-JavaScript lifecycle calls, and the JavaScript rendering loop.
 
 It is not a general UI framework. Do not add buttons, inputs, layouts, routing,
@@ -123,6 +124,10 @@ folder.
   by the regular test runner and CI. Do not add framework-level skip attributes;
   those would suppress the coverage everywhere.
 - Add a test for every new or changed public rendering behavior.
+- Text effects that split content must keep a semantic element with the complete
+  accessible text; visual tokens are decorative only.
+- Pointer-generated DOM and canvas effects must cap their transient work and
+  clear it for reduced motion, hidden documents, and disposal.
 - Keep documentation snippets linked to compiling sample components.
 - Run restore, Release build, all tests, browser tests, pack, and package-content
   inspection before declaring completion.

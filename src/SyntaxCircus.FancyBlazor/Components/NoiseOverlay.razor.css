@@ -1,0 +1,4 @@
+.syntax-circus-fancy-noise-overlay { isolation: isolate; position: relative; }
+.syntax-circus-fancy-noise-overlay__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-noise-overlay__layer { background-image: repeating-radial-gradient(circle at 0 0, var(--sc-fancy-noise-color) 0 1px, transparent 1px 3px); inset: 0; mix-blend-mode: soft-light; opacity: var(--sc-fancy-noise-opacity); pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-noise-overlay[data-fancy-disabled="true"] .syntax-circus-fancy-noise-overlay__layer { display: none; }

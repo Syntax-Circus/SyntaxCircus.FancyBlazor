@@ -150,6 +150,42 @@ public sealed class ComponentContractTests
         stagger.ShouldContain("<a href=\"/next\">Continue</a>");
     }
 
+    [Fact]
+    public void ExpressiveCssEffects_RenderStableHooksAndDecorativeLayers()
+    {
+        using var context = new BunitContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<article>Readable</article>");
+
+        var gradient = context.Render<GradientText>(p => p.Add(x => x.ChildContent, content).Add(x => x.Angle, 999)).Markup;
+        var aurora = context.Render<AuroraBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Intensity, 3)).Markup;
+        var noise = context.Render<NoiseOverlay>(p => p.Add(x => x.ChildContent, content).Add(x => x.Opacity, -1)).Markup;
+
+        gradient.ShouldContain("--sc-fancy-gradient-angle:360deg");
+        aurora.ShouldContain("syntax-circus-fancy-aurora-background__layer");
+        aurora.ShouldContain("aria-hidden=\"true\"");
+        aurora.ShouldContain("--sc-fancy-aurora-intensity:1");
+        noise.ShouldContain("--sc-fancy-noise-opacity:0");
+    }
+
+    [Fact]
+    public void ExpressiveRuntimeEffects_PreserveSemanticsAndClampValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var text = context.Render<TextReveal>(p => p.Add(x => x.Text, "Semantic heading").Add(x => x.Element, TextRevealElement.Heading2)).Markup;
+        var ripple = context.Render<Ripple>(p => p.Add(x => x.ChildContent, content).Add(x => x.Opacity, 3)).Markup;
+        var trail = context.Render<CursorTrail>(p => p.Add(x => x.ChildContent, content).Add(x => x.Size, 0).Add(x => x.ParticleCount, 99)).Markup;
+
+        text.ShouldContain("<h2");
+        text.ShouldContain("Semantic heading");
+        ripple.ShouldContain("--sc-fancy-ripple-opacity:1");
+        ripple.ShouldContain("<a href=\"/next\">Continue</a>");
+        trail.ShouldContain("syntax-circus-fancy-cursor-trail__canvas");
+        trail.ShouldContain("aria-hidden=\"true\"");
+        trail.ShouldContain("--sc-fancy-cursor-trail-size:4px");
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();
