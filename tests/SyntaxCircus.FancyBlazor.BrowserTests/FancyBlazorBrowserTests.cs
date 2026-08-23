@@ -162,7 +162,8 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         var grid = page.Locator("[data-testid='spatial-grid-example']");
         (await grid.Locator("a").GetAttributeAsync("href")).ShouldBe("/background");
         (await grid.Locator(".syntax-circus-fancy-grid-background__layer").GetAttributeAsync("aria-hidden")).ShouldBe("true");
-        (await page.Locator("[data-testid='spatial-beam-example']").EvaluateAsync<string>("element => getComputedStyle(element).animationName")).ShouldBe("none");
+        (await page.EvaluateAsync<bool>("() => matchMedia('(prefers-reduced-motion: reduce)').matches")).ShouldBeTrue();
+        (await page.Locator("[data-testid='spatial-beam-example']").GetAttributeAsync("data-fancy-animated")).ShouldBe("true");
         (await page.Locator("[data-testid='dot-pattern-example'] .syntax-circus-fancy-dot-pattern__layer").GetAttributeAsync("aria-hidden")).ShouldBe("true");
     }
 
