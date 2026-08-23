@@ -21,3 +21,26 @@ docker run --detach --name fancyblazor-demo --publish 8080:8080 ghcr.io/syntax-c
 
 The image runs as the .NET runtime image's non-root application user. It does
 not terminate TLS or include a reverse proxy.
+
+## Caddy and Blazor boot assets
+
+The demo host publishes the framework boot script through .NET static web
+assets. A normal Caddy reverse proxy needs no special route or rewrite:
+
+```caddyfile
+fancy.example.com {
+    reverse_proxy fancyblazor-demo:8080
+}
+```
+
+If the browser reports a `404` for `/_framework/blazor.web.js`, first verify
+the application directly rather than changing Caddy:
+
+```sh
+curl -I http://127.0.0.1:8080/_framework/blazor.web.js
+```
+
+The response must be `200 OK` with a JavaScript content type. The demo project
+sets `RequiresAspNetWebAssets` and its Docker build asserts that the published
+file exists. Rebuild and redeploy the image if the direct request returns 404;
+the reverse proxy can only relay the application's response.

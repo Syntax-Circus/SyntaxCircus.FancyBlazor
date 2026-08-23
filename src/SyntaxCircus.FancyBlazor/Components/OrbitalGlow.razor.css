@@ -1,0 +1,7 @@
+.syntax-circus-fancy-orbital-glow { background: var(--sc-fancy-background); isolation: isolate; overflow: hidden; position: relative; }
+.syntax-circus-fancy-orbital-glow__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-orbital-glow__layer { background: radial-gradient(circle, color-mix(in srgb, var(--sc-fancy-primary) calc(var(--sc-fancy-orbital-glow-intensity) * 100%), transparent), transparent 58%), radial-gradient(circle, color-mix(in srgb, var(--sc-fancy-accent) calc(var(--sc-fancy-orbital-glow-intensity) * 62%), transparent), transparent 52%); filter: blur(20px); inset: -40%; pointer-events: none; position: absolute; transform: translate3d(-12%, 8%, 0); z-index: 0; }
+.syntax-circus-fancy-orbital-glow[data-fancy-animated="true"] .syntax-circus-fancy-orbital-glow__layer { animation: sc-fancy-orbital-glow var(--sc-fancy-duration) ease-in-out infinite alternate; }
+.syntax-circus-fancy-orbital-glow[data-fancy-disabled="true"] .syntax-circus-fancy-orbital-glow__layer { display: none; }
+@keyframes sc-fancy-orbital-glow { to { transform: translate3d(18%, -12%, 0) rotate(24deg) scale(1.15); } }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-orbital-glow__layer { animation: none !important; } }

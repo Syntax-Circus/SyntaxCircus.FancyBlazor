@@ -42,6 +42,14 @@ its short wave is visible—use an in-place button to demonstrate it. CursorTrai
 appears only while a mouse or pen pointer moves over its surface. All three
 respect reduced-motion preferences.
 
+## A spatial surface looks flatter than expected
+
+`GlassSurface` keeps its tint and border when the browser does not support
+`backdrop-filter`; this is an intentional progressive fallback. Ensure the
+chosen `Tint` provides enough contrast without blur. `GridBackground` and
+`DotPattern` are static by design. `BorderBeam` and `OrbitalGlow` become static
+when reduced motion is active.
+
 ## Inspecting lifecycle state in development
 
 Set `EnableDiagnostics = true` during registration to expose

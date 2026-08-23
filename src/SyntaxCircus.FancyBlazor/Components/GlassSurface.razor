@@ -1,0 +1,18 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes">@ChildContent</div>
+
+@code {
+    [Parameter] public string Tint { get; set; } = "rgba(255,255,255,.08)";
+    [Parameter] public double Blur { get; set; } = 16;
+    [Parameter] public double BorderOpacity { get; set; } = .18;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-glass-surface", CssClass,
+        $"--sc-fancy-glass-tint:{Tint};--sc-fancy-glass-blur:{AttributeComposer.Number(AttributeComposer.Clamp(Blur, 0, 64))}px;--sc-fancy-glass-border-opacity:{AttributeComposer.Number(AttributeComposer.Clamp(BorderOpacity, 0, 1))}", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "glass-surface", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

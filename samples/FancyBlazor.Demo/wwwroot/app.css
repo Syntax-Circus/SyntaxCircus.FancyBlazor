@@ -91,6 +91,23 @@ code { color: #c8d4e2; font: .78rem/1.5 ui-monospace, "SFMono-Regular", Consolas
 .stagger-section { display: grid; gap: 1.25rem; }.stagger-stack { margin: 0; min-height: 0; }.shimmer-stage { display: grid; min-height: 260px; place-items: center; }
 .tilt-stage > * { max-width: 520px; }
 .expressive-effects-page { display: grid; gap: 2rem; }
+.spatial-surfaces-page { display: grid; gap: 2rem; }
+.spatial-surfaces-page > .lede { margin: 0; }
+.spatial-stage { border: 1px solid var(--line); border-radius: 30px; min-height: 560px; }
+.spatial-stage > .syntax-circus-fancy-grid-background__content, .spatial-stage .syntax-circus-fancy-orbital-glow__content, .spatial-glass { min-height: inherit; }
+.spatial-glass { align-content: center; display: grid; margin: clamp(1rem, 5vw, 4rem); }
+.spatial-beam { border-radius: 22px; overflow: hidden; }
+.spatial-copy { display: grid; gap: 1.2rem; padding: clamp(2rem, 7vw, 5rem); }
+.spatial-copy h2, .dot-copy h2 { font-size: clamp(3rem, 7vw, 6rem); margin: 0; }
+.spatial-copy p:not(.specimen-label), .dot-copy p:not(.specimen-label) { color: #d9e4ef; line-height: 1.65; margin: 0; max-width: 38rem; }
+.spatial-copy .primary-action { justify-self: start; margin-top: .75rem; }
+.dot-stage { background: #0b1727; border: 1px solid var(--line); border-radius: 24px; min-height: 280px; }
+.dot-copy { display: grid; gap: 1rem; min-height: 280px; padding: clamp(2rem, 6vw, 4rem); place-content: center start; }
+.surface-recipe { align-items: stretch; background: #07111f; border: 1px solid var(--line); border-radius: 24px; display: grid; gap: 0; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); overflow: hidden; }
+.surface-recipe__copy { align-content: center; border-right: 1px solid var(--line); display: grid; gap: 1rem; padding: clamp(2rem, 5vw, 4rem); }
+.surface-recipe__copy h2 { font-size: clamp(2.35rem, 4.5vw, 4rem); margin: 0; }
+.surface-recipe__copy p:last-child { color: var(--muted); line-height: 1.65; margin: 0; }
+.surface-recipe__code { background: #040a12; border: 0; border-radius: 0; color: #b9f6ff; font-size: .82rem; line-height: 1.7; margin: 0; padding: clamp(1.75rem, 4vw, 3rem); white-space: pre; }
 .expressive-effects-page > .lede { margin: 0; }
 .aurora-stage { border: 1px solid var(--line); border-radius: 28px; min-height: 460px; }
 .aurora-copy { display: grid; gap: 1.25rem; max-width: 48rem; min-height: 460px; padding: clamp(2rem, 7vw, 6rem); place-content: center start; }
@@ -105,6 +122,11 @@ code { color: #c8d4e2; font: .78rem/1.5 ui-monospace, "SFMono-Regular", Consolas
 .gesture-card small { color: var(--muted); font-size: 1rem; }
 .ripple-card { background: linear-gradient(145deg, #102b3d, #0b1727); }
 .trail-card { background: linear-gradient(145deg, #132032, #0b1727); }
+#components-reconnect-modal { display: none; }
+#components-reconnect-modal.components-reconnect-show, #components-reconnect-modal.components-reconnect-retrying, #components-reconnect-modal.components-reconnect-failed, #components-reconnect-modal.components-reconnect-rejected { align-items: center; backdrop-filter: blur(10px); background: rgba(4, 10, 18, .78); display: grid; inset: 0; justify-items: center; padding: 1.5rem; position: fixed; z-index: 10001; }
+.reconnect-panel { background: #0b1727; border: 1px solid rgba(103, 232, 249, .68); border-radius: 18px; box-shadow: 0 24px 72px rgba(0, 0, 0, .48); display: grid; gap: .9rem; max-width: 28rem; padding: 2rem 2.25rem; text-align: center; width: min(100%, 28rem); }
+.reconnect-panel .specimen-label { color: var(--nacre); }
+.reconnect-panel__message { color: var(--paper); font: 400 clamp(1.35rem, 3vw, 1.8rem)/1.2 Georgia, serif; margin: 0; }
 pre { background: #040a12; border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; padding: 1.25rem; }
 footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; }
 
@@ -114,6 +136,8 @@ footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .75r
     .hero-grid { grid-template-columns: 1fr; }
     .effect-grid { grid-template-columns: 1fr 1fr; }
     .gesture-grid { grid-template-columns: 1fr; }
+    .surface-recipe { grid-template-columns: 1fr; }
+    .surface-recipe__copy { border-bottom: 1px solid var(--line); border-right: 0; }
     .effect-grid a { min-height: 190px; }
     .reveal-demo-header { align-items: flex-start; flex-direction: column; }
 }

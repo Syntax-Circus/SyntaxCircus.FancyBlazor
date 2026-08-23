@@ -60,18 +60,25 @@ $requiredDocumentation = @(
     "docs/components/noise-overlay.md",
     "docs/components/ripple.md",
     "docs/components/cursor-trail.md",
+    "docs/components/glass-surface.md",
+    "docs/components/border-beam.md",
+    "docs/components/grid-background.md",
+    "docs/components/dot-pattern.md",
+    "docs/components/orbital-glow.md",
     "docs/guides/accessibility.md",
     "docs/guides/performance.md",
     "docs/guides/hosting-modes.md",
     "docs/guides/palettes-and-styling.md",
     "docs/guides/troubleshooting.md",
     "docs/guides/expressive-effects.md",
+    "docs/guides/spatial-surfaces.md",
     "samples/FancyBlazor.Demo.Client/Pages/Background.razor",
     "samples/FancyBlazor.Demo.Client/Pages/Border.razor",
     "samples/FancyBlazor.Demo.Client/Pages/RevealPage.razor",
     "samples/FancyBlazor.Demo.Client/Pages/TiltPage.razor"
     ,"samples/FancyBlazor.Demo.Client/Pages/ExpandedEffects.razor"
     ,"samples/FancyBlazor.Demo.Client/Pages/ExpressiveEffects.razor"
+    ,"samples/FancyBlazor.Demo.Client/Pages/SpatialSurfaces.razor"
 )
 
 $missingDocumentation = @($requiredDocumentation | Where-Object {

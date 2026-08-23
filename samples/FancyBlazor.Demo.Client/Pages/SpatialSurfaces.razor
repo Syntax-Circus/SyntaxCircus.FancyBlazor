@@ -1,0 +1,49 @@
+@page "/spatial-surfaces"
+
+<PageTitle>Spatial surfaces · FancyBlazor</PageTitle>
+
+<section class="demo-page spatial-surfaces-page">
+    <p class="kicker">SPATIAL SURFACES / CSS-FIRST</p>
+    <h1>Give content a field to live in.</h1>
+    <p class="lede">A grid sets the plane, an orbital glow gives it depth, and a glass surface keeps the content legible. Every layer is ordinary Razor around ordinary HTML.</p>
+
+    <GridBackground CssClass="spatial-stage" Color="#67e8f9" data-testid="spatial-grid-example">
+        <OrbitalGlow Palette="FancyPalettes.Viridian" Intensity=".72" Duration="@TimeSpan.FromSeconds(14)">
+            <GlassSurface CssClass="spatial-glass" Tint="rgba(7,17,31,.66)" Blur="20">
+                <BorderBeam Color="#a7f3d0" CssClass="spatial-beam" data-testid="spatial-beam-example">
+                    <article class="spatial-copy">
+                        <p class="specimen-label">LAYERED SURFACE</p>
+                        <h2>Depth without a canvas.</h2>
+                        <p>Glass keeps the reading plane quiet while the field behind it stays alive.</p>
+                        <a class="primary-action" href="/background">Explore the original shader</a>
+                    </article>
+                </BorderBeam>
+            </GlassSurface>
+        </OrbitalGlow>
+    </GridBackground>
+
+    <DotPattern CssClass="dot-stage" Color="#c4b5fd" DotSize="2" data-testid="dot-pattern-example">
+        <article class="dot-copy">
+            <p class="specimen-label">QUIET TEXTURE</p>
+            <h2>DotPattern</h2>
+            <p>Use a single static field when a surface needs structure but not motion.</p>
+        </article>
+    </DotPattern>
+
+    <section class="surface-recipe" aria-labelledby="surface-recipe-heading">
+        <div class="surface-recipe__copy">
+            <p class="specimen-label">LAYER RECIPE / FOUR COMPONENTS</p>
+            <h2 id="surface-recipe-heading">Build the depth stack.</h2>
+            <p>The live specimen above uses these wrappers from the outside in: a grid establishes the plane, orbital light adds atmosphere, glass protects legibility, and a beam marks the focal edge.</p>
+        </div>
+        <pre class="surface-recipe__code"><code>&lt;GridBackground Color="#67e8f9"&gt;
+    &lt;OrbitalGlow Palette="FancyPalettes.Viridian" Intensity=".72"&gt;
+        &lt;GlassSurface Tint="rgba(7,17,31,.66)" Blur="20"&gt;
+            &lt;BorderBeam Color="#a7f3d0"&gt;
+                &lt;article&gt;Readable content&lt;/article&gt;
+            &lt;/BorderBeam&gt;
+        &lt;/GlassSurface&gt;
+    &lt;/OrbitalGlow&gt;
+&lt;/GridBackground&gt;</code></pre>
+    </section>
+</section>

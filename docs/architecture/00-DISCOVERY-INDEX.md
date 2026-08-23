@@ -1,6 +1,6 @@
 # FancyBlazor Discovery Index
 
-- **Status:** Implementation complete; preview gates passed
+- **Status:** Six implementation phases complete; preview gates passed
 - **Project brief:** [../PROJECT-PLAN.md](../PROJECT-PLAN.md)
 - **Requirements:** [01-REQUIREMENTS.md](01-REQUIREMENTS.md)
 - **Architecture:** [02-ARCHITECTURE.md](02-ARCHITECTURE.md)
@@ -17,6 +17,8 @@
 2. [Proof of Fancy](PHASE-02-proof-of-fancy.md)
 3. [Representative Effects](PHASE-03-effects-and-demo.md)
 4. [Hardening and Preview](PHASE-04-hardening-and-preview.md)
+5. Expressive Catalog Expansion
+6. [Spatial Surfaces](PHASE-06-spatial-surfaces.md)
 
 ## Approval record
 
@@ -33,4 +35,4 @@ demo, and the full Syntax Circus architecture artifact suite.
 - [x] Material decisions are accepted.
 - [x] Phase dependencies and validation gates are defined.
 - [x] Demo UX has an implementation handoff.
-- [x] All four phases pass their completion gates.
+- [x] All implemented phases pass their completion gates.

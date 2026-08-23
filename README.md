@@ -73,6 +73,11 @@ palette-derived CSS background and leaves the content usable.
 | `NoiseOverlay` | CSS-first | Decorative grain behind content |
 | `Ripple` | CSS + pointer JavaScript | Decorative tap/click wave around content |
 | `CursorTrail` | Canvas + pointer JavaScript | Bounded decorative pointer particles |
+| `GlassSurface` | CSS-first | Translucent reading plane with progressive backdrop blur |
+| `BorderBeam` | CSS-first | Focused moving edge-light accent |
+| `GridBackground` | CSS-first | Faded line grid behind semantic content |
+| `DotPattern` | CSS-first | Faded dot field behind semantic content |
+| `OrbitalGlow` | CSS-first | Palette-derived ambient orbital light |
 
 Components intentionally compose:
 
@@ -117,6 +122,8 @@ continuous rendering stops while hidden or offscreen.
 - [Troubleshooting](docs/guides/troubleshooting.md)
 - [Expressive effects: what to expect](docs/guides/expressive-effects.md)
 - [Expressive-effects demo](samples/FancyBlazor.Demo.Client/Pages/ExpressiveEffects.razor)
+- [Spatial surfaces](docs/guides/spatial-surfaces.md)
+- [Spatial-surfaces demo](samples/FancyBlazor.Demo.Client/Pages/SpatialSurfaces.razor)
 - [Changelog](CHANGELOG.md)
 - [Compiling Interactive Auto demo](samples/FancyBlazor.Demo.Client/Pages/Home.razor)
 

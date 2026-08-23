@@ -1,0 +1,7 @@
+@property --sc-fancy-border-beam-angle { inherits: false; initial-value: 0deg; syntax: "<angle>"; }
+.syntax-circus-fancy-border-beam { background: conic-gradient(from var(--sc-fancy-border-beam-angle), transparent 0 76%, var(--sc-fancy-border-beam-color) 86%, transparent 96%); isolation: isolate; padding: var(--sc-fancy-border-beam-thickness); position: relative; }
+.syntax-circus-fancy-border-beam[data-fancy-animated="true"] { animation: sc-fancy-border-beam-spin var(--sc-fancy-duration) linear infinite; }
+.syntax-circus-fancy-border-beam__content { min-width: 0; }
+.syntax-circus-fancy-border-beam[data-fancy-disabled="true"] { background: transparent; padding: 0; }
+@keyframes sc-fancy-border-beam-spin { to { --sc-fancy-border-beam-angle: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-border-beam { animation: none !important; } }
