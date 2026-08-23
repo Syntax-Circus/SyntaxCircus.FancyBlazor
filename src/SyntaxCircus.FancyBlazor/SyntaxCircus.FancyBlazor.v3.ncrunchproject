@@ -1,0 +1,6 @@
+<ProjectConfiguration>
+  <Settings>
+    <!-- The browser-test host loads this library in a child process. -->
+    <InstrumentOutputAssembly>False</InstrumentOutputAssembly>
+  </Settings>
+</ProjectConfiguration>

@@ -1,0 +1,16 @@
+.git
+.github
+.cr
+.NCrunch_*
+.vs
+artifacts
+**/bin
+**/obj
+TestResults
+tests
+*.log
+*.nupkg
+*.snupkg
+.env
+.env.*
+!*.env.example

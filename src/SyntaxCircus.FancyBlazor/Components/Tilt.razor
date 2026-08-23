@@ -1,0 +1,11 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @ref="_element" @attributes="RootAttributes">
+    <div class="syntax-circus-fancy-tilt__content">
+        @ChildContent
+    </div>
+    @if (Glare)
+    {
+        <span class="syntax-circus-fancy-tilt__glare" aria-hidden="true"></span>
+    }
+</div>

@@ -1,0 +1,11 @@
+:root { color-scheme: dark; font-family: system-ui, sans-serif; }
+body { background: #07111f; color: #e8eef7; margin: 0; }
+main { margin: auto; max-width: 900px; padding: 3rem; }
+header { align-items: center; border-bottom: 1px solid #30445b; display: flex; gap: 1rem; justify-content: space-between; padding: 1rem 3rem; }
+nav { display: flex; gap: 1rem; }
+h1:focus { outline: none; }
+a:focus-visible, button:focus-visible { outline: 2px solid #67e8f9; outline-offset: 4px; }
+.syntax-circus-fancy-shader-background { min-height: 420px; }
+.syntax-circus-fancy-shader-background__content { align-content: center; display: grid; gap: 1rem; min-height: 420px; padding: 3rem; }
+.primary-action { color: inherit; }
+[data-testid="reveal-examples"] { display: grid; gap: 2rem; margin-top: 2rem; }

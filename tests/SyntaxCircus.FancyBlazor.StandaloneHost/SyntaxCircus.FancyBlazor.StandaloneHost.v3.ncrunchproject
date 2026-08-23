@@ -1,0 +1,6 @@
+<ProjectConfiguration>
+  <Settings>
+    <!-- The Blazor development server loads this application outside NCrunch's test runtime. -->
+    <InstrumentOutputAssembly>False</InstrumentOutputAssembly>
+  </Settings>
+</ProjectConfiguration>

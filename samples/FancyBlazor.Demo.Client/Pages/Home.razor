@@ -1,0 +1,41 @@
+@page "/"
+
+<PageTitle>FancyBlazor · Visual effects for Blazor</PageTitle>
+
+<ShaderBackground CssClass="demo-hero" data-testid="shader-background">
+    <div class="hero-grid">
+        <div class="hero-copy">
+            <p class="kicker">OPTICAL COMPONENTS / .NET 10</p>
+            <Reveal Effect="RevealEffect.BlurUp">
+                <h1>Make the ordinary interface catch light.</h1>
+            </Reveal>
+            <Reveal Delay="@TimeSpan.FromMilliseconds(120)">
+                <p class="lede">Shaders, borders, reveals, and motion composed in Razor. No framework islands. No runtime CDN.</p>
+            </Reveal>
+            <div class="hero-actions">
+                <GlowBorder Color="#a7f3d0" Radius="999">
+                    <a class="primary-action" href="/background">Inspect the effects</a>
+                </GlowBorder>
+                <code>dotnet add package SyntaxCircus.FancyBlazor</code>
+            </div>
+        </div>
+        <Tilt Glare="true" Scale="1.025" CssClass="specimen-tilt">
+            <article class="specimen-card">
+                <p class="specimen-label">LIVE SPECIMEN / NACRE</p>
+                <strong>Semantic content remains selectable, readable, and yours.</strong>
+                <span>Pointer motion is decorative; keyboard behavior is untouched.</span>
+            </article>
+        </Tilt>
+    </div>
+</ShaderBackground>
+
+<section class="demo-page effect-index">
+    <p class="kicker">FOUR RENDERING PATHS / ONE API</p>
+    <h2>Start with the effect, not the engine.</h2>
+    <div class="effect-grid">
+        <a href="/background"><span>01</span><strong>ShaderBackground</strong><small>WebGL + static fallback</small></a>
+        <a href="/border"><span>02</span><strong>GlowBorder</strong><small>CSS-first edge light</small></a>
+        <a href="/reveal"><span>03</span><strong>Reveal</strong><small>Viewport-aware entry</small></a>
+        <a href="/tilt"><span>04</span><strong>Tilt</strong><small>Pointer perspective</small></a>
+    </div>
+</section>

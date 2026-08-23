@@ -1,0 +1,17 @@
+@page "/"
+
+<PageTitle>FancyBlazor browser test host</PageTitle>
+
+<main>
+    <ShaderBackground data-testid="shader-background">
+        <Reveal Effect="RevealEffect.BlurUp">
+            <h1>Make the ordinary interface catch light.</h1>
+        </Reveal>
+        <Reveal Delay="@TimeSpan.FromMilliseconds(120)">
+            <p>Semantic content remains available while visual effects enhance it.</p>
+        </Reveal>
+        <Tilt data-testid="home-tilt" Glare="true">
+            <a class="primary-action" href="/border">Inspect the effects</a>
+        </Tilt>
+    </ShaderBackground>
+</main>

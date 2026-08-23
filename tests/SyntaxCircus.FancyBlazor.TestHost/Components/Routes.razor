@@ -1,0 +1,20 @@
+<header>
+    <a class="wordmark" href="/">FancyBlazor</a>
+    <nav aria-label="Browser test examples">
+        <a href="/background">Background</a>
+        <a href="/border">Border</a>
+        <a href="/reveal">Reveal</a>
+        <a href="/tilt">Tilt</a>
+    </nav>
+</header>
+
+<Router AppAssembly="typeof(TestHostAssemblyMarker).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <main><h1>Not found</h1></main>
+    </NotFound>
+</Router>

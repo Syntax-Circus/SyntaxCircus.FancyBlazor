@@ -1,0 +1,135 @@
+name: Build
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # GitVersion needs full history, not a shallow clone
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Verify documentation links and examples
+        shell: pwsh
+        run: ./eng/verify-docs.ps1
+      - run: dotnet restore SyntaxCircus.FancyBlazor.slnx
+      - run: dotnet build SyntaxCircus.FancyBlazor.slnx --no-restore --configuration Release
+      - name: Install Playwright Chromium
+        shell: pwsh
+        run: ./tests/SyntaxCircus.FancyBlazor.BrowserTests/bin/Release/net10.0/playwright.ps1 install --with-deps chromium
+      - run: dotnet test --solution SyntaxCircus.FancyBlazor.slnx --no-build --configuration Release
+
+      - name: Pack
+        run: dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release --output artifacts
+      - name: Verify package contents and clean consumer
+        shell: pwsh
+        run: ./eng/verify-package.ps1 -PackageDirectory artifacts
+
+      - name: Upload browser-test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-test-evidence
+          path: TestResults/visual/*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload package artifact
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-package
+          path: artifacts/*.*nupkg
+          retention-days: 7
+
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write
+      id-token: write # enable GitHub OIDC token issuance for NuGet Trusted Publishing
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - name: Download package artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: nuget-package
+          path: artifacts
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+      - name: Publish to NuGet
+        run: dotnet nuget push artifacts/*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+      - name: Tag published version
+        run: |
+          package_path=$(find artifacts -maxdepth 1 -type f -name '*.nupkg' ! -name '*.snupkg' | head -n 1)
+          if [ -z "$package_path" ]; then
+            echo "No .nupkg found to derive the release tag."
+            exit 1
+          fi
+
+          package_name=$(basename "$package_path")
+          version=${package_name#SyntaxCircus.FancyBlazor.}
+          version=${version%.nupkg}
+          tag="v$version"
+
+          if git ls-remote --tags origin "refs/tags/$tag" | grep -q .; then
+            echo "Tag $tag already exists on origin."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "$tag" "$GITHUB_SHA"
+          git push origin "$tag"
+
+  publish-demo-image:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate image metadata
+        id: metadata
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/syntax-circus/fancyblazor-demo
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=sha-,format=long
+      - name: Build and publish demo image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: samples/FancyBlazor.Demo/Dockerfile
+          push: true
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

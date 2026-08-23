@@ -1,0 +1,25 @@
+@page "/reveal"
+
+<PageTitle>Reveal · FancyBlazor</PageTitle>
+<section class="demo-page component-page">
+    <p class="kicker">03 / VIEWPORT-AWARE ENTRY</p><h1>Reveal</h1>
+    <div class="reveal-demo-header">
+        <p class="lede">Each strip enters in sequence. Replay it, then scroll away and back to see the viewport behavior again.</p>
+        <button class="replay-button" data-testid="replay-reveal" type="button" @onclick="Replay">Replay entrance</button>
+    </div>
+    <div @key="_replayKey" class="component-stage quiet reveal-stack" data-testid="reveal-examples" data-replay-run="@_replayKey">
+        <Reveal Effect="RevealEffect.Fade" Duration="@TimeSpan.FromMilliseconds(700)"><article class="strip">Fade</article></Reveal>
+        <Reveal Effect="RevealEffect.FadeUp" Delay="@TimeSpan.FromMilliseconds(180)" Duration="@TimeSpan.FromMilliseconds(700)"><article class="strip">Fade up</article></Reveal>
+        <Reveal Effect="RevealEffect.BlurUp" Delay="@TimeSpan.FromMilliseconds(360)" Duration="@TimeSpan.FromMilliseconds(700)"><article class="strip">Blur up</article></Reveal>
+    </div>
+    <pre><code>&lt;Reveal Effect="RevealEffect.BlurUp"
+        Duration="@@TimeSpan.FromMilliseconds(500)"&gt;
+    &lt;Content /&gt;
+&lt;/Reveal&gt;</code></pre>
+</section>
+
+@code {
+    private int _replayKey;
+
+    private void Replay() => _replayKey++;
+}

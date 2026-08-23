@@ -1,0 +1,10 @@
+<ProjectConfiguration>
+  <Settings>
+    <!-- Playwright integration coverage runs in the regular test runner and CI, not NCrunch. -->
+    <IgnoreThisComponentCompletely>True</IgnoreThisComponentCompletely>
+    <CopyReferencedAssembliesToWorkspace>True</CopyReferencedAssembliesToWorkspace>
+    <HiddenComponentWarnings>
+      <Value>CopyReferencedAssembliesToWorkspaceIsOn</Value>
+    </HiddenComponentWarnings>
+  </Settings>
+</ProjectConfiguration>
