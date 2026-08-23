@@ -146,7 +146,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await page.Locator("[data-testid='cursor-trail-example']").HoverAsync();
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount > 0");
         await page.GotoAsync($"{fixture.TestHostUrl}/border");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 0");
+        await page.WaitForFunctionAsync("() => (globalThis.__syntaxCircusFancyBlazor?.instanceCount ?? 0) === 0");
     }
 
     [Fact]
