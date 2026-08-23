@@ -1,0 +1,15 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes"><PaperSurface Tint="Tint" Ink="Ink" Disabled="Disabled"><HighlightText Color="HighlightColor" Disabled="Disabled">@ChildContent</HighlightText></PaperSurface></div>
+
+@code {
+    [Parameter] public string Tint { get; set; } = "#fffaf0";
+    [Parameter] public string Ink { get; set; } = "#1f2937";
+    [Parameter] public string HighlightColor { get; set; } = "#fbbf24";
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-editorial-hero", CssClass, null, Style, AdditionalAttributes, new Dictionary<string, object> { ["data-fancy-preset"] = "editorial-hero", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

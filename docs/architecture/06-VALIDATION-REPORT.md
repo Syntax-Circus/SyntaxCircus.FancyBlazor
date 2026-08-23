@@ -1,7 +1,7 @@
 # FancyBlazor Validation Report
 
-- **Date:** 2026-08-22
-- **Candidate:** `0.1.0-preview.1`
+- **Date:** 2026-08-23
+- **Candidate:** `0.1.5`
 - **Result:** All implementation and release gates pass locally.
 
 ## Requirement evidence
@@ -31,9 +31,16 @@ pwsh eng/verify-package.ps1 -PackageDirectory artifacts
 git diff --check
 ```
 
-The test result is 20 passed, zero failed, zero skipped: nine .NET/bUnit tests
-and eleven Playwright tests. The browser run also emits four fixed-viewport,
-reduced-motion PNG artifacts under `TestResults/visual`.
+The 0.1.5 test result is 33 passed, zero failed, zero skipped: sixteen
+.NET/bUnit tests and seventeen Playwright tests. The browser run also emits
+seven fixed-viewport, reduced-motion PNG artifacts under `TestResults/visual`.
+
+## 0.1.5 extension evidence
+
+The release adds nine CSS-first effects and five named composition presets.
+Sixteen .NET/bUnit tests verify public rendering contracts and seventeen
+Playwright tests cover the fallback matrix, static zero-runtime behavior,
+interactive preset semantics, and seven reduced-motion visual artifacts.
 
 ## Audit scope
 

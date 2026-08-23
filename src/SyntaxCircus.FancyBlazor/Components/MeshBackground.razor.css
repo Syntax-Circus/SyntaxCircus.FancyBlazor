@@ -1,0 +1,4 @@
+.syntax-circus-fancy-mesh-background { background: var(--sc-fancy-background); isolation: isolate; overflow: hidden; position: relative; }
+.syntax-circus-fancy-mesh-background__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-mesh-background__layer { background: radial-gradient(circle at 8% 16%, color-mix(in srgb, var(--sc-fancy-primary) calc(var(--sc-fancy-mesh-intensity) * 100%), transparent), transparent 36%), radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--sc-fancy-secondary) calc(var(--sc-fancy-mesh-intensity) * 85%), transparent), transparent 38%), radial-gradient(circle at 56% 95%, color-mix(in srgb, var(--sc-fancy-accent) calc(var(--sc-fancy-mesh-intensity) * 76%), transparent), transparent 44%); inset: 0; pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-mesh-background[data-fancy-disabled="true"] .syntax-circus-fancy-mesh-background__layer { display: none; }

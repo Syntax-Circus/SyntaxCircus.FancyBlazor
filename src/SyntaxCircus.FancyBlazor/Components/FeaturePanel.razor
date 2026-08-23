@@ -1,0 +1,15 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes"><CornerAccents Color="Color" Disabled="Disabled"><EdgeGlow Color="Color" Placement="Placement" Intensity="Intensity" Disabled="Disabled">@ChildContent</EdgeGlow></CornerAccents></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public EdgeGlowPlacement Placement { get; set; } = EdgeGlowPlacement.Top;
+    [Parameter] public double Intensity { get; set; } = .45;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-feature-panel", CssClass, null, Style, AdditionalAttributes, new Dictionary<string, object> { ["data-fancy-preset"] = "feature-panel", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

@@ -1,0 +1,14 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes"><GridBackground Color="Palette.Accent" Opacity=".14" Disabled="Disabled"><OrbitalGlow Palette="Palette" Intensity=".5" Disabled="Disabled"><GlassSurface Tint="Tint" Blur="20" Disabled="Disabled"><BorderBeam Color="Palette.Accent" Animated="false" Disabled="Disabled">@ChildContent</BorderBeam></GlassSurface></OrbitalGlow></GridBackground></div>
+
+@code {
+    [Parameter] public FancyPalette Palette { get; set; } = FancyPalettes.Viridian;
+    [Parameter] public string Tint { get; set; } = "rgba(7,17,31,.66)";
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-reading-surface", CssClass, null, Style, AdditionalAttributes, new Dictionary<string, object> { ["data-fancy-preset"] = "reading-surface", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

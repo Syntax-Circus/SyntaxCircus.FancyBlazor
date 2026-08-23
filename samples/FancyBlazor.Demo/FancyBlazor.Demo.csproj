@@ -9,5 +9,6 @@
     <ProjectReference Include="..\FancyBlazor.Demo.Client\FancyBlazor.Demo.Client.csproj" />
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor\SyntaxCircus.FancyBlazor.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    <PackageReference Include="SyntaxCircus.AspNetCore.Common" />
   </ItemGroup>
 </Project>

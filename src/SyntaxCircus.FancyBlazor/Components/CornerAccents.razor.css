@@ -1,0 +1,6 @@
+.syntax-circus-fancy-corner-accents { position: relative; }
+.syntax-circus-fancy-corner-accents__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-corner-accents__corner { block-size: var(--sc-fancy-corner-length); border-color: var(--sc-fancy-corner-color); border-style: solid; inline-size: var(--sc-fancy-corner-length); opacity: var(--sc-fancy-corner-opacity); pointer-events: none; position: absolute; }
+.syntax-circus-fancy-corner-accents__corner--start { border-width: var(--sc-fancy-corner-thickness) 0 0 var(--sc-fancy-corner-thickness); inset: 0 auto auto 0; }
+.syntax-circus-fancy-corner-accents__corner--end { border-width: 0 var(--sc-fancy-corner-thickness) var(--sc-fancy-corner-thickness) 0; inset: auto 0 0 auto; }
+.syntax-circus-fancy-corner-accents[data-fancy-disabled="true"] .syntax-circus-fancy-corner-accents__corner { display: none; }

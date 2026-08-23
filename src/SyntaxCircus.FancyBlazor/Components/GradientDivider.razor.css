@@ -1,0 +1,2 @@
+.syntax-circus-fancy-gradient-divider { background: linear-gradient(90deg, var(--sc-fancy-divider-start), var(--sc-fancy-divider-color), var(--sc-fancy-divider-end)); block-size: var(--sc-fancy-divider-thickness); opacity: var(--sc-fancy-divider-opacity); }
+.syntax-circus-fancy-gradient-divider[data-fancy-disabled="true"] { display: none; }

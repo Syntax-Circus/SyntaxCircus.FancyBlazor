@@ -1,0 +1,2 @@
+.syntax-circus-fancy-text-stroke, .syntax-circus-fancy-text-stroke ::deep * { color: var(--sc-fancy-text-stroke-fill); -webkit-text-stroke: var(--sc-fancy-text-stroke-width) var(--sc-fancy-text-stroke-color); text-stroke: var(--sc-fancy-text-stroke-width) var(--sc-fancy-text-stroke-color); }
+.syntax-circus-fancy-text-stroke[data-fancy-disabled="true"], .syntax-circus-fancy-text-stroke[data-fancy-disabled="true"] ::deep * { color: inherit; -webkit-text-stroke: 0 transparent; text-stroke: 0 transparent; }

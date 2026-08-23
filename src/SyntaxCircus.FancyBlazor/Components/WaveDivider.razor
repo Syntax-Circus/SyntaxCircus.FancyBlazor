@@ -1,0 +1,18 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes" aria-hidden="true"></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public double Amplitude { get; set; } = 8;
+    [Parameter] public double Thickness { get; set; } = 2;
+    [Parameter] public double Opacity { get; set; } = .5;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-wave-divider", CssClass,
+        $"--sc-fancy-wave-color:{Color};--sc-fancy-wave-amplitude:{AttributeComposer.Number(AttributeComposer.Clamp(Amplitude, 2, 32))}px;--sc-fancy-wave-thickness:{AttributeComposer.Number(AttributeComposer.Clamp(Thickness, 1, 8))}px;--sc-fancy-wave-opacity:{AttributeComposer.Number(AttributeComposer.Clamp(Opacity, 0, 1))}", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "wave-divider", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

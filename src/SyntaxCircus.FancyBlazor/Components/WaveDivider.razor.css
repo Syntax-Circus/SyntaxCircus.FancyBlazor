@@ -1,0 +1,2 @@
+.syntax-circus-fancy-wave-divider { background: radial-gradient(ellipse at 50% 0, transparent 68%, var(--sc-fancy-wave-color) 70% 76%, transparent 78%) 0 0 / calc(var(--sc-fancy-wave-amplitude) * 2) var(--sc-fancy-wave-amplitude) repeat-x; block-size: calc(var(--sc-fancy-wave-amplitude) + var(--sc-fancy-wave-thickness)); opacity: var(--sc-fancy-wave-opacity); }
+.syntax-circus-fancy-wave-divider[data-fancy-disabled="true"] { display: none; }

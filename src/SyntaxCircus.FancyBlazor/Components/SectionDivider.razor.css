@@ -1,0 +1,4 @@
+.syntax-circus-fancy-section-divider { align-items: center; display: flex; gap: .75rem; margin-inline: var(--sc-fancy-section-divider-inset); }
+.syntax-circus-fancy-section-divider::before, .syntax-circus-fancy-section-divider::after { background: color-mix(in srgb, var(--sc-fancy-section-divider-color) 55%, transparent); block-size: var(--sc-fancy-section-divider-thickness); content: ""; flex: 1; }
+.syntax-circus-fancy-section-divider > span { background: var(--sc-fancy-section-divider-color); block-size: calc(var(--sc-fancy-section-divider-thickness) * 3); inline-size: calc(var(--sc-fancy-section-divider-thickness) * 3); transform: rotate(45deg); }
+.syntax-circus-fancy-section-divider[data-fancy-disabled="true"] { display: none; }

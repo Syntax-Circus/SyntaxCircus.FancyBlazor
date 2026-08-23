@@ -1,0 +1,17 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div @attributes="RootAttributes" aria-hidden="true"><span></span></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public double Thickness { get; set; } = 1;
+    [Parameter] public double Inset { get; set; } = 0;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-section-divider", CssClass,
+        $"--sc-fancy-section-divider-color:{Color};--sc-fancy-section-divider-thickness:{AttributeComposer.Number(AttributeComposer.Clamp(Thickness, 1, 8))}px;--sc-fancy-section-divider-inset:{AttributeComposer.Number(AttributeComposer.Clamp(Inset, 0, 160))}px", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "section-divider", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}
