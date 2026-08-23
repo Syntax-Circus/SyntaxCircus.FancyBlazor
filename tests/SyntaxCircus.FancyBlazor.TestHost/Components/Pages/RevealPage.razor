@@ -1,0 +1,19 @@
+@page "/reveal"
+
+<PageTitle>Reveal browser test</PageTitle>
+
+<main>
+    <h1>Reveal</h1>
+    <button data-testid="replay-reveal" type="button" @onclick="Replay">Replay entrance</button>
+    <div @key="_replayKey" data-testid="reveal-examples" data-replay-run="@_replayKey">
+        <Reveal Effect="RevealEffect.Fade" Duration="@TimeSpan.FromMilliseconds(700)"><p>Fade</p></Reveal>
+        <Reveal Effect="RevealEffect.FadeUp" Delay="@TimeSpan.FromMilliseconds(180)" Duration="@TimeSpan.FromMilliseconds(700)"><p>Fade up</p></Reveal>
+        <Reveal Effect="RevealEffect.BlurUp" Delay="@TimeSpan.FromMilliseconds(360)" Duration="@TimeSpan.FromMilliseconds(700)"><p>Blur up</p></Reveal>
+    </div>
+</main>
+
+@code {
+    private int _replayKey;
+
+    private void Replay() => _replayKey++;
+}

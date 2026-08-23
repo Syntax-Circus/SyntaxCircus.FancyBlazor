@@ -16,6 +16,7 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [Accessibility](guides/accessibility.md)
 - [Performance](guides/performance.md)
 - [Blazor hosting modes](guides/hosting-modes.md)
+- [Demo container deployment](guides/demo-container.md)
 - [Troubleshooting](guides/troubleshooting.md)
 
 ## Project references

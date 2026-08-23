@@ -38,6 +38,7 @@ dotnet test SyntaxCircus.FancyBlazor.slnx --no-build --configuration Release
 dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release
 pwsh eng/verify-docs.ps1
 pwsh eng/verify-package.ps1
+docker build --file samples/FancyBlazor.Demo/Dockerfile --tag fancyblazor-demo:local .
 ```
 
 Install Playwright browsers once before running browser tests locally:
@@ -56,6 +57,12 @@ dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-bu
 ```
 
 That override is for local validation only; CI and releases must use GitVersion.
+
+The demo image is published only by the main-branch workflow as
+`ghcr.io/syntax-circus/fancyblazor-demo`, tagged with `latest` and the full
+commit SHA. Keep the Dockerfile's publish command independent of Git history,
+run the image as non-root on port `8080`, and do not add TLS or proxy policy to
+the demo application.
 
 ## Public API rules
 
@@ -106,6 +113,13 @@ folder.
 - Use xUnit v3, Shouldly, and bUnit for .NET/rendering contracts.
 - Use Playwright for JavaScript lifecycle, hosting mode, motion, fallback, and
   disposal behavior.
+- Browser tests launch compiled test-host assemblies rather than paths in the
+  source checkout so they remain valid in NCrunch workspaces. The server host
+  copies its own and FancyBlazor's static assets to its output so they never
+  resolve through NCrunch source-workspace paths. NCrunch ignores this project
+  completely because its spawned Kestrel/Chromium integration coverage is owned
+  by the regular test runner and CI. Do not add framework-level skip attributes;
+  those would suppress the coverage everywhere.
 - Add a test for every new or changed public rendering behavior.
 - Keep documentation snippets linked to compiling sample components.
 - Run restore, Release build, all tests, browser tests, pack, and package-content

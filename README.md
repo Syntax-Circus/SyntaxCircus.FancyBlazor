@@ -101,6 +101,7 @@ continuous rendering stops while hidden or offscreen.
 - [Accessibility](docs/guides/accessibility.md)
 - [Performance](docs/guides/performance.md)
 - [Hosting modes](docs/guides/hosting-modes.md)
+- [Deploy the interactive demo container](docs/guides/demo-container.md)
 - [Troubleshooting](docs/guides/troubleshooting.md)
 - [Changelog](CHANGELOG.md)
 - [Compiling Interactive Auto demo](samples/FancyBlazor.Demo.Client/Pages/Home.razor)

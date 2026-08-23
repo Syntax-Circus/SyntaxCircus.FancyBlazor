@@ -1,0 +1,6 @@
+<ProjectConfiguration>
+  <Settings>
+    <!-- This assembly is launched as a child process, outside NCrunch's test runtime. -->
+    <InstrumentOutputAssembly>False</InstrumentOutputAssembly>
+  </Settings>
+</ProjectConfiguration>

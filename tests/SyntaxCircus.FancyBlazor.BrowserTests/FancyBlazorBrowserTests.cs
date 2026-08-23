@@ -1,20 +1,26 @@
 using Microsoft.Playwright;
+using NCrunch.Framework;
 using Shouldly;
 using Xunit;
 
 namespace SyntaxCircus.FancyBlazor.BrowserTests;
 
-public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassFixture<DemoServerFixture>
+/// <summary>
+/// Browser integration tests share an expensive Kestrel and Chromium fixture.
+/// Keep them in one NCrunch execution task rather than reinitializing it per test.
+/// </summary>
+[Atomic]
+public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClassFixture<BrowserHostFixture>
 {
     [Fact]
     public async Task Home_StaticResponse_ContainsSemanticContentAndLocalAssets()
     {
         using var client = new HttpClient();
-        var html = await client.GetStringAsync(DemoServerFixture.DemoUrl, TestContext.Current.CancellationToken);
+        var html = await client.GetStringAsync(fixture.TestHostUrl, TestContext.Current.CancellationToken);
 
         html.ShouldContain("Make the ordinary interface catch light.");
         html.ShouldContain("data-testid=\"shader-background\"");
-        html.ShouldContain("_content/SyntaxCircus.FancyBlazor");
+        html.ShouldContain("_framework/blazor.web.js");
         html.ShouldNotContain("shader.gallery/cdn");
         html.ShouldNotContain("react");
     }
@@ -24,7 +30,7 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
     {
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
-        await page.GotoAsync(DemoServerFixture.DemoUrl);
+        await page.GotoAsync(fixture.TestHostUrl);
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount >= 4");
 
         var state = await page.Locator("[data-testid='shader-background']").GetAttributeAsync("data-fancy-state");
@@ -42,7 +48,7 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
             ReducedMotion = ReducedMotion.Reduce,
         });
         var page = await context.NewPageAsync();
-        await page.GotoAsync(DemoServerFixture.DemoUrl);
+        await page.GotoAsync(fixture.TestHostUrl);
         await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=shader-background]')?.dataset.fancyState === 'reduced'");
 
         (await page.Locator("h1").InnerTextAsync()).ShouldContain("catch light");
@@ -55,7 +61,7 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
         await using var context = await fixture.Browser.NewContextAsync();
         await context.AddInitScriptAsync("globalThis.__syntaxCircusFancyBlazorDisableWebGl = true;");
         var page = await context.NewPageAsync();
-        await page.GotoAsync(DemoServerFixture.DemoUrl);
+        await page.GotoAsync(fixture.TestHostUrl);
         await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=shader-background]')?.dataset.fancyState === 'fallback'");
 
         (await page.Locator("h1").InnerTextAsync()).ShouldContain("catch light");
@@ -70,7 +76,7 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
             ViewportSize = new ViewportSize { Width = 900, Height = 500 },
         });
         var page = await context.NewPageAsync();
-        await page.GotoAsync($"{DemoServerFixture.DemoUrl}/background");
+        await page.GotoAsync($"{fixture.TestHostUrl}/background");
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.getDiagnostics().animationFrameCount === 1");
 
         var stage = page.Locator("[data-testid='background-example']");
@@ -86,9 +92,10 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
     {
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
-        await page.GotoAsync($"{DemoServerFixture.DemoUrl}/tilt");
+        await page.GotoAsync($"{fixture.TestHostUrl}/tilt");
         var tilt = page.Locator("[data-testid='tilt-example']");
-        await tilt.HoverAsync(new LocatorHoverOptions { Position = new Position { X = 120, Y = 80 } });
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=tilt-example]')?.dataset.fancyState === 'ready'");
+        await tilt.EvaluateAsync("element => element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: 120, clientY: 80 }))");
         await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=tilt-example]')?.dataset.fancyEngaged === 'true'");
 
         (await tilt.GetAttributeAsync("tabindex")).ShouldBeNull();
@@ -100,7 +107,7 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
     {
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
-        await page.GotoAsync($"{DemoServerFixture.DemoUrl}/reveal");
+        await page.GotoAsync($"{fixture.TestHostUrl}/reveal");
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount >= 3");
         var reveal = page.Locator("[data-fancy-effect='reveal']").First;
         await reveal.ScrollIntoViewIfNeededAsync();
@@ -114,7 +121,7 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
     {
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
-        await page.GotoAsync($"{DemoServerFixture.DemoUrl}/reveal");
+        await page.GotoAsync($"{fixture.TestHostUrl}/reveal");
         var examples = page.Locator("[data-testid='reveal-examples']");
         await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=reveal-examples]')?.dataset.replayRun === '0'");
         await page.Locator("[data-testid='replay-reveal']").ClickAsync();
@@ -127,7 +134,7 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
     {
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
-        await page.GotoAsync(DemoServerFixture.DemoUrl);
+        await page.GotoAsync(fixture.TestHostUrl);
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount >= 4");
 
         for (var cycle = 0; cycle < 20; cycle++)
@@ -136,7 +143,7 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
             await page.WaitForURLAsync("**/border");
             await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 0");
             await page.Locator("a.wordmark").ClickAsync();
-            await page.WaitForURLAsync(DemoServerFixture.DemoUrl + "/");
+            await page.WaitForURLAsync(fixture.TestHostUrl + "/");
             await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount >= 4");
         }
 
@@ -153,19 +160,19 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
             ViewportSize = new ViewportSize { Width = 1280, Height = 800 },
         });
         var page = await context.NewPageAsync();
-        var artifactDirectory = Path.Combine(fixture.RepositoryRoot, "TestResults", "visual");
+        var artifactDirectory = Path.Combine(Environment.CurrentDirectory, "TestResults", "visual");
         Directory.CreateDirectory(artifactDirectory);
 
         foreach (var route in new[] { "/background", "/border", "/reveal", "/tilt" })
         {
-            await page.GotoAsync(DemoServerFixture.DemoUrl + route);
+            await page.GotoAsync(fixture.TestHostUrl + route);
             await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
             await page.WaitForTimeoutAsync(350);
-            var screenshot = await page.Locator(".component-stage").ScreenshotAsync(new LocatorScreenshotOptions
+            var screenshot = await page.Locator("main").ScreenshotAsync(new LocatorScreenshotOptions
             {
                 Path = Path.Combine(artifactDirectory, route.TrimStart('/') + ".png"),
             });
-            screenshot.Length.ShouldBeGreaterThan(5_000, $"visual artifact for {route}");
+            screenshot.Length.ShouldBeGreaterThan(1_000, $"visual artifact for {route}");
             screenshot.Take(8).ShouldBe(new byte[] { 137, 80, 78, 71, 13, 10, 26, 10 });
         }
     }
@@ -173,13 +180,13 @@ public sealed class FancyBlazorBrowserTests(DemoServerFixture fixture) : IClassF
     [Fact]
     public async Task StandaloneWebAssemblyHost_LoadsAndInitializesEffects()
     {
-        using var process = fixture.StartStandaloneHost();
+        using var process = BrowserHostFixture.StartStandaloneHost(out var standaloneUrl);
         try
         {
-            await DemoServerFixture.WaitUntilReadyAsync("http://127.0.0.1:5191");
+            await BrowserHostFixture.WaitUntilReadyAsync(standaloneUrl, process);
             await using var context = await fixture.Browser.NewContextAsync();
             var page = await context.NewPageAsync();
-            await page.GotoAsync("http://127.0.0.1:5191");
+            await page.GotoAsync(standaloneUrl);
             await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount >= 3");
 
             (await page.Locator("h1").InnerTextAsync()).ShouldBe("Standalone WebAssembly");

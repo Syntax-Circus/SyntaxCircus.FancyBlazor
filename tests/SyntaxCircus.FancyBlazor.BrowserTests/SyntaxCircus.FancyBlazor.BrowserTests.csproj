@@ -11,4 +11,8 @@
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SyntaxCircus.FancyBlazor.TestHost\SyntaxCircus.FancyBlazor.TestHost.csproj" />
+    <ProjectReference Include="..\SyntaxCircus.FancyBlazor.StandaloneHost\SyntaxCircus.FancyBlazor.StandaloneHost.csproj" />
+  </ItemGroup>
 </Project>

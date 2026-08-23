@@ -31,8 +31,8 @@ pwsh eng/verify-package.ps1 -PackageDirectory artifacts
 git diff --check
 ```
 
-The test result is 19 passed, zero failed, zero skipped: nine .NET/bUnit tests
-and ten Playwright tests. The browser run also emits four fixed-viewport,
+The test result is 20 passed, zero failed, zero skipped: nine .NET/bUnit tests
+and eleven Playwright tests. The browser run also emits four fixed-viewport,
 reduced-motion PNG artifacts under `TestResults/visual`.
 
 ## Audit scope

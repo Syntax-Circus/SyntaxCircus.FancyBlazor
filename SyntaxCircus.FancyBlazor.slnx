@@ -11,6 +11,7 @@
     <File Path="GitVersion.yml" />
     <File Path="global.json" />
     <File Path="README.md" />
+    <File Path="SyntaxCircus.FancyBlazor.v3.ncrunchsolution" />
     <File Path="THIRD-PARTY-NOTICES.md" />
   </Folder>
   <Folder Name="/src/">
@@ -23,6 +24,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/SyntaxCircus.FancyBlazor.Tests/SyntaxCircus.FancyBlazor.Tests.csproj" />
     <Project Path="tests/SyntaxCircus.FancyBlazor.BrowserTests/SyntaxCircus.FancyBlazor.BrowserTests.csproj" />
+    <Project Path="tests/SyntaxCircus.FancyBlazor.TestHost/SyntaxCircus.FancyBlazor.TestHost.csproj" />
     <Project Path="tests/SyntaxCircus.FancyBlazor.StandaloneHost/SyntaxCircus.FancyBlazor.StandaloneHost.csproj" />
   </Folder>
 </Solution>

@@ -13,8 +13,20 @@ Use this section for changes merged after the latest published package. Keep
 entries grouped under `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, or
 `Security`; move them to a dated version section during release preparation.
 
+### Added
+
+- Publish the Interactive Auto demo as a public GHCR image from successful
+  `main` builds, with `latest` and immutable commit-SHA tags.
+- Document local image builds and deployment behind a user-managed reverse
+  proxy.
+
 ### Fixed
 
+- Make browser tests NCrunch-compatible by launching compiled test-host
+  assemblies instead of searching for the source repository at runtime, and by
+  excluding child-process assemblies from NCrunch instrumentation.
+- Exclude Playwright browser integration tests from NCrunch while preserving
+  their regular-runner and CI coverage.
 - Ensure `Reveal` applies its entry state for one animation frame before it
   begins viewport observation, making the initial visual transition reliable.
 - Remove the demo's distracting default browser outline from programmatically
