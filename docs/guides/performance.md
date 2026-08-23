@@ -3,7 +3,9 @@
 JavaScript owns every animation frame; Blazor receives no frame callbacks.
 `ShaderBackground` uses `ResizeObserver`, pauses when offscreen, and tears down
 its WebGL renderer when the document is hidden. `Tilt` batches pointer movement
-into one animation-frame update. Every component removes resources on disposal.
+into one animation-frame update. `Spotlight`, `Magnetic`, and `Parallax` use
+passive browser events and one animation-frame update; `Reveal` and `Stagger`
+use `IntersectionObserver`. Every component removes resources on disposal.
 
 | Quality | Maximum shader DPR |
 | --- | --- |
@@ -13,4 +15,5 @@ into one animation-frame update. Every component removes resources on disposal.
 
 Prefer one large background over many simultaneous GPU tiles. Keep
 `Interactive` off unless pointer response adds value. Use `Low` for very large
-mobile surfaces.
+mobile surfaces. Use Parallax sparingly and reserve multi-layer depth scenes
+for focal content; avoid stacking many scroll-driven wrappers on long lists.

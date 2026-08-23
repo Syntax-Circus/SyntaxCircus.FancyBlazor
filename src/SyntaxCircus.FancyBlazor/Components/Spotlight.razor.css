@@ -1,0 +1,5 @@
+.syntax-circus-fancy-spotlight { isolation: isolate; overflow: hidden; position: relative; }
+.syntax-circus-fancy-spotlight__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-spotlight__light { background: radial-gradient(circle, color-mix(in srgb, var(--sc-fancy-spotlight-color) calc(var(--sc-fancy-spotlight-opacity) * 100%), transparent), transparent 70%); height: var(--sc-fancy-spotlight-size); left: var(--sc-fancy-spotlight-x, 50%); pointer-events: none; position: absolute; top: var(--sc-fancy-spotlight-y, 50%); transform: translate(-50%, -50%); transition: left 100ms ease-out, top 100ms ease-out; width: var(--sc-fancy-spotlight-size); z-index: 0; }
+.syntax-circus-fancy-spotlight[data-fancy-disabled="true"] .syntax-circus-fancy-spotlight__light { display: none; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-spotlight__light { left: 50%; top: 50%; } }

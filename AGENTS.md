@@ -8,7 +8,9 @@ consumer-facing contract. Architecture decisions and phase status live in
 ## Purpose and boundary
 
 This repository produces one `net10.0` Razor Class Library containing visual
-effects for Blazor. FancyBlazor owns effect markup, scoped styles, coarse
+effects for Blazor. The preview catalog includes shader and gradient backgrounds,
+glow and shimmer surfaces, reveal and stagger entrances, and pointer/scroll
+motion effects. FancyBlazor owns effect markup, scoped styles, coarse
 Blazor-to-JavaScript lifecycle calls, and the JavaScript rendering loop.
 
 It is not a general UI framework. Do not add buttons, inputs, layouts, routing,

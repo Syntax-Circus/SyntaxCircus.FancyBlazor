@@ -1,0 +1,4 @@
+.syntax-circus-fancy-gradient-background { background: linear-gradient(var(--sc-fancy-gradient-angle), var(--sc-fancy-primary), var(--sc-fancy-secondary), var(--sc-fancy-accent), var(--sc-fancy-background)); background-size: 240% 240%; }
+.syntax-circus-fancy-gradient-background[data-fancy-animated="true"] { animation: sc-fancy-gradient var(--sc-fancy-duration) ease-in-out infinite alternate; }
+@keyframes sc-fancy-gradient { to { background-position: 100% 100%; } }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-gradient-background { animation: none !important; } }

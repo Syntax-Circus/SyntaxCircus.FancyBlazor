@@ -4,8 +4,12 @@
   links, buttons, labels, and keyboard behavior.
 - Shader canvases and glare are decorative: `aria-hidden`, non-focusable, and
   pointer-transparent.
+- Spotlight and Shimmer layers are likewise decorative, `aria-hidden`, and
+  pointer-transparent; GradientBackground remains a CSS-only backdrop.
 - Wrappers add no roles or tab stops and do not suppress focus indicators.
-- Reveal never removes content from the accessibility tree.
+- Reveal and Stagger never remove content from the accessibility tree.
+- Tilt, Magnetic, and Parallax preserve child keyboard and pointer interaction;
+  they resolve to their static state for reduced motion.
 - `FancyMotionPreference.RespectSystem` is the default. Continuous motion becomes
   a static/final state when `prefers-reduced-motion: reduce` is active.
 - `IgnoreSystem` is an explicit host decision; use it only when motion is

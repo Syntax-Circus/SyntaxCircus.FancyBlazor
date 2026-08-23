@@ -4,9 +4,9 @@
 [![NuGet](https://img.shields.io/nuget/v/SyntaxCircus.FancyBlazor.svg)](https://www.nuget.org/packages/SyntaxCircus.FancyBlazor)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Composable visual effects for Blazor: an iridescent shader background, animated
-glow border, viewport reveal, and pointer tilt—without React islands, a runtime
-CDN, or consumer JavaScript tooling.
+Composable visual effects for Blazor: backgrounds, borders, viewport reveals,
+pointer motion, parallax, and shimmer—without React islands, a runtime CDN, or
+consumer JavaScript tooling.
 
 FancyBlazor targets `net10.0` and works with static SSR, Interactive Server,
 Interactive WebAssembly, Interactive Auto, and standalone WebAssembly. It is
@@ -61,6 +61,12 @@ palette-derived CSS background and leaves the content usable.
 | `GlowBorder` | CSS-first | Animated edge light around existing content |
 | `Reveal` | CSS + `IntersectionObserver` | Viewport-aware fade/translate/blur entrance |
 | `Tilt` | CSS + pointer JavaScript | Perspective motion and optional glare |
+| `GradientBackground` | CSS-first | Palette-derived animated gradient background |
+| `Spotlight` | CSS + pointer JavaScript | Decorative pointer-following radial light |
+| `Magnetic` | CSS + pointer JavaScript | Subtle pointer-relative content motion |
+| `Parallax` | CSS + scroll JavaScript | Viewport-relative content offset |
+| `Stagger` | CSS + `IntersectionObserver` | Sequential direct-child viewport entry |
+| `Shimmer` | CSS-first | Decorative highlight sweep |
 
 Components intentionally compose:
 

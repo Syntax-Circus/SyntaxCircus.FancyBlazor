@@ -15,6 +15,9 @@ entries grouped under `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, or
 
 ### Added
 
+- Add `GradientBackground`, `Spotlight`, `Magnetic`, `Parallax`, `Stagger`, and
+  `Shimmer` to the FancyBlazor preview catalog.
+
 - Publish the Interactive Auto demo as a public GHCR image from successful
   `main` builds, with `latest` and immutable commit-SHA tags.
 - Document local image builds and deployment behind a user-managed reverse

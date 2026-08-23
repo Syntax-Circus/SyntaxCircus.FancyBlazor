@@ -57,6 +57,10 @@ const factories = {
     'shader-background': createShaderBackground,
     reveal: createReveal,
     tilt: createTilt,
+    spotlight: createSpotlight,
+    magnetic: createMagnetic,
+    parallax: createParallax,
+    stagger: createStagger,
 };
 
 async function createShaderBackground(element, initialOptions, defaults) {
@@ -257,6 +261,42 @@ function createTilt(element, initialOptions, defaults) {
         hasActiveAnimationFrame() { return frame !== null; },
         destroy() { disable(); media?.removeEventListener('change', mediaHandler); },
     };
+}
+
+function createSpotlight(element, initialOptions, defaults) {
+    let frame = null;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const reset = () => { element.style.removeProperty('--sc-fancy-spotlight-x'); element.style.removeProperty('--sc-fancy-spotlight-y'); };
+    const move = event => {
+        if (motionReduced(defaults.motionPreference, media)) return;
+        if (frame !== null) cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => { const rect = element.getBoundingClientRect(); element.style.setProperty('--sc-fancy-spotlight-x', `${clamp((event.clientX - rect.left) / Math.max(rect.width, 1), 0, 1) * 100}%`); element.style.setProperty('--sc-fancy-spotlight-y', `${clamp((event.clientY - rect.top) / Math.max(rect.height, 1), 0, 1) * 100}%`); frame = null; });
+    };
+    element.addEventListener('pointermove', move, { passive: true }); element.addEventListener('pointerleave', reset, { passive: true });
+    return { update() {}, setDocumentVisible() {}, hasActiveAnimationFrame() { return frame !== null; }, destroy() { if (frame !== null) cancelAnimationFrame(frame); element.removeEventListener('pointermove', move); element.removeEventListener('pointerleave', reset); reset(); } };
+}
+
+function createMagnetic(element, initialOptions, defaults) {
+    let options = initialOptions; let frame = null; let active = true;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const reset = () => { if (frame !== null) cancelAnimationFrame(frame); frame = null; element.style.removeProperty('--sc-fancy-magnetic-x'); element.style.removeProperty('--sc-fancy-magnetic-y'); delete element.dataset.fancyEngaged; };
+    const move = event => { if (!active || motionReduced(defaults.motionPreference, media)) return; if (frame !== null) cancelAnimationFrame(frame); frame = requestAnimationFrame(() => { const rect = element.getBoundingClientRect(); const strength = clamp(options.strength, 0, 1); element.style.setProperty('--sc-fancy-magnetic-x', `${((event.clientX - (rect.left + rect.width / 2)) / Math.max(rect.width, 1)) * 30 * strength}px`); element.style.setProperty('--sc-fancy-magnetic-y', `${((event.clientY - (rect.top + rect.height / 2)) / Math.max(rect.height, 1)) * 30 * strength}px`); element.dataset.fancyEngaged = 'true'; frame = null; }); };
+    element.addEventListener('pointermove', move, { passive: true }); element.addEventListener('pointerleave', reset, { passive: true });
+    return { update(next) { options = next; }, setDocumentVisible(visible) { active = visible; if (!visible) reset(); }, hasActiveAnimationFrame() { return frame !== null; }, destroy() { element.removeEventListener('pointermove', move); element.removeEventListener('pointerleave', reset); reset(); } };
+}
+
+function createParallax(element, initialOptions, defaults) {
+    let frame = null; let active = true;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const update = () => { if (!active || motionReduced(defaults.motionPreference, media)) return; if (frame !== null) return; frame = requestAnimationFrame(() => { const rect = element.getBoundingClientRect(); const distance = parseFloat(getComputedStyle(element).getPropertyValue('--sc-fancy-parallax-distance')) || 0; const offset = clamp((window.innerHeight / 2 - (rect.top + rect.height / 2)) / Math.max(window.innerHeight, 1), -1, 1) * distance; element.style.setProperty('--sc-fancy-parallax-y', `${offset}px`); element.dataset.fancyParallaxOffset = `${Math.round(offset)}`; frame = null; }); };
+    addEventListener('scroll', update, { passive: true }); addEventListener('resize', update, { passive: true }); update();
+    return { update, setDocumentVisible(visible) { active = visible; if (visible) update(); else { if (frame !== null) cancelAnimationFrame(frame); frame = null; } }, hasActiveAnimationFrame() { return frame !== null; }, destroy() { removeEventListener('scroll', update); removeEventListener('resize', update); if (frame !== null) cancelAnimationFrame(frame); element.style.removeProperty('--sc-fancy-parallax-y'); delete element.dataset.fancyParallaxOffset; } };
+}
+
+function createStagger(element, initialOptions, defaults) {
+    let options = initialOptions; let observer = null; let frame = null; let timer = null;
+    const configure = (replay = false) => { observer?.disconnect(); if (timer !== null) clearTimeout(timer); [...element.children].forEach((child, index) => child.style.setProperty('--sc-fancy-index', index)); element.dataset.fancyReady = 'true'; if (motionReduced(defaults.motionPreference)) { element.dataset.fancyVisible = 'true'; return; } element.dataset.fancyVisible = 'false'; observer = new IntersectionObserver(entries => entries.forEach(entry => { element.dataset.fancyVisible = entry.isIntersecting ? 'true' : 'false'; if (entry.isIntersecting && options.once !== false) observer?.disconnect(); }), { threshold: .1 }); const observe = () => { frame = requestAnimationFrame(() => { frame = requestAnimationFrame(() => { frame = null; observer?.observe(element); }); }); }; if (replay) timer = setTimeout(() => { timer = null; observe(); }, 300); else observe(); };
+    configure(); return { update(next) { const replay = next.replayToken !== options.replayToken; options = next; configure(replay); }, setDocumentVisible() {}, hasActiveAnimationFrame() { return frame !== null; }, destroy() { if (frame !== null) cancelAnimationFrame(frame); if (timer !== null) clearTimeout(timer); observer?.disconnect(); [...element.children].forEach(child => child.style.removeProperty('--sc-fancy-index')); delete element.dataset.fancyReady; delete element.dataset.fancyVisible; } };
 }
 
 function ensureVisibilityListener() {

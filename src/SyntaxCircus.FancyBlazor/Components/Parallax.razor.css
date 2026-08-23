@@ -1,0 +1,2 @@
+.syntax-circus-fancy-parallax__content { transform: translateY(var(--sc-fancy-parallax-y, 0)); will-change: transform; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-parallax__content { transform: none !important; } }
