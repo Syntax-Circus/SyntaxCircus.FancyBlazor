@@ -1,0 +1,7 @@
+.syntax-circus-fancy-status-pulse { position: relative; }
+.syntax-circus-fancy-status-pulse__content { display: inline-block; position: relative; }
+.syntax-circus-fancy-status-pulse__layer { background: var(--sc-fancy-status-pulse-color); border-radius: 999px; height: var(--sc-fancy-status-pulse-size); opacity: .58; pointer-events: none; position: absolute; right: calc(var(--sc-fancy-status-pulse-size) * -.28); top: calc(var(--sc-fancy-status-pulse-size) * -.28); width: var(--sc-fancy-status-pulse-size); z-index: 1; }
+.syntax-circus-fancy-status-pulse[data-fancy-animated="true"] .syntax-circus-fancy-status-pulse__layer { animation: sc-fancy-status-pulse 1.8s ease-out infinite; }
+.syntax-circus-fancy-status-pulse[data-fancy-disabled="true"] .syntax-circus-fancy-status-pulse__layer { display: none; }
+@keyframes sc-fancy-status-pulse { 50% { opacity: .08; transform: scale(1.65); } }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-status-pulse__layer { animation: none !important; } }

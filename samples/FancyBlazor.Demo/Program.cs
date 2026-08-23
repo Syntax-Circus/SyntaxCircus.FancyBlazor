@@ -39,6 +39,7 @@ app.MapSitemap(_ =>
     new SitemapEntry("https://fancyblazor.syntaxcircus.com/interaction-feedback"),
     new SitemapEntry("https://fancyblazor.syntaxcircus.com/css-first-catalog"),
     new SitemapEntry("https://fancyblazor.syntaxcircus.com/composition-authoring"),
+    new SitemapEntry("https://fancyblazor.syntaxcircus.com/threeui-inspiration"),
 ]);
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()

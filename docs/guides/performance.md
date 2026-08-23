@@ -26,3 +26,5 @@ Prefer one large background over many simultaneous GPU tiles. Keep
 `Interactive` off unless pointer response adds value. Use `Low` for very large
 mobile surfaces. Use Parallax sparingly and reserve multi-layer depth scenes
 for focal content; avoid stacking many scroll-driven wrappers on long lists.
+
+ConstellationBackground and ArcFlowBackground use bounded Canvas 2D particle or arc sets, a quality-capped DPR, `ResizeObserver`, and intersection/document-visibility gates. They have one frame at most while visible and release observers, frames, and canvas contents on disposal. NeonText, StatusPulse, and LaunchHalo are CSS-first; TypeFlow uses viewport observation only.

@@ -13,7 +13,9 @@
 | 9 | Quality, Accessibility, and Compatibility | Complete | Interaction Feedback | Browser fallback matrix, performance budgets, visual regression, and public-API review |
 | 10 | Composition and Authoring | Complete | Quality, Accessibility, and Compatibility | Compile-tested composition recipes and named visual presets |
 | 11 | CSS-First Catalog Expansion | Complete | Quality, Accessibility, and Compatibility | Selected typography, separator, and surface treatments |
-| 12 | 1.0 Stabilization | Candidate | All prior phases | Resolved preview API, migration notes, and release-readiness evidence |
+| 12 | v0.2.0 Atmosphere and Accents | Complete | CSS-First Catalog Expansion | Six documented, tested Canvas 2D, typography, and child-preserving accent components |
+| 13 | WebGL Rendering Boundary Spike | Planned | v0.2.0 Atmosphere and Accents | Decision record comparing a `FancyBlazor.WebGL` package with opt-in main-package WebGL mode |
+| 14 | 1.0 Stabilization | Candidate | All prior phases | Resolved preview API, migration notes, and release-readiness evidence |
 
 A phase is complete only when its task boxes and validation gate are supported by current command output or inspected artifacts.
 

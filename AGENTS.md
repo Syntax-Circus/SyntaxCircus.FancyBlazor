@@ -147,6 +147,14 @@ folder.
   accessible text; visual tokens are decorative only.
 - Pointer-generated DOM and canvas effects must cap their transient work and
   clear it for reduced motion, hidden documents, and disposal.
+- Canvas 2D background effects must provide a useful CSS fallback, cap particle
+  or arc counts, quality-cap DPR, pause while hidden or offscreen, and release
+  their frame, resize, intersection, and media-query resources on disposal.
+- Decorative status and launch accents never announce application state, add
+  activation behavior, replace native focus visibility, or own child semantics.
+- New public components require a compiling demo example, user component guide,
+  README catalog entry, relevant accessibility/performance guidance, changelog
+  entry, and this contributor contract update in the same release-bound change.
 - Add browser coverage for new scroll progress, hidden/offscreen cleanup,
   fine-pointer gating, keyboard press behavior, and additive focus feedback.
 - For new CSS-first effects, add browser coverage that confirms static rendering,

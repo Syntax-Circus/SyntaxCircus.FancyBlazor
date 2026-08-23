@@ -1,0 +1,7 @@
+.syntax-circus-fancy-launch-halo { position: relative; }
+.syntax-circus-fancy-launch-halo__content { display: inline-block; isolation: isolate; position: relative; }
+.syntax-circus-fancy-launch-halo__layer { background: radial-gradient(circle, color-mix(in srgb, var(--sc-fancy-launch-halo-color) calc(var(--sc-fancy-launch-halo-intensity) * 55%), transparent), transparent 68%); border-radius: inherit; inset: calc(-1 * var(--sc-fancy-launch-halo-spread)); opacity: var(--sc-fancy-launch-halo-intensity); pointer-events: none; position: absolute; z-index: -1; }
+.syntax-circus-fancy-launch-halo[data-fancy-animated="true"] .syntax-circus-fancy-launch-halo__layer { animation: sc-fancy-launch-halo 3s ease-in-out infinite alternate; }
+.syntax-circus-fancy-launch-halo[data-fancy-disabled="true"] .syntax-circus-fancy-launch-halo__layer { display: none; }
+@keyframes sc-fancy-launch-halo { to { opacity: calc(var(--sc-fancy-launch-halo-intensity) * .45); transform: scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-launch-halo__layer { animation: none !important; } }
