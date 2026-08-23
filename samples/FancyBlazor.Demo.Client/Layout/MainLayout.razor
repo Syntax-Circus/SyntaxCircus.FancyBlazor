@@ -2,17 +2,34 @@
 
 <header class="site-header">
     <a class="wordmark" href="/"><img class="wordmark__icon" src="/images/brand/fancyblazor-favicon-64.png" alt="" aria-hidden="true" />FancyBlazor</a>
-    <nav aria-label="Examples">
-        <NavLink href="/background">Background</NavLink>
-        <NavLink href="/border">Border</NavLink>
-        <NavLink href="/reveal">Reveal</NavLink>
-        <NavLink href="/tilt">Tilt</NavLink>
-        <NavLink href="/expanded-effects">More effects</NavLink>
-        <NavLink href="/expressive-effects">Expressive effects</NavLink>
-        <NavLink href="/spatial-surfaces">Spatial surfaces</NavLink>
-        <NavLink href="/narrative-motion">Narrative motion</NavLink>
-        <NavLink href="/interaction-feedback">Interaction feedback</NavLink>
-    </nav>
+    <details class="site-menu">
+        <summary><span class="menu-label--desktop">Explore effects</span><span class="menu-label--mobile">Menu</span><span class="menu-icon" aria-hidden="true"><i></i><i></i><i></i></span></summary>
+        <nav aria-label="Examples">
+            <div class="menu-group">
+                <span class="menu-group__label">Surfaces</span>
+                <NavLink href="/background">Background</NavLink>
+                <NavLink href="/border">Border</NavLink>
+                <NavLink href="/spatial-surfaces">Spatial surfaces</NavLink>
+            </div>
+            <div class="menu-group">
+                <span class="menu-group__label">Motion</span>
+                <NavLink href="/reveal">Reveal</NavLink>
+                <NavLink href="/tilt">Tilt</NavLink>
+                <NavLink href="/narrative-motion">Narrative motion</NavLink>
+            </div>
+            <div class="menu-group">
+                <span class="menu-group__label">More to explore</span>
+                <NavLink href="/expanded-effects">More effects</NavLink>
+                <NavLink href="/expressive-effects">Expressive effects</NavLink>
+                <NavLink href="/interaction-feedback">Interaction feedback</NavLink>
+            </div>
+            <a class="menu-github" href="https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+        </nav>
+    </details>
+    <a class="repository-link" href="https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
 </header>
 <main>@Body</main>
-<footer><span>FancyBlazor by <a href="https://www.syntaxcircus.com" target="_blank">Syntax Circus</a></span><span>MIT · .NET 10</span></footer>
+<footer>
+    <span>FancyBlazor by <a href="https://www.syntaxcircus.com" target="_blank" rel="noreferrer">Syntax Circus</a></span>
+    <span class="footer-links"><a href="https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor" target="_blank" rel="noreferrer">Source</a><a href="https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor/issues" target="_blank" rel="noreferrer">Report an issue</a><span>MIT · .NET 10</span></span>
+</footer>

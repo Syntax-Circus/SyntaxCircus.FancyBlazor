@@ -26,9 +26,21 @@ a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 4px; }
 .site-header { border-bottom: 1px solid var(--line); }
 .wordmark { align-items: center; display: inline-flex; font-family: Georgia, "Times New Roman", serif; font-size: 1.2rem; gap: .45rem; text-decoration: none; }
 .wordmark__icon { height: 1.5rem; object-fit: contain; width: 1.5rem; }
-nav { display: flex; flex-wrap: wrap; gap: 1rem; }
-nav a { color: var(--muted); font-size: .78rem; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; }
-nav a.active, nav a:hover { color: var(--paper); }
+.site-menu { margin-left: auto; position: relative; }
+.site-menu summary { align-items: center; border: 1px solid var(--line); border-radius: 999px; color: var(--paper); cursor: pointer; display: flex; font: .68rem ui-monospace, monospace; gap: .55rem; letter-spacing: .08em; list-style: none; padding: .5rem .7rem; text-transform: uppercase; }
+.site-menu summary::-webkit-details-marker { display: none; }
+.site-menu[open] summary { border-color: var(--cyan); color: var(--cyan); }
+.menu-icon { display: grid; gap: 3px; width: .9rem; }
+.menu-icon i { background: currentColor; display: block; height: 1px; width: 100%; }
+.site-menu nav { background: #0b1727; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 18px 48px rgba(0, 0, 0, .34); display: grid; gap: 1.5rem; grid-template-columns: repeat(3, minmax(8rem, 1fr)); padding: 1.25rem; position: absolute; right: 0; top: calc(100% + .65rem); width: min(40rem, calc(100vw - 2rem)); z-index: 10; }
+.menu-group { display: grid; gap: .2rem; }
+.menu-group__label { color: var(--nacre); font: .64rem ui-monospace, monospace; letter-spacing: .13em; margin-bottom: .5rem; text-transform: uppercase; }
+.site-menu nav a { border-radius: 8px; color: var(--paper); font-size: .72rem; letter-spacing: .03em; padding: .5rem; text-decoration: none; }
+.site-menu nav a.active, .site-menu nav a:hover { background: rgba(103, 232, 249, .1); color: var(--cyan); }
+.menu-label--mobile { display: none; }
+.menu-github { display: none; }
+.repository-link { border: 1px solid var(--line); border-radius: 999px; color: var(--paper); font: .68rem ui-monospace, monospace; letter-spacing: .08em; padding: .5rem .7rem; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
+.repository-link:hover { border-color: var(--cyan); color: var(--cyan); }
 
 .demo-hero { min-height: min(760px, calc(100vh - 74px)); }
 .hero-grid {
@@ -148,11 +160,23 @@ code { color: #c8d4e2; font: .78rem/1.5 ui-monospace, "SFMono-Regular", Consolas
 .reconnect-panel .specimen-label { color: var(--nacre); }
 .reconnect-panel__message { color: var(--paper); font: 400 clamp(1.35rem, 3vw, 1.8rem)/1.2 Georgia, serif; margin: 0; }
 pre { background: #040a12; border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; padding: 1.25rem; }
-footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; }
+footer { border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; gap: 1rem; }
+.footer-links { align-items: center; display: flex; flex-wrap: wrap; gap: .75rem; }
+.footer-links a { color: var(--muted); text-decoration-color: rgba(158, 172, 189, .45); text-underline-offset: .18em; }
+.footer-links a:hover { color: var(--paper); }
 
 @media (max-width: 760px) {
-    .site-header { align-items: flex-start; gap: 1rem; }
-    nav { justify-content: flex-end; }
+    .site-header { gap: .75rem; }
+    .menu-label--desktop { display: none; }
+    .menu-label--mobile { display: inline; }
+    .site-menu nav { gap: 0; grid-template-columns: 1fr; min-width: min(18rem, calc(100vw - 2rem)); padding: .5rem; width: auto; }
+    .menu-group { gap: 0; }
+    .menu-group__label { display: none; }
+    .site-menu nav a { border-radius: 10px; color: var(--paper); font-size: .72rem; padding: .78rem .85rem; }
+    .site-menu nav a:hover, .site-menu nav a.active { background: rgba(103, 232, 249, .1); color: var(--cyan); }
+    .site-menu nav .menu-github { border-top: 1px solid var(--line); display: block; margin-top: .35rem; padding-top: 1rem; }
+    .repository-link { display: none; }
+    footer { align-items: flex-start; flex-direction: column; }
     .hero-grid { grid-template-columns: 1fr; }
     .effect-grid { grid-template-columns: 1fr 1fr; }
     .gesture-grid { grid-template-columns: 1fr; }
