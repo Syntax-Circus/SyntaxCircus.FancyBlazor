@@ -1,0 +1,25 @@
+@namespace SyntaxCircus.FancyBlazor
+@switch (Element)
+{
+    case TypeFlowElement.Heading1:
+        <h1 @ref="_element" @attributes="RootAttributes">@Text</h1>
+        break;
+    case TypeFlowElement.Heading2:
+        <h2 @ref="_element" @attributes="RootAttributes">@Text</h2>
+        break;
+    case TypeFlowElement.Heading3:
+        <h3 @ref="_element" @attributes="RootAttributes">@Text</h3>
+        break;
+    case TypeFlowElement.Heading4:
+        <h4 @ref="_element" @attributes="RootAttributes">@Text</h4>
+        break;
+    case TypeFlowElement.Heading5:
+        <h5 @ref="_element" @attributes="RootAttributes">@Text</h5>
+        break;
+    case TypeFlowElement.Heading6:
+        <h6 @ref="_element" @attributes="RootAttributes">@Text</h6>
+        break;
+    default:
+        <p @ref="_element" @attributes="RootAttributes">@Text</p>
+        break;
+}

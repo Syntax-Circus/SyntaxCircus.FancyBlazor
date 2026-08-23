@@ -1,6 +1,6 @@
 # FancyBlazor Discovery Index
 
-- **Status:** Eleven implementation phases complete; preview gates passed
+- **Status:** Twelve implementation phases complete; v0.2.0 gates passed
 - **Project brief:** [../PROJECT-PLAN.md](../PROJECT-PLAN.md)
 - **Requirements:** [01-REQUIREMENTS.md](01-REQUIREMENTS.md)
 - **Architecture:** [02-ARCHITECTURE.md](02-ARCHITECTURE.md)
@@ -24,6 +24,7 @@
 9. [Quality, Accessibility, and Compatibility](PHASE-09-quality-accessibility-compatibility.md)
 10. [Composition and Authoring](PHASE-10-composition-and-authoring.md)
 11. [CSS-First Catalog Expansion](PHASE-11-css-first-catalog-expansion.md)
+12. v0.2.0 Atmosphere and Accents
 
 ## Approval record
 

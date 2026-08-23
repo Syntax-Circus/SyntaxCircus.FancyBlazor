@@ -1,0 +1,40 @@
+@page "/threeui-inspiration"
+
+<PageTitle>Atmosphere and accents · FancyBlazor</PageTitle>
+
+<section class="demo-page expressive-effects-page">
+    <p class="kicker">ATMOSPHERE / TYPE / ACCENT</p>
+    <h1>Give semantic content a little orbit.</h1>
+    <p class="lede">Two bounded Canvas fields, a text entrance, and decorative control accents. Every example remains ordinary markup when motion is unavailable.</p>
+
+    <section class="gesture-grid" aria-label="Atmospheric background demonstrations">
+        <ConstellationBackground CssClass="gesture-card atmosphere-card constellation-card" Palette="FancyPalettes.Witchlight" Density="30" data-testid="constellation-example">
+            <article><span class="specimen-label">CANVAS / CONSTELLATION</span><h2>ConstellationBackground</h2><p>Connected points drift behind this semantic article.</p></article>
+        </ConstellationBackground>
+        <ArcFlowBackground CssClass="gesture-card atmosphere-card trail-card" Palette="FancyPalettes.Viridian" Density="16" data-testid="arc-flow-example">
+            <article><span class="specimen-label">CANVAS / ARC FLOW</span><h2>ArcFlowBackground</h2><p>Slow arcs create a calm directional field without an asset pipeline.</p></article>
+        </ArcFlowBackground>
+    </section>
+
+    <section class="surface-recipe" aria-labelledby="type-flow-heading">
+        <div class="surface-recipe__copy">
+            <p class="specimen-label">SEMANTIC TEXT / VIEWPORT ENTRANCE</p>
+            <NeonText Color="#a7f3d0" Glow="10"><h2 id="type-flow-heading">NeonText keeps the heading itself.</h2></NeonText>
+            <TypeFlow Element="TypeFlowElement.Paragraph" Text="Text that arrives with restraint." Unit="TextRevealUnit.Word" data-testid="type-flow-example" />
+        </div>
+        <pre class="surface-recipe__code"><code>&lt;NeonText Color="#a7f3d0" Glow="10"&gt;
+    &lt;h2&gt;NeonText keeps the heading itself.&lt;/h2&gt;
+&lt;/NeonText&gt;
+
+&lt;TypeFlow Text="Text that arrives with restraint." /&gt;</code></pre>
+    </section>
+
+    <section class="gesture-grid" aria-label="Decorative interaction accent demonstrations">
+        <StatusPulse CssClass="gesture-card accent-card ripple-card" Color="#fbbf24" data-testid="status-pulse-example">
+            <button type="button"><span class="specimen-label">DECORATIVE STATUS</span><strong>StatusPulse</strong><small>The button remains the only interactive element.</small></button>
+        </StatusPulse>
+        <LaunchHalo CssClass="gesture-card accent-card ripple-card" Color="#67e8f9" data-testid="launch-halo-example">
+            <a href="/border"><span class="specimen-label">DECORATIVE LAUNCH</span><strong>LaunchHalo</strong><small>The link retains its native navigation and focus outline.</small></a>
+        </LaunchHalo>
+    </section>
+</section>

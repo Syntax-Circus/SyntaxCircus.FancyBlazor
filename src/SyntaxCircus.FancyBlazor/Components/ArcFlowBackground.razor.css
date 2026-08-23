@@ -1,0 +1,6 @@
+.syntax-circus-fancy-arc-flow-background { background: var(--sc-fancy-background); isolation: isolate; overflow: hidden; position: relative; }
+@supports (color: color-mix(in srgb, black, white)) { .syntax-circus-fancy-arc-flow-background { background: radial-gradient(ellipse at 80% 10%, color-mix(in srgb, var(--sc-fancy-secondary) 30%, transparent), transparent 48%), var(--sc-fancy-background); } }
+.syntax-circus-fancy-arc-flow-background__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-arc-flow-background__canvas { inset: 0; opacity: .82; pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-arc-flow-background[data-fancy-disabled="true"] .syntax-circus-fancy-arc-flow-background__canvas { display: none; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-arc-flow-background__canvas { display: none; } }

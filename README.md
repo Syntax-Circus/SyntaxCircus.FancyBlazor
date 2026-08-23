@@ -97,6 +97,12 @@ palette-derived CSS background and leaves the content usable.
 | `CornerAccents` | CSS-first | Decorative opposing corners around content |
 | `PaperSurface` | CSS-first | Tinted, lightly textured reading plane |
 | `EdgeGlow` | CSS-first | Focused decorative edge bloom |
+| `ConstellationBackground` | Canvas 2D + JavaScript | Bounded decorative point-and-line field behind real DOM |
+| `ArcFlowBackground` | Canvas 2D + JavaScript | Bounded drifting-arc field behind real DOM |
+| `NeonText` | CSS-first | Semantic text glow and optional outline |
+| `TypeFlow` | CSS + `IntersectionObserver` | Semantic word or character entrance |
+| `StatusPulse` | CSS-first | Decorative pulse around consumer-owned content |
+| `LaunchHalo` | CSS-first | Decorative launch halo around consumer-owned content |
 | `AuroraHero`, `ReadingSurface`, `ActionCard`, `EditorialHero`, `FeaturePanel` | Composition presets | Named, typed decorative stacks around semantic child content |
 
 Components intentionally compose:
@@ -152,6 +158,7 @@ continuous rendering stops while hidden or offscreen.
 - [CSS-first catalog demo](samples/FancyBlazor.Demo.Client/Pages/CssFirstCatalog.razor)
 - [Composition and authoring](docs/guides/composition-and-authoring.md)
 - [Composition-and-authoring demo](samples/FancyBlazor.Demo.Client/Pages/CompositionAuthoring.razor)
+- [Atmosphere-and-accents demo](samples/FancyBlazor.Demo.Client/Pages/ThreeUiInspiration.razor)
 - [Changelog](CHANGELOG.md)
 - [Compiling Interactive Auto demo](samples/FancyBlazor.Demo.Client/Pages/Home.razor)
 

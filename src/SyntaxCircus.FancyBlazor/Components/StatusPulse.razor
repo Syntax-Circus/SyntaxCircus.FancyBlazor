@@ -1,0 +1,16 @@
+@namespace SyntaxCircus.FancyBlazor
+<div @attributes="RootAttributes"><div class="syntax-circus-fancy-status-pulse__content">@ChildContent<span class="syntax-circus-fancy-status-pulse__layer" aria-hidden="true"></span></div></div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public double Size { get; set; } = 18;
+    [Parameter] public bool Animated { get; set; } = true;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-status-pulse", CssClass,
+        $"--sc-fancy-status-pulse-color:{Color};--sc-fancy-status-pulse-size:{AttributeComposer.Number(AttributeComposer.Clamp(Size, 4, 48))}px", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "status-pulse", ["data-fancy-animated"] = Animated && !Disabled ? "true" : "false", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

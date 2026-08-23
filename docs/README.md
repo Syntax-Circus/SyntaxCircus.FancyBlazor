@@ -41,6 +41,12 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [CornerAccents](components/corner-accents.md)
 - [PaperSurface](components/paper-surface.md)
 - [EdgeGlow](components/edge-glow.md)
+- [ConstellationBackground](components/constellation-background.md)
+- [ArcFlowBackground](components/arc-flow-background.md)
+- [NeonText](components/neon-text.md)
+- [TypeFlow](components/type-flow.md)
+- [StatusPulse](components/status-pulse.md)
+- [LaunchHalo](components/launch-halo.md)
 
 ## Guides
 

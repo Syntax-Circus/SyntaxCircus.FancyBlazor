@@ -7,6 +7,24 @@ Until 1.0, changes that alter public components, parameters, defaults, rendered
 markup hooks, CSS custom properties, registration, or hosting behavior must be
 called out clearly as potentially breaking.
 
+## [0.2.0] - 2026-08-23
+
+### Added
+
+- Add six pre-1.0 public components: bounded Canvas 2D `ConstellationBackground`
+  and `ArcFlowBackground`; CSS-first `NeonText`, `StatusPulse`, and `LaunchHalo`;
+  and semantic text entrance `TypeFlow`.
+- Add a compiling Atmosphere and Accents demo route with each v0.2.0 component,
+  plus component guides and accessibility/performance documentation.
+- Add Canvas lifecycle, reduced-motion, semantic-content, static-fallback, and
+  cleanup coverage for the v0.2.0 catalog.
+
+### Changed
+
+- Expand the pre-1.0 public API surface; consumers should treat all new
+  components, parameters, stable hooks, and CSS custom properties as preview API
+  subject to the repository's documented compatibility policy.
+
 ## [0.1.5] - 2026-08-23
 
 ### Added

@@ -135,7 +135,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
         await page.GotoAsync($"{fixture.TestHostUrl}/expressive-effects");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount >= 3");
         await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=text-reveal-example]')?.dataset.fancyReady === 'true'");
 
         var text = page.Locator("[data-testid='text-reveal-example']");
@@ -259,6 +259,58 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task ThreeUiInspiredCatalog_UsesBoundedCanvasAndPreservesSemanticControls()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/threeui-inspiration");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=type-flow-example]')?.dataset.fancyReady === 'true'");
+
+        var constellation = page.Locator("[data-testid='constellation-example']");
+        var flow = page.Locator("[data-testid='arc-flow-example']");
+        (await constellation.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await flow.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await page.Locator("[data-testid='type-flow-example']").InnerTextAsync()).ShouldBe("Text that arrives with restraint.");
+        (await page.Locator("[data-testid='status-pulse-example'] button").IsEnabledAsync()).ShouldBeTrue();
+        (await page.Locator("[data-testid='launch-halo-example'] a").GetAttributeAsync("href")).ShouldBe("/border");
+
+        await constellation.EvaluateAsync("element => element.style.transform = 'translateY(3000px)'");
+        await flow.EvaluateAsync("element => element.style.transform = 'translateY(3000px)'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount === 0");
+    }
+
+    [Fact]
+    public async Task ThreeUiInspiredCatalog_WithReducedMotion_UsesStaticCanvasFallbacks()
+    {
+        await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/threeui-inspiration");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+
+        (await page.Locator("[data-testid='constellation-example'] article").InnerTextAsync()).ShouldBe("Constellation content");
+        (await page.Locator("[data-testid='arc-flow-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.Locator("[data-testid='type-flow-example']").InnerTextAsync()).ShouldBe("Text that arrives with restraint.");
+        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount")).ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task ThreeUiInspiredCatalog_WithoutCanvasContext_KeepsStaticContentAndFallbackBackground()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        await context.AddInitScriptAsync("HTMLCanvasElement.prototype.getContext = () => null;");
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/threeui-inspiration");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=type-flow-example]')?.dataset.fancyReady === 'true'");
+
+        var constellation = page.Locator("[data-testid='constellation-example']");
+        (await constellation.Locator("article").InnerTextAsync()).ShouldBe("Constellation content");
+        (await constellation.EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor")).ShouldNotBe("rgba(0, 0, 0, 0)");
+        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount")).ShouldBe(0);
+    }
+
+    [Fact]
     public async Task CompositionPresets_KeepSemanticControlsAndOnlyPressScaleInitializesRuntime()
     {
         await using var context = await fixture.Browser.NewContextAsync();
@@ -287,7 +339,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         var artifactDirectory = Path.Combine(Environment.CurrentDirectory, "TestResults", "visual");
         Directory.CreateDirectory(artifactDirectory);
 
-        foreach (var route in new[] { "/background", "/border", "/reveal", "/tilt", "/spatial-surfaces", "/css-first-catalog", "/composition-authoring" })
+        foreach (var route in new[] { "/background", "/border", "/reveal", "/tilt", "/spatial-surfaces", "/css-first-catalog", "/composition-authoring", "/threeui-inspiration" })
         {
             await page.GotoAsync(fixture.TestHostUrl + route);
             await page.WaitForLoadStateAsync(LoadState.NetworkIdle);

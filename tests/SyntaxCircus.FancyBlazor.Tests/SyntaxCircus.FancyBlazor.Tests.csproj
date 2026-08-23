@@ -14,5 +14,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor\SyntaxCircus.FancyBlazor.csproj" />
+    <ProjectReference Include="..\..\samples\FancyBlazor.Demo.Client\FancyBlazor.Demo.Client.csproj" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,16 @@
+@namespace SyntaxCircus.FancyBlazor
+<div @attributes="RootAttributes">@ChildContent</div>
+
+@code {
+    [Parameter] public string Color { get; set; } = "currentColor";
+    [Parameter] public double Glow { get; set; } = 8;
+    [Parameter] public double StrokeWidth { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+    private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose("syntax-circus-fancy-neon-text", CssClass,
+        $"--sc-fancy-neon-text-color:{Color};--sc-fancy-neon-text-glow:{AttributeComposer.Number(AttributeComposer.Clamp(Glow, 0, 24))}px;--sc-fancy-neon-text-stroke-width:{AttributeComposer.Number(AttributeComposer.Clamp(StrokeWidth, 0, 4))}px", Style, AdditionalAttributes,
+        new Dictionary<string, object> { ["data-fancy-effect"] = "neon-text", ["data-fancy-disabled"] = Disabled ? "true" : "false" });
+}

@@ -64,6 +64,9 @@ const factories = {
     'text-reveal': createTextReveal,
     ripple: createRipple,
     'cursor-trail': createCursorTrail,
+    'constellation-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'constellation'),
+    'arc-flow-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'arc-flow'),
+    'type-flow': createTextReveal,
     'scroll-scene': createScrollProgressEffect,
     'scroll-indicator': createScrollProgressEffect,
     'scroll-backdrop': createScrollProgressEffect,
@@ -504,6 +507,105 @@ function createCursorTrail(element, initialOptions, defaults) {
     const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(resize);
     resize(); resizeObserver?.observe(element); element.addEventListener('pointermove', move, { passive: true }); media?.addEventListener('change', mediaHandler);
     return { update(next) { options = next; resize(); }, setDocumentVisible(visible) { active = visible; if (!visible) reset(); }, hasActiveAnimationFrame() { return frame !== null; }, destroy() { element.removeEventListener('pointermove', move); media?.removeEventListener('change', mediaHandler); resizeObserver?.disconnect(); reset(); } };
+}
+
+function createCanvasAtmosphere(element, initialOptions, defaults, kind) {
+    let options = initialOptions;
+    let frame = null;
+    let intersecting = false;
+    let documentVisible = !document.hidden;
+    let destroyed = false;
+    let particles = [];
+    let colors = resolvePalette(initialOptions.palette);
+    const canvas = element.querySelector('canvas');
+    const context = canvas?.getContext('2d');
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+    const resize = () => {
+        if (!canvas || !context) return;
+        const rect = element.getBoundingClientRect();
+        const dpr = Math.min(devicePixelRatio || 1, qualityDpr(defaults.quality));
+        canvas.width = Math.max(1, Math.round(rect.width * dpr));
+        canvas.height = Math.max(1, Math.round(rect.height * dpr));
+        canvas.style.width = `${rect.width}px`;
+        canvas.style.height = `${rect.height}px`;
+        context.setTransform(dpr, 0, 0, dpr, 0, 0);
+        particles = createAtmosphereParticles(rect, Math.max(1, Number(options.density) || 1), kind);
+    };
+    const clear = () => {
+        if (!canvas || !context) return;
+        const rect = element.getBoundingClientRect();
+        context.clearRect(0, 0, rect.width, rect.height);
+    };
+    const stop = () => { if (frame !== null) cancelAnimationFrame(frame); frame = null; clear(); };
+    const draw = now => {
+        frame = null;
+        if (destroyed || !intersecting || !documentVisible || reduced() || !context) return;
+        const rect = element.getBoundingClientRect();
+        clear();
+        const speed = clamp(options.speed, 0, 3) * .25;
+        if (kind === 'constellation') drawConstellation(context, particles, rect, now, speed, colors, clamp(options.lineOpacity, 0, 1));
+        else drawArcFlow(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        frame = requestAnimationFrame(draw);
+    };
+    const start = () => {
+        if (destroyed || frame !== null || !intersecting || !documentVisible || reduced() || !context) return;
+        frame = requestAnimationFrame(draw);
+    };
+    const observer = new IntersectionObserver(entries => {
+        intersecting = entries.some(entry => entry.isIntersecting);
+        if (intersecting) start(); else stop();
+    }, { threshold: 0 });
+    const mediaHandler = () => { if (reduced()) stop(); else start(); };
+    const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(() => { resize(); start(); });
+    resize();
+    observer.observe(element);
+    resizeObserver?.observe(element);
+    media?.addEventListener('change', mediaHandler);
+    return {
+        update(next) { options = next; colors = resolvePalette(options.palette); resize(); start(); },
+        setDocumentVisible(visible) { documentVisible = visible; if (visible) start(); else stop(); },
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() { destroyed = true; observer.disconnect(); resizeObserver?.disconnect(); media?.removeEventListener('change', mediaHandler); stop(); },
+    };
+}
+
+function createAtmosphereParticles(rect, count, kind) {
+    return Array.from({ length: count }, (_, index) => ({
+        x: Math.random() * Math.max(rect.width, 1), y: Math.random() * Math.max(rect.height, 1),
+        radius: kind === 'constellation' ? 1 + Math.random() * 1.5 : 24 + Math.random() * 80,
+        phase: Math.random() * Math.PI * 2, drift: .3 + Math.random() * .7, color: index % 3,
+    }));
+}
+
+function drawConstellation(context, particles, rect, now, speed, colors, opacity) {
+    const time = now * .001 * speed;
+    const points = particles.map(particle => ({ ...particle, x: (particle.x + Math.sin(time * particle.drift + particle.phase) * 24 + rect.width) % Math.max(rect.width, 1), y: (particle.y + Math.cos(time * particle.drift + particle.phase) * 18 + rect.height) % Math.max(rect.height, 1) }));
+    const linkDistance = Math.min(180, Math.max(72, Math.min(rect.width, rect.height) * .32));
+    context.lineWidth = 1;
+    for (let index = 0; index < points.length; index++) {
+        const point = points[index];
+        context.fillStyle = `rgba(${colors[point.color].map(value => Math.round(value * 255)).join(',')},${.25 + opacity * .55})`;
+        context.beginPath(); context.arc(point.x, point.y, point.radius, 0, Math.PI * 2); context.fill();
+        for (let other = index + 1; other < points.length; other++) {
+            const target = points[other]; const distance = Math.hypot(point.x - target.x, point.y - target.y);
+            if (distance > linkDistance) continue;
+            context.strokeStyle = `rgba(${colors[point.color].map(value => Math.round(value * 255)).join(',')},${(1 - distance / linkDistance) * opacity * .45})`;
+            context.beginPath(); context.moveTo(point.x, point.y); context.lineTo(target.x, target.y); context.stroke();
+        }
+    }
+}
+
+function drawArcFlow(context, particles, rect, now, speed, colors, intensity) {
+    const time = now * .001 * speed;
+    context.lineWidth = 1.25;
+    for (const arc of particles) {
+        const x = (arc.x + time * 42 * arc.drift) % Math.max(rect.width + arc.radius * 2, 1) - arc.radius;
+        const y = arc.y + Math.sin(time * arc.drift + arc.phase) * 28;
+        const rgb = colors[arc.color].map(value => Math.round(value * 255)).join(',');
+        context.strokeStyle = `rgba(${rgb},${.1 + intensity * .38})`;
+        context.beginPath(); context.arc(x, y, arc.radius, Math.PI * .15, Math.PI * 1.15); context.stroke();
+    }
 }
 
 function ensureVisibilityListener() {

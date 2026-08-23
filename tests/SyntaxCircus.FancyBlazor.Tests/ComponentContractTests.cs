@@ -281,6 +281,46 @@ public sealed class ComponentContractTests
         reading.ShouldContain("syntax-circus-fancy-grid-background");
     }
 
+    [Fact]
+    public void ThreeUiInspiredCatalog_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var constellation = context.Render<ConstellationBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 999).Add(x => x.LineOpacity, -1)).Markup;
+        var flow = context.Render<ArcFlowBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 0).Add(x => x.Intensity, 2)).Markup;
+        var neon = context.Render<NeonText>(p => p.Add(x => x.ChildContent, content).Add(x => x.Glow, 99).Add(x => x.StrokeWidth, -1)).Markup;
+        var typeFlow = context.Render<TypeFlow>(p => p.Add(x => x.Text, "Readable heading").Add(x => x.Element, TypeFlowElement.Heading2).Add(x => x.Duration, TimeSpan.FromSeconds(-1))).Markup;
+        var pulse = context.Render<StatusPulse>(p => p.Add(x => x.ChildContent, content).Add(x => x.Size, 99)).Markup;
+        var halo = context.Render<LaunchHalo>(p => p.Add(x => x.ChildContent, content).Add(x => x.Intensity, -1).Add(x => x.Spread, 99)).Markup;
+
+        constellation.ShouldContain("syntax-circus-fancy-constellation-background__canvas");
+        constellation.ShouldContain("aria-hidden=\"true\"");
+        constellation.ShouldContain("--sc-fancy-constellation-density:96");
+        constellation.ShouldContain("--sc-fancy-constellation-line-opacity:0");
+        flow.ShouldContain("syntax-circus-fancy-arc-flow-background__canvas");
+        flow.ShouldContain("--sc-fancy-arc-flow-density:1");
+        flow.ShouldContain("--sc-fancy-arc-flow-intensity:1");
+        neon.ShouldContain("--sc-fancy-neon-text-glow:24px");
+        neon.ShouldContain("--sc-fancy-neon-text-stroke-width:0px");
+        typeFlow.ShouldContain("data-fancy-effect=\"type-flow\"");
+        typeFlow.ShouldContain("<h2");
+        typeFlow.ShouldContain("Readable heading");
+        typeFlow.ShouldContain("--sc-fancy-duration:0ms");
+        pulse.ShouldContain("syntax-circus-fancy-status-pulse__layer");
+        pulse.ShouldContain("aria-hidden=\"true\"");
+        pulse.ShouldContain("--sc-fancy-status-pulse-size:48px");
+        halo.ShouldContain("syntax-circus-fancy-launch-halo__layer");
+        halo.ShouldContain("aria-hidden=\"true\"");
+        halo.ShouldContain("--sc-fancy-launch-halo-intensity:0");
+        halo.ShouldContain("--sc-fancy-launch-halo-spread:64px");
+        halo.ShouldContain("<a href=\"/next\">Continue</a>");
+        context.Render<StatusPulse>(p => p.Add(x => x.ChildContent, content))
+            .Find(".syntax-circus-fancy-status-pulse__content").InnerHtml.ShouldContain("syntax-circus-fancy-status-pulse__layer");
+        context.Render<LaunchHalo>(p => p.Add(x => x.ChildContent, content))
+            .Find(".syntax-circus-fancy-launch-halo__content").InnerHtml.ShouldContain("syntax-circus-fancy-launch-halo__layer");
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();

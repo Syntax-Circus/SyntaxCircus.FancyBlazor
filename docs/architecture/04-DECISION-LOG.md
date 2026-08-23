@@ -14,3 +14,5 @@ All decisions below are accepted.
 | ADR-008 | Preview four representative effects. | Future catalog and extension APIs remain backlog. |
 | ADR-009 | Use `TimeSpan` and automatic fallback. | Idiomatic timing and no fallback slot requirement. |
 | ADR-010 | Docs, examples, demo, and `AGENTS.md` are release artifacts. | Public changes update all contracts together. |
+| ADR-011 | v0.2.0 adds clean-room Canvas 2D, text, and decorative accent effects without a new rendering engine. | No ThreeUI source/assets, Three.js runtime, full-page scenes, or UI controls enter the main RCL. |
+| ADR-012 | Defer richer WebGL/3D work to a post-v0.2.0 package-versus-mode spike. | Evaluate `FancyBlazor.WebGL` against an opt-in main-package mode before committing a renderer boundary. |
