@@ -15,4 +15,9 @@
     <ProjectReference Include="..\SyntaxCircus.FancyBlazor.TestHost\SyntaxCircus.FancyBlazor.TestHost.csproj" />
     <ProjectReference Include="..\SyntaxCircus.FancyBlazor.StandaloneHost\SyntaxCircus.FancyBlazor.StandaloneHost.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\src\SyntaxCircus.FancyBlazor.WebGL\wwwroot\**\*"
+          Link="wwwroot\_content\SyntaxCircus.FancyBlazor.WebGL\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

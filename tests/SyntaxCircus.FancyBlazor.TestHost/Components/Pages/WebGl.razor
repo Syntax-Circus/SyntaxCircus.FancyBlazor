@@ -1,0 +1,20 @@
+@page "/webgl"
+
+<main>
+    <button type="button" data-testid="holographic-update" @onclick="IncreaseIntensity">Increase intensity</button>
+    <p data-testid="holographic-activation">@_activation</p>
+    <HolographicSurface data-testid="holographic-first" Interactive="true" Intensity="@_intensity" Style="height:100px"><article>Holographic semantic content <button type="button" @onclick="Activate">Activate child</button></article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-second" Style="height:100px"><article>Second semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-third" Style="height:100px"><article>Third semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-fourth" Style="height:100px"><article>Fourth semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-fifth" Style="height:100px"><article>Fifth semantic content</article></HolographicSurface>
+</main>
+
+@code {
+    private double _intensity = 0.5;
+    private string _activation = "Not activated";
+
+    private void IncreaseIntensity() => _intensity = 0.8;
+
+    private void Activate() => _activation = "Activated";
+}

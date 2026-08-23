@@ -12,6 +12,7 @@ builder.Logging.AddConsole();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddFancyBlazor(options => options.EnableDiagnostics = true);
+builder.Services.AddFancyBlazorWebGl(options => options.MaxActiveContexts = 2);
 
 var app = builder.Build();
 app.UseAntiforgery();

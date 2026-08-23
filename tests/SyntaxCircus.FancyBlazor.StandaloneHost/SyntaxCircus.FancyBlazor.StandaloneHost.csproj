@@ -8,5 +8,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor\SyntaxCircus.FancyBlazor.csproj" />
+    <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor.WebGL\SyntaxCircus.FancyBlazor.WebGL.csproj" />
   </ItemGroup>
 </Project>
