@@ -32,8 +32,15 @@ function Assert-VerifierRejects {
         New-PackageFile -Directory $caseDirectory -Name $package
     }
 
-    $output = & pwsh -NoProfile -File $verifier -PackageDirectory $caseDirectory 2>&1
-    if ($LASTEXITCODE -eq 0) {
+    $rejected = $false
+    try {
+        $output = & $verifier -PackageDirectory $caseDirectory
+    }
+    catch {
+        $rejected = $true
+        $output = $_
+    }
+    if (-not $rejected) {
         throw "$Name should be rejected by the release package verifier."
     }
 
@@ -41,9 +48,7 @@ function Assert-VerifierRejects {
         if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message }
         else { $_.ToString() }
     }) -join [Environment]::NewLine
-    $outputText = ($outputText -replace '\s*\|\s*', ' ') -replace '\s+', ' '
-    $expectedPattern = (($ExpectedMessage -split ' ') | ForEach-Object { [regex]::Escape($_) }) -join '\W+'
-    if ($outputText -notmatch $expectedPattern) {
+    if ($outputText -notmatch [regex]::Escape($ExpectedMessage)) {
         throw "$Name produced the wrong failure. Expected '$ExpectedMessage'; actual: $outputText"
     }
 }

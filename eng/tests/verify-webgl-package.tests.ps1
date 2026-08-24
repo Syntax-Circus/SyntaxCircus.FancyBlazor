@@ -97,8 +97,15 @@ function Assert-VerifierRejects {
     $caseDirectory = Join-Path $scratchRoot $Name
     New-Item -ItemType Directory -Path $caseDirectory | Out-Null
     New-TestPackage -Directory $caseDirectory -EntryName $EntryName -EntryText $EntryText
-    $output = & pwsh -NoProfile -File $verifier -PackageDirectory $caseDirectory 2>&1
-    if ($LASTEXITCODE -eq 0) {
+    $rejected = $false
+    try {
+        $output = & $verifier -PackageDirectory $caseDirectory
+    }
+    catch {
+        $rejected = $true
+        $output = $_
+    }
+    if (-not $rejected) {
         throw "$Name should be rejected by the WebGL package verifier."
     }
 
@@ -106,9 +113,7 @@ function Assert-VerifierRejects {
         if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message }
         else { $_.ToString() }
     }) -join [Environment]::NewLine
-    $outputText = ($outputText -replace '\s*\|\s*', ' ') -replace '\s+', ' '
-    $expectedPattern = (($ExpectedMessage -split ' ') | ForEach-Object { [regex]::Escape($_) }) -join '\W+'
-    if ($outputText -notmatch $expectedPattern) {
+    if ($outputText -notmatch [regex]::Escape($ExpectedMessage)) {
         throw "$Name produced the wrong failure. Expected '$ExpectedMessage'; actual: $outputText"
     }
 }
@@ -131,8 +136,15 @@ function Assert-CompleteShapeRejection {
     if ($PSBoundParameters.ContainsKey("VendorText")) { $packageArguments.VendorText = $VendorText }
     if ($OmitReadme) { $packageArguments.OmitReadme = $true }
     New-CompleteShapePackage @packageArguments
-    $output = & pwsh -NoProfile -File $verifier -PackageDirectory $caseDirectory -CorePackageDirectory $caseDirectory -ProvenancePath (Join-Path $caseDirectory "PROVENANCE.md") 2>&1
-    if ($LASTEXITCODE -eq 0) {
+    $rejected = $false
+    try {
+        $output = & $verifier -PackageDirectory $caseDirectory -CorePackageDirectory $caseDirectory -ProvenancePath (Join-Path $caseDirectory "PROVENANCE.md")
+    }
+    catch {
+        $rejected = $true
+        $output = $_
+    }
+    if (-not $rejected) {
         throw "$Name should be rejected by the WebGL package verifier."
     }
 
@@ -140,9 +152,7 @@ function Assert-CompleteShapeRejection {
         if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message }
         else { $_.ToString() }
     }) -join [Environment]::NewLine
-    $outputText = ($outputText -replace '\s*\|\s*', ' ') -replace '\s+', ' '
-    $expectedPattern = (($ExpectedMessage -split ' ') | ForEach-Object { [regex]::Escape($_) }) -join '\W+'
-    if ($outputText -notmatch $expectedPattern) {
+    if ($outputText -notmatch [regex]::Escape($ExpectedMessage)) {
         throw "$Name produced the wrong failure. Expected '$ExpectedMessage'; actual: $outputText"
     }
 }
