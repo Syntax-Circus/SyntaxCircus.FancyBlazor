@@ -37,8 +37,13 @@ function Assert-VerifierRejects {
         throw "$Name should be rejected by the release package verifier."
     }
 
-    $outputText = $output | Out-String
-    if ($outputText -notmatch [regex]::Escape($ExpectedMessage)) {
+    $outputText = ($output | ForEach-Object {
+        if ($_ -is [System.Management.Automation.ErrorRecord]) { $_.Exception.Message }
+        else { $_.ToString() }
+    }) -join [Environment]::NewLine
+    $outputText = ($outputText -replace '\s*\|\s*', ' ') -replace '\s+', ' '
+    $expectedPattern = (($ExpectedMessage -split ' ') | ForEach-Object { [regex]::Escape($_) }) -join '\W+'
+    if ($outputText -notmatch $expectedPattern) {
         throw "$Name produced the wrong failure. Expected '$ExpectedMessage'; actual: $outputText"
     }
 }
