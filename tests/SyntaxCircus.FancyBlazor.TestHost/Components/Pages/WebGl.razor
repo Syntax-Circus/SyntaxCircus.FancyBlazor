@@ -1,5 +1,9 @@
 @page "/webgl"
 
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["_content/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.bundle.scp.css"]" />
+</HeadContent>
+
 <main>
     <button type="button" data-testid="holographic-update" @onclick="IncreaseIntensity">Increase intensity</button>
     <button type="button" data-testid="holographic-palette" @onclick="ChangePalette">Change palette</button>

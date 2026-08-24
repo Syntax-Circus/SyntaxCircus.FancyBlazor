@@ -370,19 +370,19 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     {
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
-        var companionRequests = 0;
+        var companionRequests = new List<string>();
         page.Request += (_, request) =>
         {
             if (request.Url.Contains("/_content/SyntaxCircus.FancyBlazor.WebGL/", StringComparison.Ordinal))
             {
-                companionRequests++;
+                companionRequests.Add(request.Url);
             }
         };
 
         await page.GotoAsync($"{fixture.TestHostUrl}/border");
         await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 
-        companionRequests.ShouldBe(0);
+        companionRequests.ShouldBeEmpty();
     }
 
     [Fact]
