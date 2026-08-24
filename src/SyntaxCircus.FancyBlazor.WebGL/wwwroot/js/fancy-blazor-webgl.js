@@ -6,6 +6,8 @@ let activeContexts = 0;
 let threeLoaded = false;
 let lastFailure = null;
 let disposed = false;
+let rendererObjectsCreated = 0;
+let rendererObjectsDestroyed = 0;
 
 function isReduced(defaults) {
     return defaults.motionPreference === "AlwaysReduce" ||
@@ -40,6 +42,23 @@ function enqueue(instance) {
     pump();
 }
 
+function destroyRenderer(instance, renderer = instance.renderer) {
+    if (!renderer) {
+        return;
+    }
+
+    instance.releasing = true;
+    try {
+        renderer.destroy();
+    } finally {
+        rendererObjectsDestroyed++;
+        if (instance.renderer === renderer) {
+            instance.renderer = null;
+        }
+        instance.releasing = false;
+    }
+}
+
 async function pump() {
     while (!disposed && activeContexts < contextCap()) {
         const instance = waiting.shift();
@@ -72,8 +91,9 @@ async function pump() {
             }
 
             const renderer = await rendererModule.createHolographicSurface(instance.canvas, instance.options, instance.defaults);
+            rendererObjectsCreated++;
             if (!isEligible(instance) || !instance.active || instances.get(instance.handle) !== instance) {
-                renderer.destroy();
+                destroyRenderer(instance, renderer);
                 continue;
             }
 
@@ -98,12 +118,7 @@ function contextCap() {
 
 function release(instance, requeue) {
     removeWaiting(instance);
-    if (instance.renderer) {
-        instance.releasing = true;
-        instance.renderer.destroy();
-        instance.releasing = false;
-        instance.renderer = null;
-    }
+    destroyRenderer(instance);
     if (instance.active) {
         instance.active = false;
         activeContexts = Math.max(0, activeContexts - 1);
@@ -139,6 +154,9 @@ function getDiagnostics() {
         activeContexts,
         waitingContexts: waiting.length,
         animationFrameCount: [...instances.values()].filter(instance => instance.renderer?.hasFrame()).length,
+        rendererObjectsCreated,
+        rendererObjectsDestroyed,
+        liveRendererCount: rendererObjectsCreated - rendererObjectsDestroyed,
         threeLoaded,
         lastFailure,
         instances: detail,

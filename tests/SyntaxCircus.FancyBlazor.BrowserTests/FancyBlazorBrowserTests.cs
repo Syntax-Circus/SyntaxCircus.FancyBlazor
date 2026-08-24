@@ -146,17 +146,18 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     public async Task HolographicSurface_ReleasesAnInFlightConstructionBeforeItCanStart()
     {
         await using var context = await fixture.Browser.NewContextAsync();
-        await context.AddInitScriptAsync("globalThis.__syntaxCircusFancyBlazorWebGlRendererDelayMs = 250;");
+        await context.AddInitScriptAsync("globalThis.__syntaxCircusFancyBlazorWebGlRendererDelayMs = 2000;");
         var page = await context.NewPageAsync();
         await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
         await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-first]')?.dataset.webglState === 'loading'");
 
-        await page.Locator("[data-testid='holographic-first']").EvaluateAsync("element => element.style.transform = 'translateY(3000px)'");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 0");
-        await page.WaitForTimeoutAsync(350);
+        await page.Locator("header a[href='/border']").ClickAsync();
+        await page.WaitForURLAsync("**/border");
+        await page.WaitForTimeoutAsync(2200);
 
-        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().animationFrameCount")).ShouldBe(0);
-        (await page.Locator("[data-testid='holographic-first']").GetAttributeAsync("data-webgl-state")).ShouldNotBe("active");
+        await page.WaitForFunctionAsync("() => { const diagnostics = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); return diagnostics.instanceCount === 0 && diagnostics.activeContexts === 0 && diagnostics.liveRendererCount === 0 && diagnostics.rendererObjectsCreated === diagnostics.rendererObjectsDestroyed; }");
+        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().rendererObjectsCreated"))
+            .ShouldBe(await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().rendererObjectsDestroyed"));
     }
 
     [Fact]
