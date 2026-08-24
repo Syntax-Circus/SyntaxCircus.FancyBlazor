@@ -739,7 +739,8 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
             await using var webGlCleanup = new WebGlPageCleanup(page);
             await page.GotoAsync(standaloneUrl);
             await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount >= 3");
-            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+            await page.Locator("[data-testid='standalone-holographic']").ScrollIntoViewIfNeededAsync();
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.active && instance.renderer)");
 
             (await page.Locator("h1").InnerTextAsync()).ShouldBe("Standalone WebAssembly");
         }
