@@ -12,7 +12,7 @@
 | Convention | FancyBlazor application |
 | --- | --- |
 | Discovery precedes implementation | Requirements, architecture, package map, decisions, UX brief, phases, and roadmap are maintained under `docs/architecture`. |
-| Make package boundaries explicit | One focused RCL owns effects; hosts retain layout, routing, content, design system, and application policy. |
+| Make package boundaries explicit | The focused core RCL owns general effects; the optional preview companion owns Three.js-backed effects and GPU lifecycle. Hosts retain layout, routing, content, design system, and application policy. |
 | Prefer reusable Blazor contracts | Public APIs are typed Razor components in one root namespace and make no assumptions about a host CSS framework. |
 | Use the current .NET baseline | All projects target `net10.0`, pinned by `global.json`. |
 | Centralize dependencies | All dependency versions are in `Directory.Packages.props`; project references have no inline versions. |
@@ -37,10 +37,11 @@ WebAssembly consumer, deterministic visual artifacts, third-party provenance,
 and clean-package-consumer verification. These are required by its browser and
 WebGL risk profile and are stronger gates than a markup-only component needs.
 
-The RCL references `Microsoft.AspNetCore.Components.Web` instead of the shared
-ASP.NET Core framework so the same package remains consumable by standalone
-WebAssembly. This is a hosting-compatibility decision, not a departure from the
-single-package convention.
+Both RCLs reference `Microsoft.AspNetCore.Components.Web` instead of the shared
+ASP.NET Core framework so they remain consumable by standalone WebAssembly.
+Publishing a second package is an intentional payload and lifecycle boundary:
+core-only consumers never receive Three.js, while companion consumers opt into
+the preview renderer at the exact core version.
 
 ## Ongoing rule
 

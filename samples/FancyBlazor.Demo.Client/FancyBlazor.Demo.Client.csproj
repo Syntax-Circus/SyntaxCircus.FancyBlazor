@@ -8,6 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor\SyntaxCircus.FancyBlazor.csproj" />
+    <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor.WebGL\SyntaxCircus.FancyBlazor.WebGL.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
   </ItemGroup>
 </Project>

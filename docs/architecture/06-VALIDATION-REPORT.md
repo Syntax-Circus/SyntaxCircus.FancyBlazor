@@ -1,7 +1,7 @@
 # FancyBlazor Validation Report
 
-- **Date:** 2026-08-23
-- **Candidate:** `0.1.5`
+- **Date:** 2026-08-24
+- **Candidate:** Unreleased (`0.2.1-preview.1` disposable local package version)
 - **Result:** All implementation and release gates pass locally.
 
 ## Requirement evidence
@@ -17,7 +17,7 @@
 | Hidden/offscreen efficiency | Browser diagnostics verify the Nacre RAF stops offscreen and resumes onscreen; quality caps bound DPR. |
 | Complete disposal | Twenty enhanced-navigation mount/unmount cycles return the runtime registry to zero; destroy paths release observers, listeners, RAFs, and WebGL resources. |
 | User and agent documentation | README, getting started, four API guides, five operational guides, compiling examples, conventions audit, and root `AGENTS.md` are present; local links are checked automatically. |
-| Release package | `.nupkg` and `.snupkg` are generated, required contents are inspected, and a clean temporary Razor consumer restores and builds from the package. |
+| Release packages | Core and optional WebGL `.nupkg`/`.snupkg` pairs are generated at the same version, required contents are inspected, and clean temporary Razor consumers restore and build from each package. |
 
 ## Final commands
 
@@ -26,10 +26,21 @@ dotnet restore SyntaxCircus.FancyBlazor.slnx
 dotnet build SyntaxCircus.FancyBlazor.slnx --no-restore --configuration Release
 dotnet test --solution SyntaxCircus.FancyBlazor.slnx --no-build --configuration Release
 pwsh eng/verify-docs.ps1
-dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release --output artifacts
-pwsh eng/verify-package.ps1 -PackageDirectory artifacts
+pwsh eng/tests/verify-webgl-package.tests.ps1
+pwsh eng/tests/verify-core-package-selection.tests.ps1
+pwsh eng/tests/verify-release-packages.tests.ps1
+pwsh eng/tests/publish-nuget-packages.tests.ps1
+dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release --output artifacts/release-preview
+dotnet pack src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj --no-build --configuration Release --output artifacts/release-preview
+pwsh eng/verify-package.ps1 -PackageDirectory artifacts/release-preview
+pwsh eng/verify-webgl-package.ps1 -PackageDirectory artifacts/release-preview -CorePackageDirectory artifacts/release-preview
+pwsh eng/verify-release-packages.ps1 -PackageDirectory artifacts/release-preview
 git diff --check
 ```
+
+The current test result is 68 passed, zero failed, zero skipped across .NET,
+bUnit, and Playwright. The Release build completes with zero warnings and zero
+errors. Documentation verification checks 82 Markdown files.
 
 The 0.1.5 test result is 33 passed, zero failed, zero skipped: sixteen
 .NET/bUnit tests and seventeen Playwright tests. The browser run also emits
@@ -55,3 +66,22 @@ The local sandbox rejects GitVersion's repository ownership check. Local pack
 validation therefore uses `DisableGitVersionTask=true` with the candidate
 version explicitly supplied. The committed CI workflow uses an owned checkout,
 full Git history, and GitVersion without that override.
+
+## Phase 13 WebGL preview publication evidence
+
+Phase 13 validates the optional `SyntaxCircus.FancyBlazor.WebGL` preview
+companion with a disposable local version. CI packs the core and companion into
+the same release artifact, and `eng/verify-release-packages.ps1` requires
+exactly one package of each ID with matching versions before upload.
+`eng/verify-webgl-package.ps1` inspects the companion for local Three.js r184
+assets, its MIT license and SHA-256 provenance, Node/external-load exclusions,
+its package README, and the adapter/renderer raw and Brotli budgets. It then
+restores and builds a clean Razor consumer that references only the staged
+packages and calls `AddFancyBlazorWebGl()`.
+
+The main-branch NuGet Trusted Publishing job pushes both package files through
+one authenticated release step. Tag derivation selects the core package
+explicitly. ADR-013 records the separate renderer boundary, and ADR-014 records
+same-version preview publication. Core-only consumers still request no WebGL
+companion assets; companion consumers need no Node, npm, CDN, manual script
+import, or project reference.

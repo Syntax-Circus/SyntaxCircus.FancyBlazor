@@ -1,6 +1,6 @@
 # FancyBlazor Discovery Index
 
-- **Status:** Twelve implementation phases complete; v0.2.0 gates passed
+- **Status:** Thirteen implementation phases complete; Phases 14–18 are approved pre-1.0 roadmap work
 - **Project brief:** [../PROJECT-PLAN.md](../PROJECT-PLAN.md)
 - **Requirements:** [01-REQUIREMENTS.md](01-REQUIREMENTS.md)
 - **Architecture:** [02-ARCHITECTURE.md](02-ARCHITECTURE.md)
@@ -25,6 +25,12 @@
 10. [Composition and Authoring](PHASE-10-composition-and-authoring.md)
 11. [CSS-First Catalog Expansion](PHASE-11-css-first-catalog-expansion.md)
 12. v0.2.0 Atmosphere and Accents
+13. [WebGL Rendering Boundary](PHASE-13-webgl-rendering-boundary.md)
+14. [Core Kinetic Catalog](PHASE-14-core-kinetic-catalog.md)
+15. [WebGL Fields and Materials](PHASE-15-webgl-fields-and-materials.md)
+16. [UI Companion Foundation](PHASE-16-ui-companion-foundation.md)
+17. [Marketing and Content UI](PHASE-17-marketing-and-content-ui.md)
+18. [1.0 Stabilization](PHASE-18-1.0-stabilization.md)
 
 ## Approval record
 

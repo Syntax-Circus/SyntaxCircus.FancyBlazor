@@ -28,3 +28,14 @@ mobile surfaces. Use Parallax sparingly and reserve multi-layer depth scenes
 for focal content; avoid stacking many scroll-driven wrappers on long lists.
 
 ConstellationBackground and ArcFlowBackground use bounded Canvas 2D particle or arc sets, a quality-capped DPR, `ResizeObserver`, and intersection/document-visibility gates. They have one frame at most while visible and release observers, frames, and canvas contents on disposal. NeonText, StatusPulse, and LaunchHalo are CSS-first; TypeFlow uses viewport observation only.
+
+## WebGL preview companion
+
+`HolographicSurface` is opt-in through `SyntaxCircus.FancyBlazor.WebGL`, so the
+vendored Three.js r184 payload is absent from core-only applications. The
+companion defaults to at most four active WebGL contexts, clamps overrides from
+one through eight, quality-caps DPR, pauses while hidden or offscreen, and
+releases frames, observers, listeners, renderers, materials, geometry, and the
+GPU context on teardown. Prefer one or two focal surfaces, use `Low` for large
+mobile treatments, keep `Interactive` off when it adds no value, and design the
+palette-derived CSS fallback as an intentional state.

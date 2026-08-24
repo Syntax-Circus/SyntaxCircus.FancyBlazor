@@ -1,0 +1,193 @@
+@page "/webgl"
+
+<PageTitle>WebGL preview · FancyBlazor</PageTitle>
+
+<section class="demo-page webgl-showcase-page">
+    <header class="webgl-intro">
+        <div>
+            <p class="kicker" data-testid="webgl-preview-status">PREVIEW COMPANION / WEBGL</p>
+            <h1>Inspect light as material.</h1>
+        </div>
+        <p class="lede">Tune one live holographic surface, move a fine pointer across it, and disable the renderer to inspect the CSS fallback. The article remains ordinary semantic HTML throughout.</p>
+    </header>
+
+    <section class="webgl-workbench" aria-labelledby="webgl-specimen-heading">
+        <div class="webgl-stage">
+            <HolographicSurface Palette="_palette"
+                                  Intensity="_intensity"
+                                  Depth="_depth"
+                                  Sheen="_sheen"
+                                  Speed="_speed"
+                                  Interactive="_interactive"
+                                  Quality="_quality"
+                                  Disabled="_disabled"
+                                  CssClass="webgl-specimen"
+                                  data-testid="webgl-showcase-surface">
+                <article class="webgl-specimen__content">
+                    <div class="webgl-specimen__index" aria-hidden="true">
+                        <span>SC / OPT-01</span>
+                        <span>THIN-FILM FIELD</span>
+                    </div>
+                    <div class="webgl-specimen__copy">
+                        <p class="specimen-label">LIVE SPECIMEN / HOLOGRAPHIC SURFACE</p>
+                        <h2 id="webgl-specimen-heading">Semantic HTML catches impossible light.</h2>
+                        <p>This selectable article sits above the decorative canvas. Disable WebGL, reduce motion, or lose the GPU—the reading plane remains.</p>
+                    </div>
+                    <dl class="webgl-readout" aria-label="Current surface values">
+                        <div><dt>Intensity</dt><dd>@Format(_intensity)</dd></div>
+                        <div><dt>Depth</dt><dd>@Format(_depth)</dd></div>
+                        <div><dt>Sheen</dt><dd>@Format(_sheen)</dd></div>
+                        <div><dt>Speed</dt><dd>@Format(_speed)</dd></div>
+                    </dl>
+                </article>
+            </HolographicSurface>
+        </div>
+
+        <aside class="webgl-controls" aria-label="Holographic surface controls">
+            <div class="webgl-controls__heading">
+                <p class="specimen-label">OPTICAL BENCH / LIVE VALUES</p>
+                <h2>Shape the field.</h2>
+            </div>
+
+            <fieldset class="palette-control">
+                <legend>Palette</legend>
+                <div class="palette-options">
+                    @foreach (var choice in PaletteChoices)
+                    {
+                        <button type="button"
+                                class="palette-option"
+                                aria-pressed="@(_palette == choice.Palette)"
+                                style="--palette-primary:@choice.Palette.Primary;--palette-secondary:@choice.Palette.Secondary;--palette-accent:@choice.Palette.Accent"
+                                @onclick="() => _palette = choice.Palette">
+                            <span class="palette-option__swatch" aria-hidden="true"></span>
+                            <span>@choice.Name</span>
+                        </button>
+                    }
+                </div>
+            </fieldset>
+
+            <div class="range-controls">
+                <label>
+                    <span>Intensity <output>@Format(_intensity)</output></span>
+                    <input data-testid="webgl-intensity" type="range" min="0" max="1" step="0.01" @bind="_intensity" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Depth <output>@Format(_depth)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_depth" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Sheen <output>@Format(_sheen)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_sheen" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Speed <output>@Format(_speed)</output></span>
+                    <input type="range" min="0" max="3" step="0.05" @bind="_speed" @bind:event="oninput" />
+                </label>
+            </div>
+
+            <label class="quality-control">
+                <span>Render quality</span>
+                <select @bind="_quality">
+                    @foreach (var quality in Enum.GetValues<FancyQuality>())
+                    {
+                        <option value="@quality">@quality</option>
+                    }
+                </select>
+            </label>
+
+            <div class="switch-controls">
+                <label><input type="checkbox" @bind="_interactive" /> Fine-pointer response</label>
+                <label><input data-testid="webgl-disabled" type="checkbox" @bind="_disabled" /> Show CSS fallback</label>
+            </div>
+        </aside>
+    </section>
+
+    <section class="webgl-presets" aria-labelledby="webgl-presets-heading">
+        <div class="webgl-presets__intro">
+            <p class="specimen-label">CALIBRATED STARTING POINTS</p>
+            <h2 id="webgl-presets-heading">Change the material, not the markup.</h2>
+            <p>Each preset retunes the live specimen above. It does not create another canvas or replace the article.</p>
+        </div>
+        <div class="webgl-preset-list">
+            <button type="button" @onclick="ApplyThinFilm">
+                <span>01 / WITCHLIGHT</span><strong>Thin film</strong><small>Bright interference color with a light surface profile.</small>
+            </button>
+            <button type="button" data-testid="webgl-preset-deep-field" @onclick="ApplyDeepField">
+                <span>02 / VIRIDIAN</span><strong>Deep field</strong><small>Slower motion, heavier depth, and a submerged green spectrum.</small>
+            </button>
+            <button type="button" @onclick="ApplyStillFoil">
+                <span>03 / GLACIER</span><strong>Still foil</strong><small>A motionless silver-blue treatment for quieter reading planes.</small>
+            </button>
+        </div>
+    </section>
+
+    <section class="surface-recipe" aria-labelledby="webgl-recipe-heading">
+        <div class="surface-recipe__copy">
+            <p class="specimen-label">PREVIEW COMPANION / TYPED CONTROLS</p>
+            <h2 id="webgl-recipe-heading">Install without changing your content.</h2>
+            <p>Add the optional <code>SyntaxCircus.FancyBlazor.WebGL</code> package and call <code>AddFancyBlazorWebGl()</code> in each executable host. The preview wraps semantic markup without npm, a CDN, script tags, or raw shader uniforms.</p>
+            <p>The renderer uses a packaged, official Three.js r184 build. Its visual direction was informed by the ThreeUI effect catalog; no ThreeUI source code or assets are included.</p>
+        </div>
+        <pre class="surface-recipe__code"><code>&lt;HolographicSurface Palette="FancyPalettes.Witchlight"
+                      Intensity="0.68"
+                      Depth="0.42"
+                      Sheen="0.74"
+                      Speed="0.85"
+                      Interactive&gt;
+    &lt;article&gt;Semantic content&lt;/article&gt;
+&lt;/HolographicSurface&gt;</code></pre>
+    </section>
+</section>
+
+@code {
+    private static readonly PaletteChoice[] PaletteChoices =
+    [
+        new("Witchlight", FancyPalettes.Witchlight),
+        new("Viridian", FancyPalettes.Viridian),
+        new("Ember", FancyPalettes.Ember),
+        new("Glacier", FancyPalettes.Glacier),
+    ];
+
+    private FancyPalette _palette = FancyPalettes.Witchlight;
+    private double _intensity = 0.68;
+    private double _depth = 0.42;
+    private double _sheen = 0.74;
+    private double _speed = 0.85;
+    private bool _interactive = true;
+    private bool _disabled;
+    private FancyQuality _quality = FancyQuality.Auto;
+
+    private static string Format(double value) => value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+
+    private void ApplyThinFilm()
+    {
+        _palette = FancyPalettes.Witchlight;
+        _intensity = 0.68;
+        _depth = 0.42;
+        _sheen = 0.74;
+        _speed = 0.85;
+        _disabled = false;
+    }
+
+    private void ApplyDeepField()
+    {
+        _palette = FancyPalettes.Viridian;
+        _intensity = 0.58;
+        _depth = 0.86;
+        _sheen = 0.46;
+        _speed = 0.45;
+        _disabled = false;
+    }
+
+    private void ApplyStillFoil()
+    {
+        _palette = FancyPalettes.Glacier;
+        _intensity = 0.44;
+        _depth = 0.28;
+        _sheen = 0.9;
+        _speed = 0;
+        _disabled = false;
+    }
+
+    private sealed record PaletteChoice(string Name, FancyPalette Palette);
+}

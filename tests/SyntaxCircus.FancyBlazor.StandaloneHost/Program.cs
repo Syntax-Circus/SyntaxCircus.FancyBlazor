@@ -7,4 +7,5 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddFancyBlazor(options => options.EnableDiagnostics = true);
+builder.Services.AddFancyBlazorWebGl();
 await builder.Build().RunAsync();

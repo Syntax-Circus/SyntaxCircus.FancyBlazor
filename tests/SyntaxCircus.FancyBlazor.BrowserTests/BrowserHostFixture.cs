@@ -80,6 +80,12 @@ public sealed class BrowserHostFixture : IAsyncLifetime
             ?? throw new InvalidOperationException("Could not start the standalone WebAssembly test host.");
     }
 
+    public static Process StartServerHost(string assemblyPath, out string hostUrl)
+    {
+        hostUrl = GetAvailableUrl();
+        return StartAssembly(assemblyPath, hostUrl).Process;
+    }
+
     public static async Task WaitUntilReadyAsync(
         string baseUrl,
         Process? process = null,

@@ -8,12 +8,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor\SyntaxCircus.FancyBlazor.csproj" />
+    <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor.WebGL\SyntaxCircus.FancyBlazor.WebGL.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Update="wwwroot\**\*" CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\SyntaxCircus.FancyBlazor\wwwroot\**\*"
           Link="wwwroot\_content\SyntaxCircus.FancyBlazor\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\SyntaxCircus.FancyBlazor.WebGL\wwwroot\**\*"
+          Link="wwwroot\_content\SyntaxCircus.FancyBlazor.WebGL\%(RecursiveDir)%(Filename)%(Extension)"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

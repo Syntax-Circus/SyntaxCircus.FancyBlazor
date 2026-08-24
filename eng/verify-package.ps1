@@ -12,7 +12,10 @@ if (-not (Test-Path -LiteralPath $packageRoot -PathType Container)) {
 }
 
 $packages = Get-ChildItem -LiteralPath $packageRoot -Filter "SyntaxCircus.FancyBlazor.*.nupkg" |
-    Where-Object { $_.Name -notlike "*.snupkg" } |
+    Where-Object {
+        $_.Name -notlike "*.snupkg" -and
+        $_.Name -notlike "SyntaxCircus.FancyBlazor.WebGL.*.nupkg"
+    } |
     Sort-Object LastWriteTimeUtc -Descending
 
 if (-not $packages) {

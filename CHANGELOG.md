@@ -7,6 +7,27 @@ Until 1.0, changes that alter public components, parameters, defaults, rendered
 markup hooks, CSS custom properties, registration, or hosting behavior must be
 called out clearly as potentially breaking.
 
+## [Unreleased]
+
+### Added
+
+- Add a five-phase pre-1.0 roadmap for core kinetic effects, four WebGL fields
+  and materials, the optional `SyntaxCircus.FancyBlazor.UI` companion, its
+  marketing/content catalog, and cross-package stabilization.
+- Link the hosted FancyBlazor demo from the README.
+- Publish the optional `SyntaxCircus.FancyBlazor.WebGL` preview companion at the
+  exact core package version, with locally vendored Three.js r184 assets,
+  package isolation, size budgets, clean-consumer proof, and a same-version
+  release guard.
+- Add a discoverable WebGL showcase with live typed controls, calibrated
+  presets, fallback inspection, preview/setup guidance, ThreeUI inspiration
+  attribution, and semantic-content preservation coverage.
+
+### Fixed
+
+- Recreate `HolographicSurface`'s decorative canvas after disabling its WebGL
+  runtime so re-enabling cannot reuse a deliberately context-lost canvas.
+
 ## [0.2.0] - 2026-08-23
 
 ### Added

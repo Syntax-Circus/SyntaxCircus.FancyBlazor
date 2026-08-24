@@ -8,6 +8,7 @@
     <File Path="Directory.Packages.props" />
     <File Path="eng/verify-docs.ps1" />
     <File Path="eng/verify-package.ps1" />
+    <File Path="eng/verify-webgl-package.ps1" />
     <File Path="GitVersion.yml" />
     <File Path="global.json" />
     <File Path="README.md" />
@@ -16,6 +17,7 @@
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj" />
+    <Project Path="src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/FancyBlazor.Demo/FancyBlazor.Demo.csproj" />
@@ -23,6 +25,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/SyntaxCircus.FancyBlazor.Tests/SyntaxCircus.FancyBlazor.Tests.csproj" />
+    <Project Path="tests/SyntaxCircus.FancyBlazor.WebGL.Tests/SyntaxCircus.FancyBlazor.WebGL.Tests.csproj" />
     <Project Path="tests/SyntaxCircus.FancyBlazor.BrowserTests/SyntaxCircus.FancyBlazor.BrowserTests.csproj" />
     <Project Path="tests/SyntaxCircus.FancyBlazor.TestHost/SyntaxCircus.FancyBlazor.TestHost.csproj" />
     <Project Path="tests/SyntaxCircus.FancyBlazor.StandaloneHost/SyntaxCircus.FancyBlazor.StandaloneHost.csproj" />

@@ -1,0 +1,40 @@
+@page "/webgl"
+
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["_content/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.bundle.scp.css"]" />
+</HeadContent>
+
+<main>
+    <button type="button" data-testid="holographic-update" @onclick="IncreaseIntensity">Increase intensity</button>
+    <button type="button" data-testid="holographic-palette" @onclick="ChangePalette">Change palette</button>
+    <button type="button" data-testid="holographic-speed" @onclick="ToggleSpeed">Toggle speed</button>
+    <button type="button" data-testid="holographic-interactive" @onclick="ToggleInteractive">Toggle interactive</button>
+    <p data-testid="holographic-activation">@_activation</p>
+    <HolographicSurface data-testid="holographic-first" Interactive="@_interactive" Intensity="@_intensity" Speed="@_speed" Palette="@_palette" Style="height:100px"><article>Holographic semantic content <button type="button" @onclick="Activate">Activate child</button></article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-second" Disabled="@Single" Style="height:100px"><article>Second semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-third" Disabled="@Single" Style="height:100px"><article>Third semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-fourth" Disabled="@Single" Style="height:100px"><article>Fourth semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-fifth" Disabled="@Single" Style="height:100px"><article>Fifth semantic content</article></HolographicSurface>
+</main>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "single")]
+    public bool Single { get; set; }
+
+    private double _intensity = 0.5;
+    private double _speed;
+    private bool _interactive = true;
+    private FancyPalette _palette = FancyPalettes.Witchlight;
+    private string _activation = "Not activated";
+
+    private void IncreaseIntensity() => _intensity = 0.8;
+
+    private void ChangePalette() => _palette = FancyPalettes.Glacier;
+
+    private void ToggleSpeed() => _speed = _speed == 0 ? 1 : 0;
+
+    private void ToggleInteractive() => _interactive = !_interactive;
+
+    private void Activate() => _activation = "Activated";
+}

@@ -7,6 +7,16 @@ that `_content/SyntaxCircus.FancyBlazor/js/fancy-blazor.js` and
 `vendor/shader-gallery/nacre.frag` return `200`. WebGL-disabled browsers
 intentionally keep the fallback.
 
+## HolographicSurface shows only its fallback
+
+Confirm the optional `SyntaxCircus.FancyBlazor.WebGL` package is installed and
+`AddFancyBlazorWebGl()` is registered in the active executable host. In
+Interactive Auto, register it in both server and `.Client` projects. Check that
+`_content/SyntaxCircus.FancyBlazor.WebGL/js/fancy-blazor-webgl.js` and the
+vendored Three.js module return `200`. Reduced motion, `Disabled="true"`, WebGL2
+unavailability, or the configured context limit intentionally retains the CSS
+fallback and semantic child content.
+
 ## The component is unstyled
 
 The host must include its generated `{HostAssembly}.styles.css`, as standard

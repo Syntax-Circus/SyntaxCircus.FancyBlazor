@@ -10,4 +10,6 @@ sans-serif without external font requests.
 
 The landing page composes all four effects. Dedicated pages show minimal and
 realistic usage, parameters, reduced-motion behavior, fallback behavior, and
-copyable source. Responsive layout, visible focus, and reduced motion are mandatory.
+copyable source. Optional companion pages must be visibly labeled as preview and
+show their additional install/registration step. Responsive layout, visible
+focus, and reduced motion are mandatory.
