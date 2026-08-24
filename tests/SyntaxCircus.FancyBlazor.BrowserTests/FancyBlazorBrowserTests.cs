@@ -65,7 +65,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
         await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2 && globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.testId === 'holographic-first' && instance.renderer)");
 
         var surface = page.Locator("[data-testid='holographic-first']");
         await surface.EvaluateAsync("element => element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 }))");
@@ -84,6 +84,89 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task HolographicSurface_PreservesZeroSpeedAtCreationAndUpdate()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2 && globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.testId === 'holographic-first' && instance.renderer)");
+
+        await page.WaitForTimeoutAsync(150);
+        (await page.EvaluateAsync<double>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.time"))
+            .ShouldBe(0d);
+
+        await page.Locator("[data-testid='holographic-speed']").ClickAsync();
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.time > 0");
+        await page.Locator("[data-testid='holographic-speed']").ClickAsync();
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.time === 0");
+        await page.WaitForTimeoutAsync(150);
+        (await page.EvaluateAsync<double>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.time"))
+            .ShouldBe(0d);
+    }
+
+    [Fact]
+    public async Task HolographicSurface_ReconcilesLiveInteractionAndAvoidsUnchangedBufferResizes()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2 && globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.testId === 'holographic-first' && instance.renderer)");
+
+        var surface = page.Locator("[data-testid='holographic-first']");
+        var initialResizes = await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.resizeCount");
+        await page.WaitForTimeoutAsync(150);
+        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.resizeCount"))
+            .ShouldBe(initialResizes);
+        (await page.EvaluateAsync<bool>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.usesNormalizedUv"))
+            .ShouldBeTrue();
+
+        await page.Locator("[data-testid='holographic-interactive']").ClickAsync();
+        await surface.EvaluateAsync("element => { delete element.dataset.webglPointer; element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 })); }");
+        (await surface.GetAttributeAsync("data-webgl-pointer")).ShouldBeNull();
+        await page.Locator("[data-testid='holographic-interactive']").ClickAsync();
+        await surface.EvaluateAsync("element => element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 }))");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-first]')?.dataset.webglPointer === 'true'");
+
+        await surface.EvaluateAsync("element => element.style.width = '420px'");
+        await page.WaitForFunctionAsync($"() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.resizeCount > {initialResizes}");
+    }
+
+    [Fact]
+    public async Task HolographicSurface_ReactsToLiveReducedMotionAndLogsAsyncConstructionFailureOnce()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        await context.AddInitScriptAsync("""
+            (() => {
+                let reduced = false;
+                const listeners = new Set();
+                const media = { get matches() { return reduced; }, addEventListener: (_, listener) => listeners.add(listener), removeEventListener: (_, listener) => listeners.delete(listener) };
+                const original = window.matchMedia.bind(window);
+                window.matchMedia = query => query === '(prefers-reduced-motion: reduce)' ? media : original(query);
+                globalThis.__setReducedMotion = value => { reduced = value; for (const listener of listeners) { listener({ matches: reduced }); } };
+            })();
+            """);
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
+        await page.WaitForFunctionAsync("() => typeof globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics === 'function' && globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 2");
+        await page.EvaluateAsync("() => globalThis.__setReducedMotion(true)");
+        await page.WaitForFunctionAsync("() => { const d = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); return d.activeContexts === 0 && d.animationFrameCount === 0 && d.instances.every(instance => instance.state === 'reduced'); }");
+        await page.EvaluateAsync("() => globalThis.__setReducedMotion(false)");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 2");
+
+        await using var failureContext = await fixture.Browser.NewContextAsync();
+        var warningCount = 0;
+        var failurePage = await failureContext.NewPageAsync();
+        failurePage.Console += (_, message) => { if (message.Type == "warning" && message.Text.Contains("CSS fallback remains active", StringComparison.Ordinal)) warningCount++; };
+        await failurePage.GotoAsync($"{fixture.TestHostUrl}/webgl");
+        await failurePage.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2");
+        await failurePage.EvaluateAsync("() => document.querySelectorAll('[data-fancy-effect=holographic-surface]').forEach(element => element.style.display = 'none')");
+        await failurePage.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 0");
+        await failurePage.EvaluateAsync("() => { const surface = document.querySelector('[data-testid=holographic-first]'); surface.querySelector('canvas').getContext = () => null; surface.style.display = 'block'; }");
+        await failurePage.WaitForFunctionAsync("() => { const d = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); return d.threeLoaded && d.lastFailure && d.instances.some(instance => instance.state === 'fallback'); }");
+        warningCount.ShouldBe(1);
+    }
+
+    [Fact]
     public async Task HolographicSurface_ReducedMotionAndForcedFailure_KeepFallbackWithoutLoadingThree()
     {
         await using var reducedContext = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
@@ -99,6 +182,8 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await failurePage.GotoAsync($"{fixture.TestHostUrl}/webgl");
         await failurePage.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-first]')?.dataset.webglState === 'fallback'");
         (await failurePage.Locator("[data-testid='holographic-first'] article").InnerTextAsync()).ShouldContain("Holographic semantic content");
+        (await failurePage.Locator("[data-testid='holographic-first']").EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage"))
+            .ShouldNotBe("none");
         var fallbackButton = failurePage.Locator("[data-testid='holographic-first'] button");
         (await fallbackButton.CountAsync()).ShouldBe(1);
         (await fallbackButton.IsEnabledAsync()).ShouldBeTrue();

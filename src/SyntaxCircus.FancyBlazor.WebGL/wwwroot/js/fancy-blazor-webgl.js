@@ -8,6 +8,7 @@ let lastFailure = null;
 let disposed = false;
 let rendererObjectsCreated = 0;
 let rendererObjectsDestroyed = 0;
+let failureLogged = false;
 
 function isReduced(defaults) {
     return defaults.motionPreference === "AlwaysReduce" ||
@@ -16,6 +17,15 @@ function isReduced(defaults) {
 
 function setState(instance, state) {
     instance.element.dataset.webglState = state;
+}
+
+function logFailure(error) {
+    if (failureLogged) {
+        return;
+    }
+
+    failureLogged = true;
+    console.warn("FancyBlazor WebGL could not initialize or update the holographic surface; the CSS fallback remains active.", error);
 }
 
 function isEligible(instance) {
@@ -105,7 +115,14 @@ async function pump() {
                 continue;
             }
 
-            const renderer = await rendererModule.createHolographicSurface(instance.canvas, instance.options, instance.defaults);
+            const THREE = await rendererModule.loadThree();
+            threeLoaded = true;
+            if (!isEligible(instance) || !instance.active) {
+                release(instance, false);
+                continue;
+            }
+
+            const renderer = rendererModule.createHolographicSurface(instance.canvas, instance.options, instance.defaults, THREE);
             rendererObjectsCreated++;
             if (!isEligible(instance) || !instance.active || instances.get(instance.handle) !== instance) {
                 destroyRenderer(instance, renderer);
@@ -114,11 +131,11 @@ async function pump() {
 
             instance.renderer = renderer;
             instance.releasing = false;
-            threeLoaded = true;
             instance.renderer.start();
             setState(instance, "active");
         } catch (error) {
             lastFailure = String(error?.message || error);
+            logFailure(error);
             release(instance, false);
             setState(instance, "fallback");
         }
@@ -165,6 +182,7 @@ function getDiagnostics() {
         palette: instance.renderer?.getPalette() ?? instance.options.palette,
         active: instance.active,
         waiting: instance.waiting,
+        renderer: instance.renderer?.getState() ?? null,
     }));
     return {
         instanceCount: instances.size,
@@ -191,7 +209,31 @@ function onVisibilityChange() {
     }
 }
 
+function onReducedMotionChange() {
+    for (const instance of instances.values()) {
+        instance.reduced = isReduced(instance.defaults);
+        if (instance.reduced) {
+            release(instance, false);
+            setState(instance, "reduced");
+        } else {
+            recheck(instance);
+        }
+    }
+}
+
 document.addEventListener("visibilitychange", onVisibilityChange);
+reducedMotion.addEventListener("change", onReducedMotionChange);
+
+function reconcilePointer(instance) {
+    const interactive = Boolean(instance.options.interactive);
+    if (interactive && !instance.pointerListening) {
+        instance.element.addEventListener("pointermove", instance.pointerMove, { passive: true });
+        instance.pointerListening = true;
+    } else if (!interactive && instance.pointerListening) {
+        instance.element.removeEventListener("pointermove", instance.pointerMove);
+        instance.pointerListening = false;
+    }
+}
 
 export function createEffect(element, effect, options, defaults) {
     if (disposed || effect !== "holographic-surface") {
@@ -221,35 +263,33 @@ export function createEffect(element, effect, options, defaults) {
         restoreContext: null,
         observer: null,
         pointerMove: null,
+        pointerListening: false,
         contextLostHandler: null,
         contextRestoredHandler: null,
     };
 
     instances.set(handle, instance);
-    if (instance.reduced) {
-        setState(instance, "reduced");
-        return handle;
-    }
-
     instance.observer = new IntersectionObserver(entries => {
         instance.visible = entries.some(entry => entry.isIntersecting);
         recheck(instance);
     }, { threshold: 0.01 });
     instance.observer.observe(element);
 
-    if (options.interactive) {
-        instance.pointerMove = event => {
-            if (!matchMedia("(pointer: fine)").matches ||
-                (event.pointerType && event.pointerType !== "mouse" && event.pointerType !== "pen")) {
-                return;
-            }
-            const bounds = element.getBoundingClientRect();
-            const x = bounds.width ? (event.clientX - bounds.left) / bounds.width : 0.5;
-            const y = bounds.height ? (event.clientY - bounds.top) / bounds.height : 0.5;
-            instance.renderer?.setPointer(x, y);
-            element.dataset.webglPointer = "true";
-        };
-        element.addEventListener("pointermove", instance.pointerMove, { passive: true });
+    instance.pointerMove = event => {
+        if (!matchMedia("(pointer: fine)").matches ||
+            (event.pointerType && event.pointerType !== "mouse" && event.pointerType !== "pen")) {
+            return;
+        }
+        const bounds = element.getBoundingClientRect();
+        const x = bounds.width ? (event.clientX - bounds.left) / bounds.width : 0.5;
+        const y = bounds.height ? (event.clientY - bounds.top) / bounds.height : 0.5;
+        instance.renderer?.setPointer(x, y);
+        element.dataset.webglPointer = "true";
+    };
+    reconcilePointer(instance);
+
+    if (instance.reduced) {
+        setState(instance, "reduced");
     }
 
     instance.contextLostHandler = event => {
@@ -280,6 +320,7 @@ export function updateEffect(handle, options) {
 
     instance.options = { ...instance.options, ...options };
     instance.renderer?.update(instance.options);
+    reconcilePointer(instance);
     return true;
 }
 
@@ -291,7 +332,7 @@ export function destroyEffect(handle) {
 
     instance.destroyed = true;
     instance.observer?.disconnect();
-    if (instance.pointerMove) {
+    if (instance.pointerListening) {
         instance.element.removeEventListener("pointermove", instance.pointerMove);
     }
     instance.canvas.removeEventListener("webglcontextlost", instance.contextLostHandler);
@@ -307,6 +348,7 @@ export function disposeRuntime() {
     }
     waiting.length = 0;
     document.removeEventListener("visibilitychange", onVisibilityChange);
+    reducedMotion.removeEventListener("change", onReducedMotionChange);
 }
 
 export { getDiagnostics };
