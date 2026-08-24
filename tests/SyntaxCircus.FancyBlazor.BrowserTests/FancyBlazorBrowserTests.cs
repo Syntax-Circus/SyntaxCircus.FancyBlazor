@@ -170,7 +170,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await context.AddInitScriptAsync("globalThis.__syntaxCircusFancyBlazorWebGlConstructionGate = new Promise(resolve => { globalThis.__syntaxCircusFancyBlazorWebGlResolveConstructionGate = resolve; });");
         var page = await context.NewPageAsync();
         await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
-        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-first]')?.dataset.webglState === 'loading'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts > 0 && document.querySelector('[data-webgl-state=loading]')");
 
         await page.Locator("header a[href='/border']").ClickAsync();
         await page.WaitForURLAsync("**/border");
