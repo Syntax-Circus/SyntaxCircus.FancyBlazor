@@ -75,6 +75,11 @@ async function pump() {
         instance.active = true;
         setState(instance, "loading");
         try {
+            const constructionGate = globalThis.__syntaxCircusFancyBlazorWebGlConstructionGate;
+            if (constructionGate && typeof constructionGate.then === "function") {
+                await constructionGate;
+            }
+
             if (globalThis.__syntaxCircusFancyBlazorWebGlForceFailure) {
                 throw new Error("The test failure switch is enabled.");
             }
@@ -83,11 +88,6 @@ async function pump() {
             if (!isEligible(instance) || !instance.active) {
                 release(instance, false);
                 continue;
-            }
-
-            const delay = Number(globalThis.__syntaxCircusFancyBlazorWebGlRendererDelayMs) || 0;
-            if (delay > 0) {
-                await new Promise(resolve => setTimeout(resolve, delay));
             }
 
             const renderer = await rendererModule.createHolographicSurface(instance.canvas, instance.options, instance.defaults);
