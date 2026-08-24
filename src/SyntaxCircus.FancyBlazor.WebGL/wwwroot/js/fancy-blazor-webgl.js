@@ -66,7 +66,18 @@ async function pump() {
                 continue;
             }
 
-            instance.renderer = await rendererModule.createHolographicSurface(instance.canvas, instance.options, instance.defaults);
+            const delay = Number(globalThis.__syntaxCircusFancyBlazorWebGlRendererDelayMs) || 0;
+            if (delay > 0) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+
+            const renderer = await rendererModule.createHolographicSurface(instance.canvas, instance.options, instance.defaults);
+            if (!isEligible(instance) || !instance.active || instances.get(instance.handle) !== instance) {
+                renderer.destroy();
+                continue;
+            }
+
+            instance.renderer = renderer;
             threeLoaded = true;
             instance.renderer.start();
             setState(instance, "active");
@@ -88,7 +99,9 @@ function contextCap() {
 function release(instance, requeue) {
     removeWaiting(instance);
     if (instance.renderer) {
+        instance.releasing = true;
         instance.renderer.destroy();
+        instance.releasing = false;
         instance.renderer = null;
     }
     if (instance.active) {
@@ -117,6 +130,7 @@ function getDiagnostics() {
         handle: instance.handle,
         state: instance.element.dataset.webglState,
         intensity: instance.options.intensity,
+        palette: instance.renderer?.getPalette() ?? instance.options.palette,
         active: instance.active,
         waiting: instance.waiting,
     }));
@@ -167,6 +181,7 @@ export function createEffect(element, effect, options, defaults) {
         reduced: isReduced(defaults),
         contextLost: false,
         renderer: null,
+        releasing: false,
         observer: null,
         pointerMove: null,
         contextLostHandler: null,
@@ -187,10 +202,8 @@ export function createEffect(element, effect, options, defaults) {
 
     if (options.interactive) {
         instance.pointerMove = event => {
-            if (event.pointerType && event.pointerType !== "mouse" && event.pointerType !== "pen") {
-                return;
-            }
-            if (!matchMedia("(pointer: fine)").matches && event.pointerType !== "mouse") {
+            if (!matchMedia("(pointer: fine)").matches ||
+                (event.pointerType && event.pointerType !== "mouse" && event.pointerType !== "pen")) {
                 return;
             }
             const bounds = element.getBoundingClientRect();
@@ -204,6 +217,9 @@ export function createEffect(element, effect, options, defaults) {
 
     instance.contextLostHandler = event => {
         event.preventDefault();
+        if (instance.releasing) {
+            return;
+        }
         instance.contextLost = true;
         release(instance, false);
         setState(instance, "fallback");

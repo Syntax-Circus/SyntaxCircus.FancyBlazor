@@ -2,8 +2,9 @@
 
 <main>
     <button type="button" data-testid="holographic-update" @onclick="IncreaseIntensity">Increase intensity</button>
+    <button type="button" data-testid="holographic-palette" @onclick="ChangePalette">Change palette</button>
     <p data-testid="holographic-activation">@_activation</p>
-    <HolographicSurface data-testid="holographic-first" Interactive="true" Intensity="@_intensity" Style="height:100px"><article>Holographic semantic content <button type="button" @onclick="Activate">Activate child</button></article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-first" Interactive="true" Intensity="@_intensity" Palette="@_palette" Style="height:100px"><article>Holographic semantic content <button type="button" @onclick="Activate">Activate child</button></article></HolographicSurface>
     <HolographicSurface data-testid="holographic-second" Style="height:100px"><article>Second semantic content</article></HolographicSurface>
     <HolographicSurface data-testid="holographic-third" Style="height:100px"><article>Third semantic content</article></HolographicSurface>
     <HolographicSurface data-testid="holographic-fourth" Style="height:100px"><article>Fourth semantic content</article></HolographicSurface>
@@ -12,9 +13,12 @@
 
 @code {
     private double _intensity = 0.5;
+    private FancyPalette _palette = FancyPalettes.Witchlight;
     private string _activation = "Not activated";
 
     private void IncreaseIntensity() => _intensity = 0.8;
+
+    private void ChangePalette() => _palette = FancyPalettes.Glacier;
 
     private void Activate() => _activation = "Activated";
 }

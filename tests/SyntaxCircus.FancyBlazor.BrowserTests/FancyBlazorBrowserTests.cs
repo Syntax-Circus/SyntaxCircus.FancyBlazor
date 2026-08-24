@@ -2,6 +2,7 @@ using Microsoft.Playwright;
 using NCrunch.Framework;
 using Shouldly;
 using Xunit;
+using FancyBlazor.Demo;
 
 namespace SyntaxCircus.FancyBlazor.BrowserTests;
 
@@ -26,7 +27,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     [Fact]
     public async Task HolographicSurface_LoadsThreeOnlyWhenVisibleAndActive()
     {
-        await using var context = await fixture.Browser.NewContextAsync();
+        await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions { ViewportSize = new ViewportSize { Width = 900, Height = 1 } });
         var page = await context.NewPageAsync();
         var threeRequests = 0;
         var coreStatus = 0;
@@ -46,6 +47,9 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         };
 
         await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
+        await page.WaitForTimeoutAsync(150);
+        threeRequests.ShouldBe(0);
+        await page.Locator("[data-testid='holographic-first']").ScrollIntoViewIfNeededAsync();
         await page.WaitForTimeoutAsync(750);
 
         threeRequests.ShouldBe(1);
@@ -68,6 +72,8 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-first]')?.dataset.webglPointer === 'true'");
         await page.Locator("[data-testid='holographic-update']").ClickAsync();
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.intensity === 0.8)");
+        await page.Locator("[data-testid='holographic-palette']").ClickAsync();
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.palette?.[0] === '#60a5fa')");
 
         await surface.Locator("button").FocusAsync();
         (await surface.Locator("button").GetAttributeAsync("tabindex")).ShouldBeNull();
@@ -103,12 +109,16 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         var page = await context.NewPageAsync();
         await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().waitingContexts === 3");
 
         var first = page.Locator("[data-testid='holographic-first']");
         await first.EvaluateAsync("element => element.style.transform = 'translateY(3000px)'");
         await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-third]')?.dataset.webglState === 'active'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.state === 'waiting')?.handle > 3");
         await page.Locator("[data-testid='holographic-third'] canvas").EvaluateAsync("canvas => canvas.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))");
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts < 2");
+        await page.Locator("[data-testid='holographic-third'] canvas").EvaluateAsync("canvas => canvas.dispatchEvent(new Event('webglcontextrestored'))");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-third]')?.dataset.webglState === 'active'");
 
         await page.EvaluateAsync("() => { document.hidden = true; document.dispatchEvent(new Event('visibilitychange')); }");
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 0 && globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().animationFrameCount === 0");
@@ -126,8 +136,64 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         {
             await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
             await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2");
-            await page.GotoAsync($"{fixture.TestHostUrl}/border");
-            await page.WaitForFunctionAsync("() => (globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instanceCount ?? 0) === 0");
+            await page.Locator("header a[href='/border']").ClickAsync();
+            await page.WaitForURLAsync("**/border");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instanceCount === 0");
+        }
+    }
+
+    [Fact]
+    public async Task HolographicSurface_ReleasesAnInFlightConstructionBeforeItCanStart()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        await context.AddInitScriptAsync("globalThis.__syntaxCircusFancyBlazorWebGlRendererDelayMs = 250;");
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-first]')?.dataset.webglState === 'loading'");
+
+        await page.Locator("[data-testid='holographic-first']").EvaluateAsync("element => element.style.transform = 'translateY(3000px)'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 0");
+        await page.WaitForTimeoutAsync(350);
+
+        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().animationFrameCount")).ShouldBe(0);
+        (await page.Locator("[data-testid='holographic-first']").GetAttributeAsync("data-webgl-state")).ShouldNotBe("active");
+    }
+
+    [Fact]
+    public async Task HolographicSurface_RejectsPointerUpdatesOnCoarsePointers()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        await context.AddInitScriptAsync("{ const original = window.matchMedia; window.matchMedia = query => query === '(pointer: fine)' ? { matches: false } : original(query); }");
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2");
+
+        await page.Locator("[data-testid='holographic-first']").EvaluateAsync("element => element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 }))");
+
+        (await page.Locator("[data-testid='holographic-first']").GetAttributeAsync("data-webgl-pointer")).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task InteractiveAutoDemo_LoadsTheWebGlCompanionAfterWebAssemblyHydration()
+    {
+        using var process = BrowserHostFixture.StartServerHost(typeof(DemoAssemblyMarker).Assembly.Location, out var demoUrl);
+        try
+        {
+            await BrowserHostFixture.WaitUntilReadyAsync(demoUrl, process);
+            await using var context = await fixture.Browser.NewContextAsync();
+            var page = await context.NewPageAsync();
+            await page.GotoAsync($"{demoUrl}/test-webgl-auto");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+
+            (await page.Locator("[data-testid='auto-holographic'] article").InnerTextAsync()).ShouldBe("Interactive Auto holographic content");
+        }
+        finally
+        {
+            if (!process.HasExited)
+            {
+                process.Kill(entireProcessTree: true);
+                process.WaitForExit(10_000);
+            }
         }
     }
 

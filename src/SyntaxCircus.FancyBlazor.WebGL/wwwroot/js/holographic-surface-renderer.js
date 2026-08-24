@@ -48,6 +48,13 @@ export async function createHolographicSurface(canvas, options, defaults) {
             material.uniforms.intensity.value = Number(next.intensity) || 0.5;
             material.uniforms.depth.value = Number(next.depth) || 0.5;
             material.uniforms.sheen.value = Number(next.sheen) || 0.5;
+            material.uniforms.first.value.set(next.palette?.[0] || "#7c3aed");
+            material.uniforms.second.value.set(next.palette?.[1] || "#2563eb");
+            material.uniforms.accent.value.set(next.palette?.[2] || "#22d3ee");
+        },
+        getPalette() {
+            return [material.uniforms.first.value, material.uniforms.second.value, material.uniforms.accent.value]
+                .map(color => `#${color.getHexString()}`);
         },
         destroy() {
             if (frame) { cancelAnimationFrame(frame); frame = 0; }

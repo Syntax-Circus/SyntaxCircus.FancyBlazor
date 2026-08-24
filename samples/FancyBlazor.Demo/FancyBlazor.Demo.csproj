@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FancyBlazor.Demo.Client\FancyBlazor.Demo.Client.csproj" />
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor\SyntaxCircus.FancyBlazor.csproj" />
+    <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor.WebGL\SyntaxCircus.FancyBlazor.WebGL.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
     <PackageReference Include="SyntaxCircus.AspNetCore.Common" />
   </ItemGroup>

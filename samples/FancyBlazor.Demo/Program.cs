@@ -9,6 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddFancyBlazor(options => options.EnableDiagnostics = true);
+builder.Services.AddFancyBlazorWebGl();
 
 var app = builder.Build();
 
