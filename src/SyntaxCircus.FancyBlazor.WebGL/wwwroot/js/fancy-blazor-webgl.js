@@ -212,6 +212,7 @@ function onVisibilityChange() {
 function onReducedMotionChange() {
     for (const instance of instances.values()) {
         instance.reduced = isReduced(instance.defaults);
+        reconcilePointer(instance);
         if (instance.reduced) {
             release(instance, false);
             setState(instance, "reduced");
@@ -225,7 +226,7 @@ document.addEventListener("visibilitychange", onVisibilityChange);
 reducedMotion.addEventListener("change", onReducedMotionChange);
 
 function reconcilePointer(instance) {
-    const interactive = Boolean(instance.options.interactive);
+    const interactive = Boolean(instance.options.interactive) && !instance.reduced;
     if (interactive && !instance.pointerListening) {
         instance.element.addEventListener("pointermove", instance.pointerMove, { passive: true });
         instance.pointerListening = true;

@@ -2,13 +2,14 @@
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    background:
-        linear-gradient(135deg,
-            color-mix(in srgb, var(--sc-fancy-primary) 45%, var(--sc-fancy-background)),
-            var(--sc-fancy-background)),
+    background-color: var(--sc-fancy-background);
+    background-image:
         radial-gradient(circle at 80% 15%,
             color-mix(in srgb, var(--sc-fancy-accent) 45%, transparent),
-            transparent 55%);
+            transparent 55%),
+        linear-gradient(135deg,
+            color-mix(in srgb, var(--sc-fancy-primary) 45%, var(--sc-fancy-background)),
+            var(--sc-fancy-background));
 }
 
 .syntax-circus-fancy-holographic-surface__canvas {

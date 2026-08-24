@@ -110,7 +110,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
         await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2 && globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.testId === 'holographic-first' && instance.renderer)");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'holographic-first' && instance.active && instance.renderer)");
 
         var surface = page.Locator("[data-testid='holographic-first']");
         var initialResizes = await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.resizeCount");
@@ -121,11 +121,9 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
             .ShouldBeTrue();
 
         await page.Locator("[data-testid='holographic-interactive']").ClickAsync();
-        await surface.EvaluateAsync("element => { delete element.dataset.webglPointer; element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 })); }");
-        (await surface.GetAttributeAsync("data-webgl-pointer")).ShouldBeNull();
+        await page.WaitForFunctionAsync("() => { const element = document.querySelector('[data-testid=holographic-first]'); delete element.dataset.webglPointer; element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 })); return !element.dataset.webglPointer; }");
         await page.Locator("[data-testid='holographic-interactive']").ClickAsync();
-        await surface.EvaluateAsync("element => element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 }))");
-        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-first]')?.dataset.webglPointer === 'true'");
+        await page.WaitForFunctionAsync("() => { const element = document.querySelector('[data-testid=holographic-first]'); element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 })); return element.dataset.webglPointer === 'true'; }");
 
         await surface.EvaluateAsync("element => element.style.width = '420px'");
         await page.WaitForFunctionAsync($"() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'holographic-first').renderer.resizeCount > {initialResizes}");
@@ -150,8 +148,12 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await page.WaitForFunctionAsync("() => typeof globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics === 'function' && globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 2");
         await page.EvaluateAsync("() => globalThis.__setReducedMotion(true)");
         await page.WaitForFunctionAsync("() => { const d = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); return d.activeContexts === 0 && d.animationFrameCount === 0 && d.instances.every(instance => instance.state === 'reduced'); }");
+        await page.Locator("[data-testid='holographic-first']").EvaluateAsync("element => { delete element.dataset.webglPointer; element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 })); }");
+        (await page.Locator("[data-testid='holographic-first']").GetAttributeAsync("data-webgl-pointer")).ShouldBeNull();
         await page.EvaluateAsync("() => globalThis.__setReducedMotion(false)");
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 2");
+        await page.Locator("[data-testid='holographic-first']").EvaluateAsync("element => element.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, pointerType: 'mouse', clientX: 80, clientY: 40 }))");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-first]')?.dataset.webglPointer === 'true'");
 
         await using var failureContext = await fixture.Browser.NewContextAsync();
         var warningCount = 0;
@@ -182,8 +184,11 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await failurePage.GotoAsync($"{fixture.TestHostUrl}/webgl");
         await failurePage.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-first]')?.dataset.webglState === 'fallback'");
         (await failurePage.Locator("[data-testid='holographic-first'] article").InnerTextAsync()).ShouldContain("Holographic semantic content");
-        (await failurePage.Locator("[data-testid='holographic-first']").EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage"))
-            .ShouldNotBe("none");
+        var fallback = failurePage.Locator("[data-testid='holographic-first']");
+        (await fallback.EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"))
+            .ShouldNotBe("rgba(0, 0, 0, 0)");
+        (await fallback.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage"))
+            .StartsWith("radial-gradient", StringComparison.Ordinal).ShouldBeTrue();
         var fallbackButton = failurePage.Locator("[data-testid='holographic-first'] button");
         (await fallbackButton.CountAsync()).ShouldBe(1);
         (await fallbackButton.IsEnabledAsync()).ShouldBeTrue();
