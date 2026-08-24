@@ -29,7 +29,8 @@ function New-CompleteShapePackage {
     param(
         [Parameter(Mandatory)] [string] $Directory,
         [Parameter(Mandatory)] [string] $AdapterText,
-        [Parameter(Mandatory)] [string] $RendererText
+        [Parameter(Mandatory)] [string] $RendererText,
+        [string] $VendorText
     )
 
     Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -45,6 +46,9 @@ function New-CompleteShapePackage {
         "staticwebassets/vendor/three/build/three.core.js" = "export {};"
         "staticwebassets/vendor/three/build/three.module.js" = "export {};"
         "buildTransitive/SyntaxCircus.FancyBlazor.WebGL.props" = "<Project />"
+    }
+    if ($PSBoundParameters.ContainsKey("VendorText")) {
+        $entries["staticwebassets/vendor/three/build/vendor-extension.js"] = $VendorText
     }
     $archive = [System.IO.Compression.ZipFile]::Open($packagePath, [System.IO.Compression.ZipArchiveMode]::Create)
     try {
@@ -85,12 +89,15 @@ function Assert-CompleteShapeRejection {
         [Parameter(Mandatory)] [string] $Name,
         [Parameter(Mandatory)] [string] $AdapterText,
         [Parameter(Mandatory)] [string] $RendererText,
+        [string] $VendorText,
         [Parameter(Mandatory)] [string] $ExpectedMessage
     )
 
     $caseDirectory = Join-Path $scratchRoot $Name
     New-Item -ItemType Directory -Path $caseDirectory | Out-Null
-    New-CompleteShapePackage -Directory $caseDirectory -AdapterText $AdapterText -RendererText $RendererText
+    $packageArguments = @{ Directory = $caseDirectory; AdapterText = $AdapterText; RendererText = $RendererText }
+    if ($PSBoundParameters.ContainsKey("VendorText")) { $packageArguments.VendorText = $VendorText }
+    New-CompleteShapePackage @packageArguments
     $output = & pwsh -NoProfile -File $verifier -PackageDirectory $caseDirectory -CorePackageDirectory $caseDirectory 2>&1
     if ($LASTEXITCODE -eq 0) {
         throw "$Name should be rejected by the WebGL package verifier."
@@ -115,6 +122,8 @@ try {
         Assert-VerifierRejects -Name $case.Name -EntryName "staticwebassets/js/fancy-blazor-webgl.js" -EntryText $case.Text -ExpectedMessage "external URL"
     }
     Assert-CompleteShapeRejection -Name "raw-budget" -AdapterText ("a" * 1048576) -RendererText ";" -ExpectedMessage "limit is below 1 MiB"
+    Assert-CompleteShapeRejection -Name "vendor-external-url" -AdapterText "const local = 1;" -RendererText ";" -VendorText 'fetch("https://example.test/vendor.js");' -ExpectedMessage "external URL"
+    Assert-CompleteShapeRejection -Name "ordinary-comment" -AdapterText "//todo" -RendererText ";" -ExpectedMessage "matching core package"
     Write-Host "WebGL package verifier rejection cases passed."
 }
 finally {

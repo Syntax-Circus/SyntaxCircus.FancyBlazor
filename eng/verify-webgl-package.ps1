@@ -44,11 +44,9 @@ try {
     $unexpectedEntries = @($entryNames | Where-Object { $_ -match '(?i)(^|/)(node_modules|package(?:-lock)?\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|\.pnp\.(?:cjs|js)|\.npmrc|\.yarnrc(?:\.yml)?|bower\.json)(/|$)' })
     if ($unexpectedEntries.Count -gt 0) { throw "Package contains Node artifacts: $($unexpectedEntries -join ', ')" }
 
-    foreach ($entry in @($archive.Entries | Where-Object {
-        $_.FullName -in @("staticwebassets/js/fancy-blazor-webgl.js", "staticwebassets/js/holographic-surface-renderer.js")
-    })) {
+    foreach ($entry in @($archive.Entries | Where-Object { $_.FullName -match '\.js$' })) {
         $scriptText = [System.Text.Encoding]::UTF8.GetString((Read-ArchiveEntryBytes -Entry $entry))
-        if ($scriptText -match '(?i)https?:|//[A-Za-z0-9]') {
+        if ($scriptText -match '(?is)["''`]\s*(?:(?:https?:)?//)') {
             throw "$($entry.FullName) loads executable assets from an external URL."
         }
     }
