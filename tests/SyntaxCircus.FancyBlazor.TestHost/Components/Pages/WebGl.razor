@@ -7,13 +7,17 @@
     <button type="button" data-testid="holographic-interactive" @onclick="ToggleInteractive">Toggle interactive</button>
     <p data-testid="holographic-activation">@_activation</p>
     <HolographicSurface data-testid="holographic-first" Interactive="@_interactive" Intensity="@_intensity" Speed="@_speed" Palette="@_palette" Style="height:100px"><article>Holographic semantic content <button type="button" @onclick="Activate">Activate child</button></article></HolographicSurface>
-    <HolographicSurface data-testid="holographic-second" Style="height:100px"><article>Second semantic content</article></HolographicSurface>
-    <HolographicSurface data-testid="holographic-third" Style="height:100px"><article>Third semantic content</article></HolographicSurface>
-    <HolographicSurface data-testid="holographic-fourth" Style="height:100px"><article>Fourth semantic content</article></HolographicSurface>
-    <HolographicSurface data-testid="holographic-fifth" Style="height:100px"><article>Fifth semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-second" Disabled="@Single" Style="height:100px"><article>Second semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-third" Disabled="@Single" Style="height:100px"><article>Third semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-fourth" Disabled="@Single" Style="height:100px"><article>Fourth semantic content</article></HolographicSurface>
+    <HolographicSurface data-testid="holographic-fifth" Disabled="@Single" Style="height:100px"><article>Fifth semantic content</article></HolographicSurface>
 </main>
 
 @code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "single")]
+    public bool Single { get; set; }
+
     private double _intensity = 0.5;
     private double _speed;
     private bool _interactive = true;

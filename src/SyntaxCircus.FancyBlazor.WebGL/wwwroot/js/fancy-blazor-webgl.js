@@ -222,8 +222,13 @@ function onReducedMotionChange() {
     }
 }
 
+function onPageHide() {
+    disposeRuntime();
+}
+
 document.addEventListener("visibilitychange", onVisibilityChange);
 reducedMotion.addEventListener("change", onReducedMotionChange);
+window.addEventListener("pagehide", onPageHide, { once: true });
 
 function reconcilePointer(instance) {
     const interactive = Boolean(instance.options.interactive) && !instance.reduced;
@@ -350,6 +355,7 @@ export function disposeRuntime() {
     waiting.length = 0;
     document.removeEventListener("visibilitychange", onVisibilityChange);
     reducedMotion.removeEventListener("change", onReducedMotionChange);
+    window.removeEventListener("pagehide", onPageHide);
 }
 
 export { getDiagnostics };
