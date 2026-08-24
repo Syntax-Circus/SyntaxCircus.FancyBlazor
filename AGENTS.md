@@ -7,7 +7,7 @@ consumer-facing contract. Architecture decisions and phase status live in
 
 ## Purpose and boundary
 
-This repository produces one `net10.0` Razor Class Library containing visual
+This repository publishes one `net10.0` Razor Class Library containing visual
 effects for Blazor. The preview catalog includes shader and gradient backgrounds,
 glow and shimmer surfaces, reveal and stagger entrances, and pointer/scroll
 motion effects, including semantic text entrances, ambient overlays, bounded
@@ -28,6 +28,7 @@ discovery uses `SyntaxCircus.AspNetCore.Common`'s `MapRobotsTxt` and
 
 ```text
 src/SyntaxCircus.FancyBlazor/              package source and static assets
+src/SyntaxCircus.FancyBlazor.WebGL/        unpublished Phase 13 companion spike
 samples/FancyBlazor.Demo*/                 compiling Interactive Auto demo
 tests/SyntaxCircus.FancyBlazor.Tests/      xUnit, Shouldly, and bUnit contracts
 tests/SyntaxCircus.FancyBlazor.BrowserTests/ Playwright lifecycle tests
@@ -65,6 +66,17 @@ dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-bu
 ```
 
 That override is for local validation only; CI and releases must use GitVersion.
+
+Phase 13's companion is an unpublished boundary-validation spike. To validate it
+locally, pack the core package to `artifacts`, then pack the companion only to
+`artifacts/webgl-spike`, using a disposable version, and run the dedicated
+verifier. Never move this output into `artifacts` root or a publication input.
+
+```bash
+dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release --output artifacts -p:DisableGitVersionTask=true -p:PackageVersion=0.2.1-preview.1
+dotnet pack src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj --no-build --configuration Release --output artifacts/webgl-spike -p:DisableGitVersionTask=true -p:PackageVersion=0.2.1-preview.1
+pwsh eng/verify-webgl-package.ps1 -PackageDirectory artifacts/webgl-spike -CorePackageDirectory artifacts
+```
 
 The demo image is published only by the main-branch workflow as
 `ghcr.io/syntax-circus/fancyblazor-demo`, tagged with `latest` and the full
@@ -129,6 +141,11 @@ the documented intake process, review the diff, update SHA-256 values in
 `PROVENANCE.md`, and preserve `licenses/shader-gallery-LICENSE` and
 `THIRD-PARTY-NOTICES.md`. FancyBlazor adaptations belong outside the vendor
 folder.
+
+The unpublished WebGL spike separately vendors unmodified Three.js r184 ESM
+assets. Its package must retain `licenses/three-LICENSE` and
+`third-party/three/PROVENANCE.md`, ship no Node artifact or external executable
+asset load, and remain under the dedicated raw/Brotli adapter-renderer size gate.
 
 ## Testing and completion
 

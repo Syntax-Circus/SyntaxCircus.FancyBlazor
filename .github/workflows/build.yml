@@ -32,6 +32,12 @@ jobs:
         shell: pwsh
         run: ./eng/verify-package.ps1 -PackageDirectory artifacts
 
+      - name: Pack unpublished WebGL boundary spike
+        run: dotnet pack src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj --no-build --configuration Release --output artifacts/webgl-spike
+      - name: Verify unpublished WebGL boundary spike
+        shell: pwsh
+        run: ./eng/verify-webgl-package.ps1 -PackageDirectory artifacts/webgl-spike -CorePackageDirectory artifacts
+
       - name: Upload browser-test evidence
         if: always()
         uses: actions/upload-artifact@v4

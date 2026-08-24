@@ -7,6 +7,15 @@ Until 1.0, changes that alter public components, parameters, defaults, rendered
 markup hooks, CSS custom properties, registration, or hosting behavior must be
 called out clearly as potentially breaking.
 
+## [Unreleased]
+
+### Added
+
+- Validate an unpublished `SyntaxCircus.FancyBlazor.WebGL` companion boundary
+  spike locally and in CI, with locally vendored Three.js r184 assets, package
+  isolation, size budgets, and a clean consumer proof. This is not a published
+  package or part of the advertised FancyBlazor catalog.
+
 ## [0.2.0] - 2026-08-23
 
 ### Added

@@ -8,6 +8,7 @@
     <File Path="Directory.Packages.props" />
     <File Path="eng/verify-docs.ps1" />
     <File Path="eng/verify-package.ps1" />
+    <File Path="eng/verify-webgl-package.ps1" />
     <File Path="GitVersion.yml" />
     <File Path="global.json" />
     <File Path="README.md" />

@@ -1,6 +1,6 @@
 # FancyBlazor Discovery Index
 
-- **Status:** Twelve implementation phases complete; v0.2.0 gates passed
+- **Status:** Thirteen implementation phases complete; Phase 13 is an unpublished validated package-boundary spike
 - **Project brief:** [../PROJECT-PLAN.md](../PROJECT-PLAN.md)
 - **Requirements:** [01-REQUIREMENTS.md](01-REQUIREMENTS.md)
 - **Architecture:** [02-ARCHITECTURE.md](02-ARCHITECTURE.md)
@@ -25,6 +25,7 @@
 10. [Composition and Authoring](PHASE-10-composition-and-authoring.md)
 11. [CSS-First Catalog Expansion](PHASE-11-css-first-catalog-expansion.md)
 12. v0.2.0 Atmosphere and Accents
+13. [WebGL Rendering Boundary](PHASE-13-webgl-rendering-boundary.md)
 
 ## Approval record
 

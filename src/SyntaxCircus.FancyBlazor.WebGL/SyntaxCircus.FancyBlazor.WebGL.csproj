@@ -26,4 +26,10 @@
   <ItemGroup>
     <ProjectReference Include="..\SyntaxCircus.FancyBlazor\SyntaxCircus.FancyBlazor.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\THIRD-PARTY-NOTICES.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\licenses\three-LICENSE" Pack="true" PackagePath="licenses\" />
+    <None Include="..\..\third-party\three\PROVENANCE.md" Pack="true" PackagePath="third-party\three\" />
+  </ItemGroup>
 </Project>

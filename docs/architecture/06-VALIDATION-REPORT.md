@@ -55,3 +55,20 @@ The local sandbox rejects GitVersion's repository ownership check. Local pack
 validation therefore uses `DisableGitVersionTask=true` with the candidate
 version explicitly supplied. The committed CI workflow uses an owned checkout,
 full Git history, and GitVersion without that override.
+
+## Phase 13 WebGL boundary spike evidence
+
+Phase 13 validates an unpublished `SyntaxCircus.FancyBlazor.WebGL` companion
+package with a disposable local version. The published core package remains in
+`artifacts`; the companion package is packed only to `artifacts/webgl-spike`.
+`eng/verify-webgl-package.ps1` inspects the companion for local Three.js r184
+assets, its MIT license and SHA-256 provenance, Node/external-load exclusions,
+and the adapter/renderer raw and Brotli budgets. It then restores and builds a
+clean Razor consumer that references only the local packages and calls
+`AddFancyBlazorWebGl()`.
+
+The CI upload and publish paths remain `artifacts/*.*nupkg`; because this glob
+does not recurse into `artifacts/webgl-spike`, the spike cannot be uploaded or
+published by the existing core package workflow. ADR-013 records the selected
+companion boundary and the five constrained future catalog candidates. This is
+validation evidence, not a claim that the companion has shipped.
