@@ -8,6 +8,9 @@ assets. A separately installed preview companion RCL owns optional Three.js
 effects. Both packages share one GitVersion-derived release version, while the
 companion renderer and lifecycle never join the core runtime or core package.
 The demo and test projects are non-packable consumers of both boundaries.
+The approved roadmap adds a third, separately installed UI RCL. It shares the
+release version and public namespace, depends on core only, and owns accessible
+widget markup and scoped styling without making WebGL transitive.
 
 ```text
 Razor component
@@ -23,6 +26,12 @@ Razor component
 ```text
 Preview companion boundary:
 Razor component -> separate companion runtime -> companion ES modules -> vendored Three.js r184
+```
+
+```text
+Planned UI companion boundary:
+UI component -> semantic HTML + scoped styles -> core palettes/motion defaults
+                                             -> no transitive WebGL dependency
 ```
 
 Components render meaningful HTML during SSR. After interactivity,

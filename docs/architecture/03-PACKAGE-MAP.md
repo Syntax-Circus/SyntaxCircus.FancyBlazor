@@ -4,8 +4,9 @@
 
 | Concern | Status | Package | Purpose and boundary | Owning phase |
 | --- | --- | --- | --- | --- |
-| Reusable utility UI | Excluded | `SyntaxCircus.Blazor.Components` | Separate error/not-found/reconnect concern; FancyBlazor owns visual effects only. | — |
+| Reusable host utility UI | Excluded | `SyntaxCircus.Blazor.Components` | Separate error/not-found/reconnect concern; the planned UI companion does not absorb shared host utilities. | — |
 | Optional 3D rendering | Published preview | `SyntaxCircus.FancyBlazor.WebGL` | Separately installed companion RCL selected by ADR-013; owns its Three.js r184 assets and runtime without changing the core package payload. It publishes at the exact core package version. | 13 |
+| Styled site controls | Planned | `SyntaxCircus.FancyBlazor.UI` | Optional exact-version companion selected by ADR-015; owns accessible marketing/content widget semantics and scoped themes, depends only on core, and does not replace shared host-utility components. | 16–17 |
 | Other catalog concerns | Not applicable | — | No auth, persistence, HTTP, storage, email, analytics, or business integration exists here. | — |
 
 ## NuGet dependencies
@@ -29,3 +30,8 @@ The WebGL preview companion depends on the same-version core package and vendors
 Three.js r184 ESM assets with the MIT text and SHA-256 provenance. Its
 adapter/renderer has an isolated size gate. CI stages both packages together,
 verifies their versions match, then publishes them through one release job.
+
+Phase 16 extends that same-version release set to the planned UI package. The UI
+companion must reference core at the exact version and must not reference the
+WebGL companion. Its package-content and clean-consumer gates become release
+requirements before its first publication.

@@ -11,6 +11,10 @@ called out clearly as potentially breaking.
 
 ### Added
 
+- Add a five-phase pre-1.0 roadmap for core kinetic effects, four WebGL fields
+  and materials, the optional `SyntaxCircus.FancyBlazor.UI` companion, its
+  marketing/content catalog, and cross-package stabilization.
+- Link the hosted FancyBlazor demo from the README.
 - Publish the optional `SyntaxCircus.FancyBlazor.WebGL` preview companion at the
   exact core package version, with locally vendored Three.js r184 assets,
   package isolation, size budgets, clean-consumer proof, and a same-version

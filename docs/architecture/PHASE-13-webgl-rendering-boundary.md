@@ -48,19 +48,20 @@ but no ThreeUI source code, shaders, or assets are included. FancyBlazor's
 adapter, material renderer, typed API, lifecycle, fallbacks, and demo are its
 own implementation.
 
-## Approved future catalog candidates
+## Approved follow-up catalog
 
-The published preview currently contains `HolographicSurface`. The boundary is
-approved for evaluation of exactly these additional future components:
+The published preview currently contains `HolographicSurface`. Phase 15 commits
+the boundary's four approved follow-up components:
 
 - `ParticleFieldBackground`
 - `WaveFieldBackground`
 - `RefractiveOrbBackground`
 - `PrismFieldBackground`
 
-Any future component remains subject to the core accessibility, semantic DOM,
-static fallback, reduced-motion, lifecycle cleanup, package, and documentation
-contracts. This list is a scoped follow-up catalog, not a release commitment.
+Each component remains subject to the core accessibility, semantic DOM, static
+fallback, reduced-motion, lifecycle cleanup, package, and documentation
+contracts. The components are roadmap commitments but are not part of the
+current published catalog until Phase 15 completes.
 
 ## Validation gate
 

@@ -2,7 +2,9 @@
 
 FancyBlazor is an MIT-licensed visual-effects component library that gives
 Blazor applications polished backgrounds, borders, reveals, and pointer motion
-without React islands, runtime CDNs, or consumer JavaScript build tooling.
+without React islands, runtime CDNs, or consumer JavaScript build tooling. Its
+approved pre-1.0 roadmap keeps those effects in core and WebGL packages while
+adding an optional styled UI companion for reusable site controls.
 
 ## Preview outcome
 
@@ -31,7 +33,10 @@ requirements.
   content and a palette-derived fallback.
 - Effect styles are scoped and CSS-framework-agnostic.
 - The preview exposes internal extension seams only. Custom shaders, public
-providers, additional engines, and the larger effect catalog are backlog.
+  providers, and additional engines remain out of scope. The approved roadmap
+  expands the typed effect catalog and introduces the separately installed
+  `SyntaxCircus.FancyBlazor.UI` companion without moving widget semantics into
+  core or making WebGL a transitive UI dependency.
 
 The completed catalog expansions add text, ambient-surface,
 pointer-interaction, spatial-surface, narrative-motion, and interaction-feedback

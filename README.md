@@ -9,6 +9,10 @@
   <img src="docs/assets/fancyblazor-marketing-640.png" width="320" alt="FancyBlazor optical mark" />
 </p>
 
+**Live demo:** [Explore the FancyBlazor catalog](https://fancyblazor-demo-latest.onrender.com)
+
+**Roadmap:** [See the approved pre-1.0 expansion phases](docs/architecture/99-IMPLEMENTATION-ROADMAP.md)
+
 Composable visual effects for Blazor: backgrounds, borders, viewport reveals,
 pointer motion, parallax, and shimmer—without React islands, a runtime CDN, or
 consumer JavaScript tooling.

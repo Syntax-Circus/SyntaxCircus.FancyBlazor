@@ -9,16 +9,21 @@ consumer-facing contract. Architecture decisions and phase status live in
 
 This repository publishes a core `net10.0` Razor Class Library plus an optional,
 same-version WebGL preview companion containing visual effects for Blazor. The
+approved pre-1.0 roadmap also plans an optional, same-version
+`SyntaxCircus.FancyBlazor.UI` companion for styled, accessible site controls. The
 core preview catalog includes shader and gradient backgrounds,
 glow and shimmer surfaces, reveal and stagger entrances, and pointer/scroll
 motion effects, including semantic text entrances, ambient overlays, bounded
 pointer particles, CSS-first spatial surfaces, in-flow narrative motion, and additive interaction feedback. FancyBlazor owns effect markup, scoped styles, coarse
 Blazor-to-JavaScript lifecycle calls, and the JavaScript rendering loop.
 
-It is not a general UI framework. Do not add buttons, inputs, layouts, routing,
-middleware, authentication, SEO policy, a CSS framework, global resets, host
-typography, or product-specific content. Meaningful consumer content must remain
-semantic DOM; canvas and glare layers are decorative.
+The core and WebGL packages are not general UI frameworks. Do not add buttons,
+inputs, layouts, or other semantic widgets to either package. Planned widget
+semantics belong only in the UI companion after its package-boundary phase begins.
+No FancyBlazor package owns routing, middleware, authentication, SEO policy,
+business logic, a CSS framework, global resets, host typography, or
+product-specific content. Meaningful consumer content must remain semantic DOM;
+canvas and glare layers are decorative.
 
 Use the relevant `SyntaxCircus.*` shared package for common host concerns rather
 than reimplementing them in an application. In particular, demo-host crawler
@@ -105,6 +110,9 @@ Every public component, parameter, enum value, default, rendered hook, CSS
 custom property, and setup step is consumer API.
 
 - Keep public types in `SyntaxCircus.FancyBlazor` so one Razor import is enough.
+- Keep the planned UI companion in that namespace and register it through
+  `AddFancyBlazorUi()`; it depends on core at the exact package version and must
+  never pull in WebGL transitively.
 - Prefer typed C# parameters; do not expose renderer names, raw uniforms,
   shader-gallery slugs, runtime handles, or provider internals.
 - Use `TimeSpan` for durations and clamp unsafe numeric inputs.
