@@ -112,21 +112,39 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         var page = await context.NewPageAsync();
         await page.GotoAsync($"{fixture.TestHostUrl}/webgl");
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 2");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().waitingContexts === 3");
+        await page.WaitForFunctionAsync("() => { const diagnostics = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); return diagnostics.waitingHandles?.length === 3 && diagnostics.instances.every(instance => instance.testId); }");
 
-        var first = page.Locator("[data-testid='holographic-first']");
-        await first.EvaluateAsync("element => element.style.display = 'none'");
-        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-third]')?.dataset.webglState === 'active'");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.state === 'waiting')?.handle > 3");
-        await page.Locator("[data-testid='holographic-third'] canvas").EvaluateAsync("canvas => canvas.dispatchEvent(new Event('webglcontextlost', { cancelable: true }))");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts < 2");
-        await page.Locator("[data-testid='holographic-third'] canvas").EvaluateAsync("canvas => canvas.dispatchEvent(new Event('webglcontextrestored'))");
-        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=holographic-third]')?.dataset.webglState === 'active'");
+        var activeTestId = await page.EvaluateAsync<string>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.active).testId");
+        var firstWaiterHandle = await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().waitingHandles[0]");
+        var firstWaiterTestId = await page.EvaluateAsync<string>($"() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.handle === {firstWaiterHandle}).testId");
+        var offscreenWaiterHandle = await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().waitingHandles.at(-1)");
+        var offscreenWaiterTestId = await page.EvaluateAsync<string>($"() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.handle === {offscreenWaiterHandle}).testId");
+
+        await page.Locator($"[data-testid='{offscreenWaiterTestId}']").EvaluateAsync("element => element.style.display = 'none'");
+        await page.WaitForFunctionAsync($"() => !globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().waitingHandles.includes({offscreenWaiterHandle})");
+
+        await page.Locator($"[data-testid='{activeTestId}']").EvaluateAsync("element => element.style.display = 'none'");
+        await page.WaitForFunctionAsync($"() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.handle === {firstWaiterHandle})?.active === true");
+
+        var nextWaiterHandle = await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().waitingHandles[0]");
+        var promotedCanvas = page.Locator($"[data-testid='{firstWaiterTestId}'] canvas");
+        await promotedCanvas.EvaluateAsync("canvas => { const context = canvas.getContext('webgl2'); globalThis.__syntaxCircusFancyBlazorWebGlLostContext = context.getExtension('WEBGL_lose_context'); globalThis.__syntaxCircusFancyBlazorWebGlLostContext.loseContext(); }");
+        await page.WaitForFunctionAsync($"() => {{ const diagnostics = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); const lost = diagnostics.instances.find(instance => instance.handle === {firstWaiterHandle}); return lost?.active === false && lost.state === 'fallback' && diagnostics.instances.find(instance => instance.handle === {nextWaiterHandle})?.active === true; }}");
+
+        await page.EvaluateAsync("() => globalThis.__syntaxCircusFancyBlazorWebGlLostContext.restoreContext()");
+        await page.WaitForFunctionAsync($"() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().waitingHandles.at(-1) === {firstWaiterHandle}");
+
+        var otherTestIds = await page.EvaluateAsync<string[]>($"() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.filter(instance => instance.handle !== {firstWaiterHandle}).map(instance => instance.testId)");
+        foreach (var testId in otherTestIds)
+        {
+            await page.Locator($"[data-testid='{testId}']").EvaluateAsync("element => element.style.display = 'none'");
+        }
+        await page.WaitForFunctionAsync($"() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.handle === {firstWaiterHandle})?.active === true");
 
         await page.EvaluateAsync("() => { document.hidden = true; document.dispatchEvent(new Event('visibilitychange')); }");
         await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 0 && globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().animationFrameCount === 0");
         await page.EvaluateAsync("() => { document.hidden = false; document.dispatchEvent(new Event('visibilitychange')); }");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 2");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 1");
     }
 
     [Fact]

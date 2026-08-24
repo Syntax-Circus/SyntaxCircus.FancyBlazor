@@ -23,6 +23,8 @@ export async function createHolographicSurface(canvas, options, defaults) {
     scene.add(new THREE.Mesh(geometry, material));
     let frame = 0;
     let startedAt = performance.now();
+    let destroyed = false;
+    let restoreContext = null;
 
     function size() {
         const bounds = canvas.getBoundingClientRect();
@@ -57,11 +59,37 @@ export async function createHolographicSurface(canvas, options, defaults) {
                 .map(color => `#${color.getHexString()}`);
         },
         destroy() {
+            if (destroyed) {
+                return restoreContext;
+            }
+
+            destroyed = true;
             if (frame) { cancelAnimationFrame(frame); frame = 0; }
+            const context = renderer.getContext();
+            const extension = context.getExtension("WEBGL_lose_context");
+            const contextWasLost = context.isContextLost();
+            const contextLost = !extension || contextWasLost
+                ? Promise.resolve()
+                : new Promise(resolve => canvas.addEventListener("webglcontextlost", resolve, { once: true }));
+            let restoreRequest = null;
+            restoreContext = () => {
+                restoreRequest ??= (async () => {
+                    await contextLost;
+                    if (!extension || !context.isContextLost()) {
+                        return;
+                    }
+
+                    const restoration = new Promise(resolve => canvas.addEventListener("webglcontextrestored", resolve, { once: true }));
+                    extension.restoreContext();
+                    await restoration;
+                })();
+                return restoreRequest;
+            };
             geometry.dispose();
             material.dispose();
             renderer.dispose();
             renderer.forceContextLoss();
+            return restoreContext;
         },
     };
 }

@@ -49,13 +49,15 @@ function destroyRenderer(instance, renderer = instance.renderer) {
 
     instance.releasing = true;
     try {
-        renderer.destroy();
+        const restoreContext = renderer.destroy();
+        instance.restoreContext = !instance.destroyed && typeof restoreContext === "function"
+            ? restoreContext
+            : null;
     } finally {
         rendererObjectsDestroyed++;
         if (instance.renderer === renderer) {
             instance.renderer = null;
         }
-        instance.releasing = false;
     }
 }
 
@@ -75,6 +77,19 @@ async function pump() {
         instance.active = true;
         setState(instance, "loading");
         try {
+            const restoreContext = instance.restoreContext;
+            if (restoreContext) {
+                await restoreContext();
+                if (instance.restoreContext === restoreContext) {
+                    instance.restoreContext = null;
+                }
+                instance.releasing = false;
+                if (!isEligible(instance) || !instance.active || instances.get(instance.handle) !== instance) {
+                    release(instance, false);
+                    continue;
+                }
+            }
+
             const constructionGate = globalThis.__syntaxCircusFancyBlazorWebGlConstructionGate;
             if (constructionGate && typeof constructionGate.then === "function") {
                 await constructionGate;
@@ -98,6 +113,7 @@ async function pump() {
             }
 
             instance.renderer = renderer;
+            instance.releasing = false;
             threeLoaded = true;
             instance.renderer.start();
             setState(instance, "active");
@@ -135,7 +151,7 @@ function release(instance, requeue) {
 function recheck(instance) {
     if (isEligible(instance)) {
         enqueue(instance);
-    } else if (instance.active) {
+    } else if (instance.active || instance.waiting) {
         release(instance, false);
     }
 }
@@ -143,6 +159,7 @@ function recheck(instance) {
 function getDiagnostics() {
     const detail = [...instances.values()].map(instance => ({
         handle: instance.handle,
+        testId: instance.element.getAttribute("data-testid"),
         state: instance.element.dataset.webglState,
         intensity: instance.options.intensity,
         palette: instance.renderer?.getPalette() ?? instance.options.palette,
@@ -153,6 +170,7 @@ function getDiagnostics() {
         instanceCount: instances.size,
         activeContexts,
         waitingContexts: waiting.length,
+        waitingHandles: waiting.map(instance => instance.handle),
         animationFrameCount: [...instances.values()].filter(instance => instance.renderer?.hasFrame()).length,
         rendererObjectsCreated,
         rendererObjectsDestroyed,
@@ -200,6 +218,7 @@ export function createEffect(element, effect, options, defaults) {
         contextLost: false,
         renderer: null,
         releasing: false,
+        restoreContext: null,
         observer: null,
         pointerMove: null,
         contextLostHandler: null,
@@ -243,6 +262,8 @@ export function createEffect(element, effect, options, defaults) {
         setState(instance, "fallback");
     };
     instance.contextRestoredHandler = () => {
+        instance.releasing = false;
+        instance.restoreContext = null;
         instance.contextLost = false;
         recheck(instance);
     };
