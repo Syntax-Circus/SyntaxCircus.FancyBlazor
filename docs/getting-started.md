@@ -41,6 +41,32 @@ Then wrap existing content:
 FancyBlazor loads its JavaScript module through Blazor interop and ships effect
 styles through Razor CSS isolation. Do not add a script tag or npm dependency.
 
+## Optional: enable the WebGL preview
+
+Install the separately packaged companion when you want the preview
+`HolographicSurface`. NuGet resolves its matching core dependency.
+
+```bash
+dotnet add package SyntaxCircus.FancyBlazor.WebGL
+```
+
+Add the companion registration in each executable host. It registers core
+defaults too, so the separate core call is needed only when configuring shared
+options.
+
+```csharp
+builder.Services.AddFancyBlazorWebGl();
+```
+
+```csharp
+builder.Services.AddFancyBlazor(options => options.Quality = FancyQuality.Low);
+builder.Services.AddFancyBlazorWebGl(options => options.MaxActiveContexts = 2);
+```
+
+Interactive Auto applications call `AddFancyBlazorWebGl()` in both the server
+and `.Client` projects. No Node, npm, CDN, script tag, or raw shader setup is
+required. Continue with the [HolographicSurface preview guide](components/holographic-surface.md).
+
 ## 4. Run the repository demo
 
 ```bash
@@ -54,6 +80,7 @@ The demo source is the canonical compiling example set:
 - [GlowBorder](../samples/FancyBlazor.Demo.Client/Pages/Border.razor)
 - [Reveal](../samples/FancyBlazor.Demo.Client/Pages/RevealPage.razor)
 - [Tilt](../samples/FancyBlazor.Demo.Client/Pages/TiltPage.razor)
+- [WebGL preview showcase](../samples/FancyBlazor.Demo.Client/Pages/WebGlShowcase.razor)
 
 Continue with [hosting modes](guides/hosting-modes.md) if your application uses
 prerendering, WebAssembly, or Interactive Auto.

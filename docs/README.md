@@ -47,6 +47,7 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [TypeFlow](components/type-flow.md)
 - [StatusPulse](components/status-pulse.md)
 - [LaunchHalo](components/launch-halo.md)
+- [HolographicSurface (optional WebGL preview)](components/holographic-surface.md)
 
 ## Guides
 

@@ -2,6 +2,7 @@
 
 [![Build](https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor/actions/workflows/build.yml/badge.svg)](https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor/actions/workflows/build.yml)
 [![NuGet](https://img.shields.io/nuget/v/SyntaxCircus.FancyBlazor.svg)](https://www.nuget.org/packages/SyntaxCircus.FancyBlazor)
+[![WebGL Preview](https://img.shields.io/nuget/v/SyntaxCircus.FancyBlazor.WebGL.svg?label=WebGL%20preview)](https://www.nuget.org/packages/SyntaxCircus.FancyBlazor.WebGL)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 <p align="center">
@@ -56,6 +57,36 @@ No script tag, npm package, CDN, or manual stylesheet import is required.
 
 Before interactivity—or when WebGL is unavailable—the component displays a
 palette-derived CSS background and leaves the content usable.
+
+## Optional WebGL preview
+
+`SyntaxCircus.FancyBlazor.WebGL` is a separately installed preview companion.
+It publishes at the same version as the core package while keeping Three.js and
+the GPU lifecycle out of applications that do not opt in.
+
+```bash
+dotnet add package SyntaxCircus.FancyBlazor.WebGL
+```
+
+```csharp
+builder.Services.AddFancyBlazorWebGl();
+```
+
+This also registers core defaults. Call `AddFancyBlazor(...)` first when you
+need to configure the shared motion, quality, pause, or diagnostics options.
+
+```razor
+<HolographicSurface Palette="FancyPalettes.Witchlight" Interactive>
+    <article>Semantic content remains ordinary HTML.</article>
+</HolographicSurface>
+```
+
+The companion vendors the unmodified official Three.js r184 ESM build under
+MIT and requires no Node, npm, CDN, or manual script import. Its visual
+direction was informed by the [ThreeUI effect catalog](https://github.com/MengTo/threeui),
+but it includes no ThreeUI source code or assets. Treat its components,
+parameters, defaults, and visual output as preview API that may change before
+1.0.
 
 ## Preview components
 
@@ -140,6 +171,7 @@ continuous rendering stops while hidden or offscreen.
 
 - [Getting started](docs/getting-started.md)
 - [Component guides and API tables](docs/README.md#components)
+- [HolographicSurface preview guide](docs/components/holographic-surface.md)
 - [Palettes and styling](docs/guides/palettes-and-styling.md)
 - [Accessibility](docs/guides/accessibility.md)
 - [Performance](docs/guides/performance.md)
@@ -150,6 +182,7 @@ continuous rendering stops while hidden or offscreen.
 - [Expressive-effects demo](samples/FancyBlazor.Demo.Client/Pages/ExpressiveEffects.razor)
 - [Spatial surfaces](docs/guides/spatial-surfaces.md)
 - [Spatial-surfaces demo](samples/FancyBlazor.Demo.Client/Pages/SpatialSurfaces.razor)
+- [WebGL surface showcase](samples/FancyBlazor.Demo.Client/Pages/WebGlShowcase.razor)
 - [Narrative motion](docs/guides/narrative-motion.md)
 - [Narrative-motion demo](samples/FancyBlazor.Demo.Client/Pages/NarrativeMotion.razor)
 - [Interaction feedback](docs/guides/interaction-feedback.md)
@@ -168,9 +201,12 @@ continuous rendering stops while hidden or offscreen.
 dotnet restore SyntaxCircus.FancyBlazor.slnx
 dotnet build SyntaxCircus.FancyBlazor.slnx --no-restore --configuration Release
 dotnet test SyntaxCircus.FancyBlazor.slnx --no-build --configuration Release
-dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release
+dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release --output artifacts/release-preview
+dotnet pack src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj --no-build --configuration Release --output artifacts/release-preview
 pwsh eng/verify-docs.ps1
-pwsh eng/verify-package.ps1
+pwsh eng/verify-package.ps1 -PackageDirectory artifacts/release-preview
+pwsh eng/verify-webgl-package.ps1 -PackageDirectory artifacts/release-preview -CorePackageDirectory artifacts/release-preview
+pwsh eng/verify-release-packages.ps1 -PackageDirectory artifacts/release-preview
 ```
 
 Install the Playwright browser once before the first local browser-test run;
@@ -179,5 +215,5 @@ the exact command is documented in [AGENTS.md](AGENTS.md#commands).
 ## Contributing and license
 
 Read [AGENTS.md](AGENTS.md) before changing public behavior or vendored assets.
-FancyBlazor is MIT licensed; see [LICENSE](LICENSE). Bundled shader.gallery
-notices are in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+FancyBlazor is MIT licensed; see [LICENSE](LICENSE). Bundled shader.gallery and
+Three.js notices are in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).

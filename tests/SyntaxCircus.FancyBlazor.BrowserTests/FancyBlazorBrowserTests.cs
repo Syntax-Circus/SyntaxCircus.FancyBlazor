@@ -366,6 +366,63 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task InteractiveAutoDemo_WebGlShowcaseControlsUpdateSurfaceWithoutReplacingContent()
+    {
+        using var process = BrowserHostFixture.StartServerHost(typeof(DemoAssemblyMarker).Assembly.Location, out var demoUrl);
+        try
+        {
+            await BrowserHostFixture.WaitUntilReadyAsync(demoUrl, process);
+            await using var browser = await NewWebGlBrowserAsync();
+            await using var context = await browser.NewContextAsync();
+            var page = await context.NewPageAsync();
+            await using var webGlCleanup = new WebGlPageCleanup(page);
+            await page.GotoAsync($"{demoUrl}/webgl");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'webgl-showcase-surface' && instance.active && instance.renderer)");
+
+            await page.EvaluateAsync("() => { globalThis.__webGlShowcaseContent = document.querySelector('[data-testid=webgl-showcase-surface] article'); globalThis.__webGlShowcaseCanvas = document.querySelector('[data-testid=webgl-showcase-surface] canvas'); }");
+            var initialHandle = await page.EvaluateAsync<long>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances[0].handle");
+            await page.Locator("[data-testid='webgl-intensity']").FillAsync("0.82");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances[0]?.intensity === 0.82");
+
+            var surface = page.Locator("[data-testid='webgl-showcase-surface']");
+            var style = await surface.GetAttributeAsync("style");
+            style.ShouldNotBeNull();
+            style.ShouldContain("--sc-fancy-holographic-intensity:0.82");
+            (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseContent === document.querySelector('[data-testid=webgl-showcase-surface] article')")).ShouldBeTrue();
+
+            await page.Locator("[data-testid='webgl-preset-deep-field']").ClickAsync(new() { Timeout = 1_000 });
+            await page.WaitForFunctionAsync("() => { const instance = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(candidate => candidate.testId === 'webgl-showcase-surface'); return instance?.renderer && instance.palette?.[0] === '#10b981'; }");
+            var presetStyle = await surface.GetAttributeAsync("style");
+            presetStyle.ShouldNotBeNull();
+            presetStyle.ShouldContain("--sc-fancy-holographic-depth:0.86");
+            (await page.EvaluateAsync<long>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances[0].handle")).ShouldBe(initialHandle);
+            (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts")).ShouldBe(1);
+            (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseContent === document.querySelector('[data-testid=webgl-showcase-surface] article')")).ShouldBeTrue();
+
+            await page.Locator("[data-testid='webgl-disabled']").CheckAsync();
+            await page.WaitForFunctionAsync("() => { const d = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); return d.instanceCount === 0 && d.activeContexts === 0 && d.animationFrameCount === 0 && d.liveRendererCount === 0; }");
+            (await surface.GetAttributeAsync("data-fancy-disabled")).ShouldBe("true");
+            (await surface.Locator("article").InnerTextAsync()).ShouldContain("Semantic HTML");
+            (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseContent === document.querySelector('[data-testid=webgl-showcase-surface] article')")).ShouldBeTrue();
+
+            await page.Locator("[data-testid='webgl-disabled']").UncheckAsync();
+            await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=webgl-showcase-surface]')?.dataset.fancyDisabled === 'false'");
+            (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseCanvas !== document.querySelector('[data-testid=webgl-showcase-surface] canvas')")).ShouldBeTrue();
+            await page.WaitForFunctionAsync("() => { const d = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); return d.instanceCount === 1 && d.activeContexts === 1 && d.animationFrameCount === 1 && d.liveRendererCount === 1 && d.instances.some(instance => instance.testId === 'webgl-showcase-surface' && instance.active && instance.renderer); }");
+            (await page.EvaluateAsync<bool>("() => { const canvas = document.querySelector('[data-testid=webgl-showcase-surface] canvas'); const context = canvas?.getContext('webgl2'); return Boolean(context && !context.isContextLost()); }")).ShouldBeTrue();
+            (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseContent === document.querySelector('[data-testid=webgl-showcase-surface] article')")).ShouldBeTrue();
+        }
+        finally
+        {
+            if (!process.HasExited)
+            {
+                process.Kill(entireProcessTree: true);
+                process.WaitForExit(10_000);
+            }
+        }
+    }
+
+    [Fact]
     public async Task CoreOnlyPage_NeverRequestsCompanionAssets()
     {
         await using var context = await fixture.Browser.NewContextAsync();

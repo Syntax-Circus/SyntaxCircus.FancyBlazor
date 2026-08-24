@@ -9,3 +9,7 @@ FancyBlazor's optional WebGL companion vendors the unmodified official Three.js 
 | `src/SyntaxCircus.FancyBlazor.WebGL/wwwroot/vendor/three/LICENSE` | `https://raw.githubusercontent.com/mrdoob/three.js/r184/LICENSE` | `8B378EBE60E2FE500158CB0AC71CB5E8B7D92953C2ABCC63A0EB90499653B5BC` |
 
 The companion's adapter and renderer files are FancyBlazor code; no changes have been made to the vendored Three.js files.
+
+ThreeUI informed the WebGL preview's visual direction only. FancyBlazor does
+not include ThreeUI source code, shaders, or assets; its typed component,
+renderer, lifecycle, and fallback implementation are independent.

@@ -14,7 +14,7 @@
 | 10 | Composition and Authoring | Complete | Quality, Accessibility, and Compatibility | Compile-tested composition recipes and named visual presets |
 | 11 | CSS-First Catalog Expansion | Complete | Quality, Accessibility, and Compatibility | Selected typography, separator, and surface treatments |
 | 12 | v0.2.0 Atmosphere and Accents | Complete | CSS-First Catalog Expansion | Six documented, tested Canvas 2D, typography, and child-preserving accent components |
-| 13 | WebGL Rendering Boundary Spike | Complete (unpublished) | v0.2.0 Atmosphere and Accents | ADR-013 selects a locally validated companion package; isolated pack/consumer proof, vendored Three r184 provenance, and no publication path |
+| 13 | WebGL Rendering Boundary and Preview | Complete (preview) | v0.2.0 Atmosphere and Accents | ADR-013 selects the companion boundary; ADR-014 publishes it at the exact core version with isolated pack/consumer proof and vendored Three r184 provenance |
 | 14 | 1.0 Stabilization | Candidate | All prior phases | Resolved preview API, migration notes, and release-readiness evidence |
 
 A phase is complete only when its task boxes and validation gate are supported by current command output or inspected artifacts.

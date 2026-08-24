@@ -11,10 +11,18 @@ called out clearly as potentially breaking.
 
 ### Added
 
-- Validate an unpublished `SyntaxCircus.FancyBlazor.WebGL` companion boundary
-  spike locally and in CI, with locally vendored Three.js r184 assets, package
-  isolation, size budgets, and a clean consumer proof. This is not a published
-  package or part of the advertised FancyBlazor catalog.
+- Publish the optional `SyntaxCircus.FancyBlazor.WebGL` preview companion at the
+  exact core package version, with locally vendored Three.js r184 assets,
+  package isolation, size budgets, clean-consumer proof, and a same-version
+  release guard.
+- Add a discoverable WebGL showcase with live typed controls, calibrated
+  presets, fallback inspection, preview/setup guidance, ThreeUI inspiration
+  attribution, and semantic-content preservation coverage.
+
+### Fixed
+
+- Recreate `HolographicSurface`'s decorative canvas after disabling its WebGL
+  runtime so re-enabling cannot reuse a deliberately context-lost canvas.
 
 ## [0.2.0] - 2026-08-23
 

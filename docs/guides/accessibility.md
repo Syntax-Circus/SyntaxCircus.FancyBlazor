@@ -18,6 +18,9 @@
 - ScrollBackdrop and ScrollIndicator layers are decorative, `aria-hidden`, and pointer-transparent; ScrollScene never hides its semantic content. HoverLift and PressScale add no roles or tab stops. FocusHalo is decorative and supplements rather than removes the host focus outline.
 - TextStroke and HighlightText retain their semantic child text. GradientDivider, WaveDivider, and SectionDivider are decorative and `aria-hidden`; use a native `<hr>` where a thematic break must be announced. MeshBackground, CornerAccents, PaperSurface texture, and EdgeGlow layers are decorative, pointer-transparent, and leave child semantics intact. Presets add no roles, tab stops, or activation behavior.
 - ConstellationBackground and ArcFlowBackground canvases are decorative, `aria-hidden`, pointer-transparent, and hidden for reduced motion. NeonText retains semantic child text. TypeFlow retains a complete accessible text value while its visual tokens are decorative. StatusPulse and LaunchHalo add no roles, tab stops, click behavior, status announcement, or focus replacement; their layers are decorative only.
+- The optional-preview `HolographicSurface` canvas is decorative, `aria-hidden`,
+  non-focusable, and pointer-transparent. Its child content remains the same
+  semantic DOM through WebGL startup, live updates, fallback, and teardown.
 - `FancyMotionPreference.RespectSystem` is the default. Continuous motion becomes
   a static/final state when `prefers-reduced-motion: reduce` is active.
 - `IgnoreSystem` is an explicit host decision; use it only when motion is

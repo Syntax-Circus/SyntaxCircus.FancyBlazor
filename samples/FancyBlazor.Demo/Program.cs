@@ -32,6 +32,7 @@ app.MapSitemap(_ =>
     new SitemapEntry("https://fancyblazor.syntaxcircus.com/background"),
     new SitemapEntry("https://fancyblazor.syntaxcircus.com/border"),
     new SitemapEntry("https://fancyblazor.syntaxcircus.com/spatial-surfaces"),
+    new SitemapEntry("https://fancyblazor.syntaxcircus.com/webgl"),
     new SitemapEntry("https://fancyblazor.syntaxcircus.com/reveal"),
     new SitemapEntry("https://fancyblazor.syntaxcircus.com/tilt"),
     new SitemapEntry("https://fancyblazor.syntaxcircus.com/narrative-motion"),

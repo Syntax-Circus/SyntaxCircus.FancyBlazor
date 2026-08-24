@@ -1,8 +1,9 @@
 [CmdletBinding()]
 param(
-    [string] $PackageDirectory = (Join-Path $PSScriptRoot "..\artifacts\webgl-spike"),
+    [string] $PackageDirectory = (Join-Path $PSScriptRoot "..\artifacts"),
     [string] $CorePackageDirectory,
-    [string] $PackageVersion
+    [string] $PackageVersion,
+    [string] $ProvenancePath = (Join-Path $PSScriptRoot "..\third-party\three\PROVENANCE.md")
 )
 
 $ErrorActionPreference = "Stop"
@@ -36,6 +37,10 @@ function Get-BrotliLength {
         return $memory.Length
     }
     finally { $memory.Dispose() }
+}
+function Get-Sha256Hex {
+    param([Parameter(Mandatory)] [byte[]] $Bytes)
+    return [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData($Bytes))
 }
 
 function Test-ExternalExecutableLoad {
@@ -73,9 +78,40 @@ try {
         }
     }
 
-    $requiredEntries = @("THIRD-PARTY-NOTICES.md", "licenses/three-LICENSE", "third-party/three/PROVENANCE.md", "lib/net10.0/SyntaxCircus.FancyBlazor.WebGL.dll", "staticwebassets/js/fancy-blazor-webgl.js", "staticwebassets/js/holographic-surface-renderer.js", "staticwebassets/vendor/three/LICENSE", "staticwebassets/vendor/three/build/three.core.js", "staticwebassets/vendor/three/build/three.module.js", "buildTransitive/SyntaxCircus.FancyBlazor.WebGL.props")
+    $requiredEntries = @("README.md", "THIRD-PARTY-NOTICES.md", "licenses/three-LICENSE", "third-party/three/PROVENANCE.md", "lib/net10.0/SyntaxCircus.FancyBlazor.WebGL.dll", "staticwebassets/js/fancy-blazor-webgl.js", "staticwebassets/js/holographic-surface-renderer.js", "staticwebassets/vendor/three/LICENSE", "staticwebassets/vendor/three/build/three.core.js", "staticwebassets/vendor/three/build/three.module.js", "buildTransitive/SyntaxCircus.FancyBlazor.WebGL.props")
     $missingEntries = @($requiredEntries | Where-Object { $_ -notin $entryNames })
     if ($missingEntries.Count -gt 0) { throw "Package is missing required entries: $($missingEntries -join ', ')" }
+
+    $resolvedProvenancePath = [System.IO.Path]::GetFullPath($ProvenancePath)
+    if (-not (Test-Path -LiteralPath $resolvedProvenancePath -PathType Leaf)) {
+        throw "Three.js provenance file does not exist: $resolvedProvenancePath"
+    }
+    [byte[]] $recordedProvenanceBytes = [System.IO.File]::ReadAllBytes($resolvedProvenancePath)
+    [byte[]] $packagedProvenanceBytes = Read-ArchiveEntryBytes -Entry $archive.GetEntry("third-party/three/PROVENANCE.md")
+    if ((Get-Sha256Hex -Bytes $recordedProvenanceBytes) -ne (Get-Sha256Hex -Bytes $packagedProvenanceBytes)) {
+        throw "Packaged Three.js provenance does not match $resolvedProvenancePath."
+    }
+
+    $provenanceText = [System.Text.Encoding]::UTF8.GetString($recordedProvenanceBytes)
+    $vendorEntries = @(
+        @{ Source = "src/SyntaxCircus.FancyBlazor.WebGL/wwwroot/vendor/three/build/three.module.js"; Package = "staticwebassets/vendor/three/build/three.module.js" },
+        @{ Source = "src/SyntaxCircus.FancyBlazor.WebGL/wwwroot/vendor/three/build/three.core.js"; Package = "staticwebassets/vendor/three/build/three.core.js" },
+        @{ Source = "src/SyntaxCircus.FancyBlazor.WebGL/wwwroot/vendor/three/LICENSE"; Package = "staticwebassets/vendor/three/LICENSE" }
+    )
+    foreach ($vendorEntry in $vendorEntries) {
+        $hashPattern = ('(?m)\|\s*`{0}`\s*\|[^|\r\n]*\|\s*`(?<hash>[0-9A-Fa-f]{{64}})`\s*\|' -f [regex]::Escape($vendorEntry.Source))
+        $hashMatch = [regex]::Match($provenanceText, $hashPattern)
+        if (-not $hashMatch.Success) {
+            throw "Three.js provenance does not record a SHA-256 value for $($vendorEntry.Source)."
+        }
+
+        [byte[]] $vendorBytes = Read-ArchiveEntryBytes -Entry $archive.GetEntry($vendorEntry.Package)
+        $actualHash = Get-Sha256Hex -Bytes $vendorBytes
+        $expectedHash = $hashMatch.Groups['hash'].Value
+        if (-not [string]::Equals($actualHash, $expectedHash, [StringComparison]::OrdinalIgnoreCase)) {
+            throw "Three.js provenance hash mismatch for $($vendorEntry.Package): expected $expectedHash; found $actualHash."
+        }
+    }
 
     $ownedScripts = @($archive.GetEntry("staticwebassets/js/fancy-blazor-webgl.js"), $archive.GetEntry("staticwebassets/js/holographic-surface-renderer.js"))
     [long] $rawLength = 0
@@ -121,7 +157,7 @@ public static class Registration
     $escapedPackageRoot = [System.Security.SecurityElement]::Escape($packageRoot); $escapedCorePackageRoot = [System.Security.SecurityElement]::Escape($corePackageRoot)
     Set-Content -LiteralPath $nugetConfig -Encoding utf8 -Value @"
 <?xml version="1.0" encoding="utf-8"?>
-<configuration><packageSources><clear /><add key="webgl-spike" value="$escapedPackageRoot" /><add key="core-package" value="$escapedCorePackageRoot" /><add key="nuget.org" value="https://api.nuget.org/v3/index.json" /></packageSources></configuration>
+<configuration><packageSources><clear /><add key="webgl-preview" value="$escapedPackageRoot" /><add key="core-package" value="$escapedCorePackageRoot" /><add key="nuget.org" value="https://api.nuget.org/v3/index.json" /></packageSources></configuration>
 "@
     & dotnet restore $projectFile --configfile $nugetConfig
     if ($LASTEXITCODE -ne 0) { throw "Clean WebGL package consumer restore failed." }

@@ -86,6 +86,66 @@ public sealed class HolographicSurfaceTests
         defaults.ShouldContain("\"pauseWhenOffscreen\":true");
     }
 
+    [Fact]
+    public async Task HolographicSurface_RapidReenable_WaitsForTeardownBeforeCreatingReplacement()
+    {
+        await using var context = CreateContext();
+        var module = context.JSInterop.SetupModule(ModulePath);
+        module.Setup<long>("createEffect", _ => true).SetResult(11);
+        var destroy = module.SetupVoid("destroyEffect", _ => true);
+        module.SetupVoid("disposeRuntime", _ => true).SetVoidResult();
+
+        var cut = context.Render<HolographicSurface>();
+
+        cut.Render(parameters => parameters.Add(component => component.Disabled, true));
+        cut.Render(parameters => parameters.Add(component => component.Disabled, false));
+
+        module.Invocations.Count(call => call.Identifier == "createEffect").ShouldBe(1);
+
+        destroy.SetVoidResult();
+        await cut.WaitForStateAsync(
+            () => module.Invocations.Count(call => call.Identifier == "createEffect") == 2,
+            TimeSpan.FromSeconds(1));
+    }
+
+    [Fact]
+    public async Task HolographicSurface_DisposalDuringCreation_DestroysTheStaleHandle()
+    {
+        await using var context = CreateContext();
+        var module = context.JSInterop.SetupModule(ModulePath);
+        var create = module.Setup<long>("createEffect", _ => true);
+        module.SetupVoid("destroyEffect", _ => true).SetVoidResult();
+        module.SetupVoid("disposeRuntime", _ => true).SetVoidResult();
+
+        context.Render<HolographicSurface>();
+
+        var disposal = context.DisposeComponentsAsync();
+        create.SetResult(17);
+        await disposal.WaitAsync(TimeSpan.FromSeconds(1), Xunit.TestContext.Current.CancellationToken);
+
+        module.Invocations.Count(call => call.Identifier == "destroyEffect").ShouldBe(1);
+        module.Invocations.Single(call => call.Identifier == "destroyEffect").Arguments[0].ShouldBe(17L);
+    }
+
+    [Fact]
+    public async Task HolographicSurface_DisposalDuringTeardown_DoesNotCreateOrRenderAReplacement()
+    {
+        await using var context = CreateContext();
+        var module = context.JSInterop.SetupModule(ModulePath);
+        module.Setup<long>("createEffect", _ => true).SetResult(23);
+        var destroy = module.SetupVoid("destroyEffect", _ => true);
+        module.SetupVoid("disposeRuntime", _ => true).SetVoidResult();
+        var cut = context.Render<HolographicSurface>();
+
+        cut.Render(parameters => parameters.Add(component => component.Disabled, true));
+        var disposal = context.DisposeComponentsAsync();
+        destroy.SetVoidResult();
+        await disposal.WaitAsync(TimeSpan.FromSeconds(1), Xunit.TestContext.Current.CancellationToken);
+
+        module.Invocations.Count(call => call.Identifier == "createEffect").ShouldBe(1);
+        module.Invocations.Count(call => call.Identifier == "destroyEffect").ShouldBe(1);
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();

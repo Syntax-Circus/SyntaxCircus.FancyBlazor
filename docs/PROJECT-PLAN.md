@@ -6,8 +6,10 @@ without React islands, runtime CDNs, or consumer JavaScript build tooling.
 
 ## Preview outcome
 
-`0.1.0-preview.1` contains one package, `SyntaxCircus.FancyBlazor`, targeting
-`net10.0`. The preview proves four representative rendering paths:
+The repository publishes a `net10.0` core package,
+`SyntaxCircus.FancyBlazor`, plus the separately installed
+`SyntaxCircus.FancyBlazor.WebGL` preview companion at the exact same version.
+The initial preview proved four representative rendering paths:
 
 - `ShaderBackground` with the vendored Nacre WebGL shader;
 - `GlowBorder`, implemented CSS-first;
@@ -31,10 +33,10 @@ requirements.
 - The preview exposes internal extension seams only. Custom shaders, public
 providers, additional engines, and the larger effect catalog are backlog.
 
-The completed catalog expansions add text, ambient-surface, pointer-interaction,
-and spatial-surface effects while retaining the same single-package,
-progressive-enhancement model. The next planned passes are narrative motion and
-interaction feedback; their public APIs remain intentionally undecided.
+The completed catalog expansions add text, ambient-surface,
+pointer-interaction, spatial-surface, narrative-motion, and interaction-feedback
+effects. Optional Three.js-backed work remains isolated in the WebGL companion;
+both packages preserve the same progressive-enhancement and semantic-DOM model.
 
 ## Delivery plan
 

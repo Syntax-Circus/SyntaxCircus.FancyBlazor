@@ -19,6 +19,13 @@ jobs:
       - name: Verify documentation links and examples
         shell: pwsh
         run: ./eng/verify-docs.ps1
+      - name: Verify package guard tests
+        shell: pwsh
+        run: |
+          ./eng/tests/verify-webgl-package.tests.ps1
+          ./eng/tests/verify-core-package-selection.tests.ps1
+          ./eng/tests/verify-release-packages.tests.ps1
+          ./eng/tests/publish-nuget-packages.tests.ps1
       - run: dotnet restore SyntaxCircus.FancyBlazor.slnx
       - run: dotnet build SyntaxCircus.FancyBlazor.slnx --no-restore --configuration Release
       - name: Install Playwright Chromium
@@ -32,11 +39,14 @@ jobs:
         shell: pwsh
         run: ./eng/verify-package.ps1 -PackageDirectory artifacts
 
-      - name: Pack unpublished WebGL boundary spike
-        run: dotnet pack src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj --no-build --configuration Release --output artifacts/webgl-spike
-      - name: Verify unpublished WebGL boundary spike
+      - name: Pack WebGL preview companion
+        run: dotnet pack src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj --no-build --configuration Release --output artifacts
+      - name: Verify WebGL preview companion
         shell: pwsh
-        run: ./eng/verify-webgl-package.ps1 -PackageDirectory artifacts/webgl-spike -CorePackageDirectory artifacts
+        run: ./eng/verify-webgl-package.ps1 -PackageDirectory artifacts -CorePackageDirectory artifacts
+      - name: Verify same-version release package set
+        shell: pwsh
+        run: ./eng/verify-release-packages.ps1 -PackageDirectory artifacts
 
       - name: Upload browser-test evidence
         if: always()
@@ -75,16 +85,22 @@ jobs:
         with:
           name: nuget-package
           path: artifacts
+      - name: Verify downloaded release package set
+        shell: pwsh
+        run: ./eng/verify-release-packages.ps1 -PackageDirectory artifacts
       - name: NuGet login (OIDC → temp API key)
         uses: NuGet/login@v1
         id: login
         with:
           user: ${{ secrets.NUGET_USER }}
       - name: Publish to NuGet
-        run: dotnet nuget push artifacts/*.nupkg --api-key ${{ steps.login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        shell: pwsh
+        env:
+          NUGET_API_KEY: ${{ steps.login.outputs.NUGET_API_KEY }}
+        run: ./eng/publish-nuget-packages.ps1 -PackageDirectory artifacts -ApiKey $env:NUGET_API_KEY
       - name: Tag published version
         run: |
-          package_path=$(find artifacts -maxdepth 1 -type f -name '*.nupkg' ! -name '*.snupkg' | head -n 1)
+          package_path=$(find artifacts -maxdepth 1 -type f -name 'SyntaxCircus.FancyBlazor.*.nupkg' ! -name 'SyntaxCircus.FancyBlazor.WebGL.*.nupkg' ! -name '*.snupkg' | head -n 1)
           if [ -z "$package_path" ]; then
             echo "No .nupkg found to derive the release tag."
             exit 1
@@ -139,3 +155,7 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+      - name: Trigger Render deploy
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: curl --fail-with-body --silent --show-error --request POST "$RENDER_DEPLOY_HOOK"

@@ -24,17 +24,21 @@ it, import one namespace, and render an obvious effect in under five minutes.
 - Remain independent of CSS frameworks and host layouts.
 - Treat warnings as errors and publish symbols and repository metadata.
 
-## Explicitly out of scope for preview
+## Explicitly out of scope and package boundaries
 
 - General-purpose controls or a design system.
 - More shaders, custom GLSL, public provider registration, or a public JavaScript extension API.
-- Paper Shaders, Three.js, WebGPU, particles, text effects, or a full playground.
+- Three.js, raw shaders, and 3D renderer lifecycle in the core package. The
+  optional WebGL preview companion may vendor a bounded Three.js runtime behind
+  typed components and automatic fallbacks.
+- Paper Shaders, WebGPU, arbitrary custom GLSL, or a full shader playground.
 - Runtime CDN loading, consumer JavaScript build tooling, or framework islands.
 
 ## Measurable acceptance
 
 - No active FancyBlazor animation frame remains for a hidden/offscreen effect.
 - Twenty mount/unmount cycles return the runtime registry to zero instances.
-- A clean project builds from the packed NuGet package without project references.
+- Clean projects build independently from the packed core and companion NuGet
+  packages without project references; the two release package versions match.
 - Every documented snippet maps to compiling sample source.
 - All Release builds, .NET tests, browser tests, and package inspections pass.

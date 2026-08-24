@@ -2,11 +2,12 @@
 
 ## Topology
 
-The published Razor Class Library contains the C# API, Razor components,
+The published core Razor Class Library contains its C# API, Razor components,
 isolated CSS, FancyBlazor's JavaScript adapter, and vendored shader-gallery
-assets. The demo and test projects are non-packable consumers. Phase 13 also
-validates, but does not publish or advertise, a separate WebGL companion RCL;
-its Three.js renderer and lifecycle never join the core runtime or core package.
+assets. A separately installed preview companion RCL owns optional Three.js
+effects. Both packages share one GitVersion-derived release version, while the
+companion renderer and lifecycle never join the core runtime or core package.
+The demo and test projects are non-packable consumers of both boundaries.
 
 ```text
 Razor component
@@ -20,7 +21,7 @@ Razor component
 ```
 
 ```text
-Unpublished companion boundary:
+Preview companion boundary:
 Razor component -> separate companion runtime -> companion ES modules -> vendored Three.js r184
 ```
 

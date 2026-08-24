@@ -1,6 +1,6 @@
 # FancyBlazor Discovery Index
 
-- **Status:** Thirteen implementation phases complete; Phase 13 is an unpublished validated package-boundary spike
+- **Status:** Thirteen implementation phases complete; Phase 13 ships an optional same-version WebGL preview companion
 - **Project brief:** [../PROJECT-PLAN.md](../PROJECT-PLAN.md)
 - **Requirements:** [01-REQUIREMENTS.md](01-REQUIREMENTS.md)
 - **Architecture:** [02-ARCHITECTURE.md](02-ARCHITECTURE.md)

@@ -6,9 +6,12 @@ namespace SyntaxCircus.FancyBlazor;
 /// <summary>Renders a progressively enhanced holographic surface behind semantic child content.</summary>
 public partial class HolographicSurface : ComponentBase, IAsyncDisposable
 {
+    private readonly SemaphoreSlim _lifecycleGate = new(1, 1);
     private ElementReference _element;
     private long? _handle;
     private string? _signature;
+    private long _canvasGeneration;
+    private volatile bool _disposed;
 
     [Inject]
     private IFancyWebGlRuntime Runtime { get; set; } = default!;
@@ -64,30 +67,50 @@ public partial class HolographicSurface : ComponentBase, IAsyncDisposable
     /// <inheritdoc />
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (Disabled)
+        var replaceCanvas = false;
+        await _lifecycleGate.WaitAsync().ConfigureAwait(false);
+        try
         {
-            await DestroyAsync().ConfigureAwait(false);
-            return;
+            if (_disposed)
+            {
+                return;
+            }
+
+            replaceCanvas = Disabled
+                ? await DestroyActiveHandleAsync(replaceCanvas: true).ConfigureAwait(false)
+                : await CreateOrUpdateAsync().ConfigureAwait(false);
+        }
+        finally
+        {
+            _lifecycleGate.Release();
         }
 
-        var options = CreateOptions();
-        var signature = JsonSerializer.Serialize(options);
-        if (_handle is null)
+        if (replaceCanvas)
         {
-            _handle = await Runtime.CreateAsync(_element, "holographic-surface", options).ConfigureAwait(false);
-            _signature = signature;
-        }
-        else if (!string.Equals(_signature, signature, StringComparison.Ordinal))
-        {
-            await Runtime.UpdateAsync(_handle.Value, options).ConfigureAwait(false);
-            _signature = signature;
+            await InvokeAsync(() =>
+            {
+                if (!_disposed)
+                {
+                    StateHasChanged();
+                }
+            });
         }
     }
 
     /// <inheritdoc />
     public async ValueTask DisposeAsync()
     {
-        await DestroyAsync().ConfigureAwait(false);
+        _disposed = true;
+        await _lifecycleGate.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            await DestroyActiveHandleAsync(replaceCanvas: false).ConfigureAwait(false);
+        }
+        finally
+        {
+            _lifecycleGate.Release();
+        }
+
         GC.SuppressFinalize(this);
     }
 
@@ -105,15 +128,57 @@ public partial class HolographicSurface : ComponentBase, IAsyncDisposable
     private string BuildStyle() =>
         $"--sc-fancy-primary:{Palette.Primary};--sc-fancy-secondary:{Palette.Secondary};--sc-fancy-accent:{Palette.Accent};--sc-fancy-background:{Palette.Background};--sc-fancy-holographic-intensity:{WebGlAttributeComposer.Number(WebGlAttributeComposer.Clamp(Intensity, 0, 1))};--sc-fancy-holographic-depth:{WebGlAttributeComposer.Number(WebGlAttributeComposer.Clamp(Depth, 0, 1))};--sc-fancy-holographic-sheen:{WebGlAttributeComposer.Number(WebGlAttributeComposer.Clamp(Sheen, 0, 1))};--sc-fancy-holographic-speed:{WebGlAttributeComposer.Number(WebGlAttributeComposer.Clamp(Speed, 0, 3))}";
 
-    private async ValueTask DestroyAsync()
+    private async ValueTask<bool> CreateOrUpdateAsync()
+    {
+        var options = CreateOptions();
+        var signature = JsonSerializer.Serialize(options);
+        if (_handle is null)
+        {
+            var createdHandle = await Runtime.CreateAsync(_element, "holographic-surface", options).ConfigureAwait(false);
+            if (createdHandle is not { } handle)
+            {
+                return false;
+            }
+
+            if (_disposed || Disabled)
+            {
+                var replaceCanvas = !_disposed;
+                if (replaceCanvas)
+                {
+                    Interlocked.Increment(ref _canvasGeneration);
+                }
+
+                await Runtime.DestroyAsync(handle).ConfigureAwait(false);
+                return replaceCanvas;
+            }
+
+            _handle = handle;
+            _signature = signature;
+        }
+        else if (!string.Equals(_signature, signature, StringComparison.Ordinal))
+        {
+            await Runtime.UpdateAsync(_handle.Value, options).ConfigureAwait(false);
+            _signature = signature;
+        }
+
+        return false;
+    }
+
+    private async ValueTask<bool> DestroyActiveHandleAsync(bool replaceCanvas)
     {
         if (_handle is not { } handle)
         {
-            return;
+            return false;
         }
 
         _handle = null;
         _signature = null;
+        if (replaceCanvas)
+        {
+            Interlocked.Increment(ref _canvasGeneration);
+        }
+
         await Runtime.DestroyAsync(handle).ConfigureAwait(false);
+        return replaceCanvas;
     }
 }

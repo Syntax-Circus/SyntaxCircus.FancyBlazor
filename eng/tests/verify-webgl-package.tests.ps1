@@ -30,25 +30,49 @@ function New-CompleteShapePackage {
         [Parameter(Mandatory)] [string] $Directory,
         [Parameter(Mandatory)] [string] $AdapterText,
         [Parameter(Mandatory)] [string] $RendererText,
-        [string] $VendorText
+        [string] $CoreVendorText = "export {};",
+        [string] $ExpectedCoreVendorText = "export {};",
+        [string] $VendorText,
+        [switch] $OmitReadme
     )
 
     Add-Type -AssemblyName System.IO.Compression.FileSystem
     $packagePath = Join-Path $Directory "SyntaxCircus.FancyBlazor.WebGL.0.2.1-preview.1.nupkg"
+    $moduleVendorText = "export {};"
+    $licenseText = "license"
+    function Get-TextSha256 {
+        param([Parameter(Mandatory)] [string] $Text)
+        return [Convert]::ToHexString([Security.Cryptography.SHA256]::HashData([Text.Encoding]::UTF8.GetBytes($Text)))
+    }
+    $provenanceText = @"
+# Three.js provenance
+
+| Local file | Source | SHA-256 |
+| --- | --- | --- |
+| ``src/SyntaxCircus.FancyBlazor.WebGL/wwwroot/vendor/three/build/three.module.js`` | source | ``$(Get-TextSha256 -Text $moduleVendorText)`` |
+| ``src/SyntaxCircus.FancyBlazor.WebGL/wwwroot/vendor/three/build/three.core.js`` | source | ``$(Get-TextSha256 -Text $ExpectedCoreVendorText)`` |
+| ``src/SyntaxCircus.FancyBlazor.WebGL/wwwroot/vendor/three/LICENSE`` | source | ``$(Get-TextSha256 -Text $licenseText)`` |
+"@
+    $provenancePath = Join-Path $Directory "PROVENANCE.md"
+    Set-Content -LiteralPath $provenancePath -Value $provenanceText -Encoding utf8 -NoNewline
     $entries = @{
         "THIRD-PARTY-NOTICES.md" = "notice"
+        "README.md" = "readme"
         "licenses/three-LICENSE" = "license"
-        "third-party/three/PROVENANCE.md" = "provenance"
+        "third-party/three/PROVENANCE.md" = $provenanceText
         "lib/net10.0/SyntaxCircus.FancyBlazor.WebGL.dll" = "assembly"
         "staticwebassets/js/fancy-blazor-webgl.js" = $AdapterText
         "staticwebassets/js/holographic-surface-renderer.js" = $RendererText
-        "staticwebassets/vendor/three/LICENSE" = "license"
-        "staticwebassets/vendor/three/build/three.core.js" = "export {};"
-        "staticwebassets/vendor/three/build/three.module.js" = "export {};"
+        "staticwebassets/vendor/three/LICENSE" = $licenseText
+        "staticwebassets/vendor/three/build/three.core.js" = $CoreVendorText
+        "staticwebassets/vendor/three/build/three.module.js" = $moduleVendorText
         "buildTransitive/SyntaxCircus.FancyBlazor.WebGL.props" = "<Project />"
     }
     if ($PSBoundParameters.ContainsKey("VendorText")) {
         $entries["staticwebassets/vendor/three/build/vendor-extension.js"] = $VendorText
+    }
+    if ($OmitReadme) {
+        $entries.Remove("README.md")
     }
     $archive = [System.IO.Compression.ZipFile]::Open($packagePath, [System.IO.Compression.ZipArchiveMode]::Create)
     try {
@@ -89,16 +113,20 @@ function Assert-CompleteShapeRejection {
         [Parameter(Mandatory)] [string] $Name,
         [Parameter(Mandatory)] [string] $AdapterText,
         [Parameter(Mandatory)] [string] $RendererText,
+        [string] $CoreVendorText = "export {};",
+        [string] $ExpectedCoreVendorText = "export {};",
         [string] $VendorText,
+        [switch] $OmitReadme,
         [Parameter(Mandatory)] [string] $ExpectedMessage
     )
 
     $caseDirectory = Join-Path $scratchRoot $Name
     New-Item -ItemType Directory -Path $caseDirectory | Out-Null
-    $packageArguments = @{ Directory = $caseDirectory; AdapterText = $AdapterText; RendererText = $RendererText }
+    $packageArguments = @{ Directory = $caseDirectory; AdapterText = $AdapterText; RendererText = $RendererText; CoreVendorText = $CoreVendorText; ExpectedCoreVendorText = $ExpectedCoreVendorText }
     if ($PSBoundParameters.ContainsKey("VendorText")) { $packageArguments.VendorText = $VendorText }
+    if ($OmitReadme) { $packageArguments.OmitReadme = $true }
     New-CompleteShapePackage @packageArguments
-    $output = & pwsh -NoProfile -File $verifier -PackageDirectory $caseDirectory -CorePackageDirectory $caseDirectory 2>&1
+    $output = & pwsh -NoProfile -File $verifier -PackageDirectory $caseDirectory -CorePackageDirectory $caseDirectory -ProvenancePath (Join-Path $caseDirectory "PROVENANCE.md") 2>&1
     if ($LASTEXITCODE -eq 0) {
         throw "$Name should be rejected by the WebGL package verifier."
     }
@@ -123,6 +151,8 @@ try {
     }
     Assert-CompleteShapeRejection -Name "raw-budget" -AdapterText ("a" * 1048576) -RendererText ";" -ExpectedMessage "limit is below 1 MiB"
     Assert-CompleteShapeRejection -Name "vendor-external-url" -AdapterText "const local = 1;" -RendererText ";" -VendorText 'fetch("https://example.test/vendor.js");' -ExpectedMessage "external URL"
+    Assert-CompleteShapeRejection -Name "missing-readme" -AdapterText "const local = 1;" -RendererText ";" -OmitReadme -ExpectedMessage "missing required entries: README.md"
+    Assert-CompleteShapeRejection -Name "mutated-three-vendor" -AdapterText "const local = 1;" -RendererText ";" -CoreVendorText "export const changed = true;" -ExpectedMessage "provenance hash mismatch"
     Assert-CompleteShapeRejection -Name "ordinary-comment" -AdapterText "//todo" -RendererText ";" -ExpectedMessage "matching core package"
     Assert-CompleteShapeRejection -Name "non-executable-namespace-url" -AdapterText "const local = 1;" -RendererText ";" -VendorText "document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');" -ExpectedMessage "matching core package"
     Write-Host "WebGL package verifier rejection cases passed."
