@@ -38,6 +38,28 @@ function Get-BrotliLength {
     finally { $memory.Dispose() }
 }
 
+function Test-ExternalExecutableLoad {
+    param([Parameter(Mandatory)] [string] $ScriptText)
+
+    $directLoaderPattern = '(?is)(?:\b(?:fetch|importScripts)\s*(?:/\*.*?\*/\s*)*\(\s*(?:/\*.*?\*/\s*)*["''`]\s*(?:(?:https?:)?//)|\bimport\s*(?:/\*.*?\*/\s*)*(?:\(\s*(?:/\*.*?\*/\s*)*["''`]\s*(?:(?:https?:)?//)|["''`]\s*(?:(?:https?:)?//)|[^;\r\n]*?\bfrom\s*(?:/\*.*?\*/\s*)*["''`]\s*(?:(?:https?:)?//)))'
+    if ($ScriptText -match $directLoaderPattern) {
+        return $true
+    }
+
+    $externalAssignments = [regex]::Matches(
+        $ScriptText,
+        '(?is)\b(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*["''`]\s*(?:(?:https?:)?//)')
+    foreach ($assignment in $externalAssignments) {
+        $name = [regex]::Escape($assignment.Groups[1].Value)
+        $variableLoaderPattern = "(?is)\b(?:fetch|importScripts|import)\s*(?:/\*.*?\*/\s*)*\(\s*(?:/\*.*?\*/\s*)*$name\b"
+        if ($ScriptText -match $variableLoaderPattern) {
+            return $true
+        }
+    }
+
+    return $false
+}
+
 $archive = [System.IO.Compression.ZipFile]::OpenRead($package.FullName)
 try {
     $entryNames = @($archive.Entries | ForEach-Object FullName)
@@ -46,7 +68,7 @@ try {
 
     foreach ($entry in @($archive.Entries | Where-Object { $_.FullName -match '\.js$' })) {
         $scriptText = [System.Text.Encoding]::UTF8.GetString((Read-ArchiveEntryBytes -Entry $entry))
-        if ($scriptText -match '(?is)["''`]\s*(?:(?:https?:)?//)') {
+        if (Test-ExternalExecutableLoad -ScriptText $scriptText) {
             throw "$($entry.FullName) loads executable assets from an external URL."
         }
     }

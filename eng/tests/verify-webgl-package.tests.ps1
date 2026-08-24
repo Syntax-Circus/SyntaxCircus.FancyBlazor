@@ -115,15 +115,16 @@ try {
     foreach ($case in @(
         @{ Name = "static-import"; Text = 'import "https://example.test/runtime.js";' },
         @{ Name = "dynamic-import"; Text = 'import("https://example.test/runtime.js");' },
-        @{ Name = "fetch"; Text = 'fetch("https://example.test/runtime.js");' },
+        @{ Name = "fetch"; Text = 'fetch/* comment */("https://example.test/runtime.js");' },
         @{ Name = "import-scripts"; Text = 'importScripts("https://example.test/runtime.js");' },
-        @{ Name = "protocol-relative"; Text = 'const runtime = "//example.test/runtime.js";' }
+        @{ Name = "protocol-relative-variable"; Text = 'const runtime = "//example.test/runtime.js"; fetch(runtime);' }
     )) {
         Assert-VerifierRejects -Name $case.Name -EntryName "staticwebassets/js/fancy-blazor-webgl.js" -EntryText $case.Text -ExpectedMessage "external URL"
     }
     Assert-CompleteShapeRejection -Name "raw-budget" -AdapterText ("a" * 1048576) -RendererText ";" -ExpectedMessage "limit is below 1 MiB"
     Assert-CompleteShapeRejection -Name "vendor-external-url" -AdapterText "const local = 1;" -RendererText ";" -VendorText 'fetch("https://example.test/vendor.js");' -ExpectedMessage "external URL"
     Assert-CompleteShapeRejection -Name "ordinary-comment" -AdapterText "//todo" -RendererText ";" -ExpectedMessage "matching core package"
+    Assert-CompleteShapeRejection -Name "non-executable-namespace-url" -AdapterText "const local = 1;" -RendererText ";" -VendorText "document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');" -ExpectedMessage "matching core package"
     Write-Host "WebGL package verifier rejection cases passed."
 }
 finally {
