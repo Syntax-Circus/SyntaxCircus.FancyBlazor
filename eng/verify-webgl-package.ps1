@@ -41,12 +41,14 @@ function Get-BrotliLength {
 $archive = [System.IO.Compression.ZipFile]::OpenRead($package.FullName)
 try {
     $entryNames = @($archive.Entries | ForEach-Object FullName)
-    $unexpectedEntries = @($entryNames | Where-Object { $_ -match '(?i)(^|/)(node_modules|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|npm-shrinkwrap\.json)(/|$)' })
+    $unexpectedEntries = @($entryNames | Where-Object { $_ -match '(?i)(^|/)(node_modules|package(?:-lock)?\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|\.pnp\.(?:cjs|js)|\.npmrc|\.yarnrc(?:\.yml)?|bower\.json)(/|$)' })
     if ($unexpectedEntries.Count -gt 0) { throw "Package contains Node artifacts: $($unexpectedEntries -join ', ')" }
 
-    foreach ($entry in @($archive.Entries | Where-Object { $_.FullName -match '\.js$' })) {
+    foreach ($entry in @($archive.Entries | Where-Object {
+        $_.FullName -in @("staticwebassets/js/fancy-blazor-webgl.js", "staticwebassets/js/holographic-surface-renderer.js")
+    })) {
         $scriptText = [System.Text.Encoding]::UTF8.GetString((Read-ArchiveEntryBytes -Entry $entry))
-        if ($scriptText -match '(?is)(?:import\s*\(\s*["'']|import\s*["'']|import\s+[^;]*?\bfrom\s*["'']|fetch\s*\(\s*["'']|importScripts\s*\(\s*["''])\s*https?://') {
+        if ($scriptText -match '(?i)https?:|//[A-Za-z0-9]') {
             throw "$($entry.FullName) loads executable assets from an external URL."
         }
     }
@@ -56,10 +58,13 @@ try {
     if ($missingEntries.Count -gt 0) { throw "Package is missing required entries: $($missingEntries -join ', ')" }
 
     $ownedScripts = @($archive.GetEntry("staticwebassets/js/fancy-blazor-webgl.js"), $archive.GetEntry("staticwebassets/js/holographic-surface-renderer.js"))
-    $ownedScriptBytes = @($ownedScripts | ForEach-Object { Read-ArchiveEntryBytes -Entry $_ })
-    [long] $rawLength = ($ownedScriptBytes | Measure-Object -Property Length -Sum).Sum
+    [long] $rawLength = 0
     [long] $brotliLength = 0
-    foreach ($bytes in $ownedScriptBytes) { $brotliLength += Get-BrotliLength -Bytes $bytes }
+    foreach ($ownedScript in $ownedScripts) {
+        [byte[]] $scriptBytes = Read-ArchiveEntryBytes -Entry $ownedScript
+        $rawLength += $scriptBytes.Length
+        $brotliLength += Get-BrotliLength -Bytes $scriptBytes
+    }
     if ($rawLength -ge 1MB) { throw "Combined adapter/renderer JavaScript is $rawLength bytes raw; the limit is below 1 MiB." }
     if ($brotliLength -ge 250KB) { throw "Combined adapter/renderer JavaScript is $brotliLength bytes Brotli; the limit is below 250 KiB." }
 }
