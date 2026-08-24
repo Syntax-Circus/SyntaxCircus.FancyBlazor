@@ -39,11 +39,11 @@
 - Produce `HolographicSurface` parameters `Palette`, `Intensity`, `Depth`, `Sheen`, `Speed`, `Interactive`, `Quality`, `Disabled`, `ChildContent`, `CssClass`, `Style`, and unmatched attributes.
 - Produce internal create/update/destroy runtime calls; the module path is `./_content/SyntaxCircus.FancyBlazor.WebGL/js/fancy-blazor-webgl.js`.
 
-- [ ] Write bUnit and registration tests first for defaults, clamping, stable hooks, merged attributes, child semantics, disabled lifecycle, and option configuration.
-- [ ] Run the focused test project and record expected RED failures caused by missing companion types/project.
-- [ ] Implement the minimal RCL, C# runtime, component markup/code, and CSS fallback.
-- [ ] Run focused tests GREEN, then build the solution with the documented GitVersion sandbox override.
-- [ ] Commit the task and write the SDD report with RED/GREEN evidence.
+- [x] Write bUnit and registration tests first for defaults, clamping, stable hooks, merged attributes, child semantics, disabled lifecycle, and option configuration.
+- [x] Run the focused test project and record expected RED failures caused by missing companion types/project.
+- [x] Implement the minimal RCL, C# runtime, component markup/code, and CSS fallback.
+- [x] Run focused tests GREEN, then build the solution with the documented GitVersion sandbox override.
+- [x] Commit the task and write the SDD report with RED/GREEN evidence.
 
 ### Task 2: Lazy Three.js renderer, context pool, and browser lifecycle proof
 
@@ -59,11 +59,11 @@
 - Each active instance owns one Three.js renderer/context; it fully releases on offscreen, hidden, disabled, context loss, or disposal and requeues when eligible.
 - Diagnostic data reports instances, active/waiting contexts, frames, and whether Three.js loaded.
 
-- [ ] Write browser tests first for SSR fallback, lazy network loading, active rendering, fine-pointer response, reduced motion, forced failure, context loss, offscreen/hidden release, FIFO cap with five visible surfaces, semantic child activation/focus, parameter update, Auto/WASM hosting, and twenty navigation disposal cycles.
-- [ ] Run focused browser tests and record RED failures caused by missing runtime/assets/routes.
-- [ ] Vendor exact r184 ESM assets/license and record source URLs and SHA-256 values; implement the bootstrap, renderer, pool, lifecycle, and test-host pages.
-- [ ] Run browser tests GREEN and confirm no core-only page requests companion assets.
-- [ ] Commit the task and write the SDD report with RED/GREEN evidence.
+- [x] Write browser tests first for SSR fallback, lazy network loading, active rendering, fine-pointer response, reduced motion, forced failure, context loss, offscreen/hidden release, FIFO cap with five visible surfaces, semantic child activation/focus, parameter update, Auto/WASM hosting, and twenty navigation disposal cycles.
+- [x] Run focused browser tests and record RED failures caused by missing runtime/assets/routes.
+- [x] Vendor exact r184 ESM assets/license and record source URLs and SHA-256 values; implement the bootstrap, renderer, pool, lifecycle, and test-host pages.
+- [x] Run browser tests GREEN and confirm no core-only page requests companion assets.
+- [x] Commit the task and write the SDD report with RED/GREEN evidence.
 
 ### Task 3: Package isolation, CI validation, and architecture records
 
@@ -77,9 +77,8 @@
 - Verification rejects Node artifacts and external executable imports/fetches, builds a clean package consumer, and enforces combined adapter/renderer JS below 1 MiB raw and 250 KiB Brotli.
 - ADR-013 selects the companion package and records the five approved future components.
 
-- [ ] Add package-verifier failure cases or script-level assertions before changing pack/CI behavior; record RED evidence.
-- [ ] Implement nested packing, package inspection, clean-consumer validation, licensing/provenance, documentation, roadmap/index/validation updates, and the follow-up catalog phase.
-- [ ] Run documentation and both package verification scripts GREEN.
-- [ ] Run Release restore/build/tests/pack, browser tests, and `git diff --check` with required sandbox overrides.
-- [ ] Commit the task and write the SDD report with verification evidence.
-
+- [x] Add package-verifier failure cases or script-level assertions before changing pack/CI behavior; record RED evidence.
+- [x] Implement nested packing, package inspection, clean-consumer validation, licensing/provenance, documentation, roadmap/index/validation updates, and the follow-up catalog phase.
+- [x] Run documentation and both package verification scripts GREEN.
+- [x] Run Release restore/build/tests/pack, browser tests, and `git diff --check` with required sandbox overrides.
+- [x] Commit the task and write the SDD report with verification evidence.
