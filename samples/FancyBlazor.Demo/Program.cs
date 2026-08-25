@@ -1,6 +1,7 @@
 using FancyBlazor.Demo.Client;
 using FancyBlazor.Demo.Components;
 using SyntaxCircus.AspNetCore.Common;
+using SyntaxCircus.Blazor.Tracking;
 using SyntaxCircus.FancyBlazor;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddFancyBlazor(options => options.EnableDiagnostics = true);
 builder.Services.AddFancyBlazorWebGl();
+builder.Services.AddSyntaxCircusTracking(builder.Configuration);
 
 var app = builder.Build();
 
