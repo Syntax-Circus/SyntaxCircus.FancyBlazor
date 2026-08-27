@@ -380,9 +380,9 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
             await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'webgl-showcase-surface' && instance.active && instance.renderer)");
 
             await page.EvaluateAsync("() => { globalThis.__webGlShowcaseContent = document.querySelector('[data-testid=webgl-showcase-surface] article'); globalThis.__webGlShowcaseCanvas = document.querySelector('[data-testid=webgl-showcase-surface] canvas'); }");
-            var initialHandle = await page.EvaluateAsync<long>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances[0].handle");
+            var initialHandle = await page.EvaluateAsync<long>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'webgl-showcase-surface').handle");
             await page.Locator("[data-testid='webgl-intensity']").FillAsync("0.82");
-            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances[0]?.intensity === 0.82");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'webgl-showcase-surface')?.intensity === 0.82");
 
             var surface = page.Locator("[data-testid='webgl-showcase-surface']");
             var style = await surface.GetAttributeAsync("style");
@@ -391,16 +391,20 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
             (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseContent === document.querySelector('[data-testid=webgl-showcase-surface] article')")).ShouldBeTrue();
 
             await page.Locator("[data-testid='webgl-preset-deep-field']").ClickAsync(new() { Timeout = 1_000 });
+            // The preset button now sits far below the four additional WebGL workbenches, so clicking it
+            // scrolls the Holographic specimen off-screen and its runtime legitimately pauses (pause-when-offscreen).
+            // Scroll it back into view so the reactivated renderer reflects the already-updated preset options.
+            await surface.ScrollIntoViewIfNeededAsync();
             await page.WaitForFunctionAsync("() => { const instance = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(candidate => candidate.testId === 'webgl-showcase-surface'); return instance?.renderer && instance.palette?.[0] === '#10b981'; }");
             var presetStyle = await surface.GetAttributeAsync("style");
             presetStyle.ShouldNotBeNull();
             presetStyle.ShouldContain("--sc-fancy-holographic-depth:0.86");
-            (await page.EvaluateAsync<long>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances[0].handle")).ShouldBe(initialHandle);
-            (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts")).ShouldBe(1);
+            (await page.EvaluateAsync<long>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'webgl-showcase-surface').handle")).ShouldBe(initialHandle);
+            (await page.EvaluateAsync<bool>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'webgl-showcase-surface')?.active === true")).ShouldBeTrue();
             (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseContent === document.querySelector('[data-testid=webgl-showcase-surface] article')")).ShouldBeTrue();
 
             await page.Locator("[data-testid='webgl-disabled']").CheckAsync();
-            await page.WaitForFunctionAsync("() => { const d = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); return d.instanceCount === 0 && d.activeContexts === 0 && d.animationFrameCount === 0 && d.liveRendererCount === 0; }");
+            await page.WaitForFunctionAsync("() => !globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.testId === 'webgl-showcase-surface')");
             (await surface.GetAttributeAsync("data-fancy-disabled")).ShouldBe("true");
             (await surface.Locator("article").InnerTextAsync()).ShouldContain("Semantic HTML");
             (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseContent === document.querySelector('[data-testid=webgl-showcase-surface] article')")).ShouldBeTrue();
@@ -408,7 +412,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
             await page.Locator("[data-testid='webgl-disabled']").UncheckAsync();
             await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=webgl-showcase-surface]')?.dataset.fancyDisabled === 'false'");
             (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseCanvas !== document.querySelector('[data-testid=webgl-showcase-surface] canvas')")).ShouldBeTrue();
-            await page.WaitForFunctionAsync("() => { const d = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics(); return d.instanceCount === 1 && d.activeContexts === 1 && d.animationFrameCount === 1 && d.liveRendererCount === 1 && d.instances.some(instance => instance.testId === 'webgl-showcase-surface' && instance.active && instance.renderer); }");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.testId === 'webgl-showcase-surface' && instance.active && instance.renderer)");
             (await page.EvaluateAsync<bool>("() => { const canvas = document.querySelector('[data-testid=webgl-showcase-surface] canvas'); const context = canvas?.getContext('webgl2'); return Boolean(context && !context.isContextLost()); }")).ShouldBeTrue();
             (await page.EvaluateAsync<bool>("() => globalThis.__webGlShowcaseContent === document.querySelector('[data-testid=webgl-showcase-surface] article')")).ShouldBeTrue();
         }
@@ -420,6 +424,495 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
                 process.WaitForExit(10_000);
             }
         }
+    }
+
+    [Fact]
+    public async Task WaveFieldBackground_StaticResponse_PreservesFallbackAndSemanticChild()
+    {
+        using var client = new HttpClient();
+        var html = await client.GetStringAsync($"{fixture.TestHostUrl}/webgl-wave-field", TestContext.Current.CancellationToken);
+
+        html.ShouldContain("Wave field semantic content");
+        html.ShouldContain("syntax-circus-fancy-wave-field-background");
+        html.ShouldNotContain("data-webgl-state=\"active\"");
+    }
+
+    [Fact]
+    public async Task WaveFieldBackground_UpdatesParametersWithoutReplacingChildContent()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-wave-field");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'wave-field-first' && instance.active && instance.renderer)");
+
+        await page.EvaluateAsync("() => { globalThis.__waveFieldContent = document.querySelector('[data-testid=wave-field-first] article'); }");
+        await page.Locator("[data-testid='wave-field-update']").ClickAsync();
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.renderer?.amplitude === 0.9)");
+        (await page.EvaluateAsync<bool>("() => globalThis.__waveFieldContent === document.querySelector('[data-testid=wave-field-first] article')")).ShouldBeTrue();
+
+        var surface = page.Locator("[data-testid='wave-field-first']");
+        await surface.Locator("button").ClickAsync();
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=wave-field-activation]')?.textContent === 'Activated'");
+        (await page.Locator("[data-testid='wave-field-activation']").InnerTextAsync()).ShouldBe("Activated");
+    }
+
+    [Fact]
+    public async Task WaveFieldBackground_ReducedMotionAndForcedFailure_KeepFallbackWithoutLoadingThree()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var reducedContext = await browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var reducedPage = await reducedContext.NewPageAsync();
+        await using var reducedCleanup = new WebGlPageCleanup(reducedPage);
+        await reducedPage.GotoAsync($"{fixture.TestHostUrl}/webgl-wave-field");
+        await reducedPage.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instanceCount === 1");
+        (await reducedPage.EvaluateAsync<bool>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().threeLoaded")).ShouldBeFalse();
+        (await reducedPage.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().animationFrameCount")).ShouldBe(0);
+
+        await using var failureContext = await browser.NewContextAsync();
+        await failureContext.AddInitScriptAsync("globalThis.__syntaxCircusFancyBlazorWebGlForceFailure = true;");
+        var failurePage = await failureContext.NewPageAsync();
+        await using var failureCleanup = new WebGlPageCleanup(failurePage);
+        await failurePage.GotoAsync($"{fixture.TestHostUrl}/webgl-wave-field");
+        await failurePage.WaitForFunctionAsync("() => document.querySelector('[data-testid=wave-field-first]')?.dataset.webglState === 'fallback'");
+        (await failurePage.Locator("[data-testid='wave-field-first'] article").InnerTextAsync()).ShouldContain("Wave field semantic content");
+        var fallback = failurePage.Locator("[data-testid='wave-field-first']");
+        (await fallback.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage"))
+            .StartsWith("repeating-linear-gradient", StringComparison.Ordinal).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task WaveFieldBackground_ReleasesContextForHiddenAndRestoresWhenVisible()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-wave-field");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+
+        await page.Locator("[data-testid='wave-field-first']").EvaluateAsync("element => element.style.display = 'none'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 0");
+
+        await page.Locator("[data-testid='wave-field-first']").EvaluateAsync("element => element.style.display = 'block'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 1");
+    }
+
+    [Fact]
+    public async Task WaveFieldBackground_RepeatedNavigationCycles_DisposeEveryContext()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+
+        for (var cycle = 0; cycle < 5; cycle++)
+        {
+            await page.GotoAsync($"{fixture.TestHostUrl}/webgl-wave-field");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+            await page.Locator("header a[href='/border']").ClickAsync();
+            await page.WaitForURLAsync("**/border");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instanceCount === 0");
+        }
+    }
+
+    [Fact]
+    public async Task WaveFieldBackground_Pagehide_DisposesEveryRuntimeResourceBeforeThePageCloses()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-wave-field");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'wave-field-first' && instance.active && instance.renderer)");
+        await page.EvaluateAsync("""
+            () => addEventListener('pagehide', () => {
+                const diagnostics = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics();
+                sessionStorage.setItem('wave-field-pagehide-diagnostics', JSON.stringify({
+                    instances: diagnostics.instanceCount,
+                    active: diagnostics.activeContexts,
+                    waiting: diagnostics.waitingContexts,
+                    frames: diagnostics.animationFrameCount,
+                    liveRenderers: diagnostics.liveRendererCount,
+                }));
+            }, { once: true })
+            """);
+
+        await page.GotoAsync($"{fixture.TestHostUrl}/border");
+        await page.WaitForFunctionAsync("""
+            () => {
+                const diagnostics = JSON.parse(sessionStorage.getItem('wave-field-pagehide-diagnostics') ?? 'null');
+                return diagnostics && diagnostics.instances === 0 && diagnostics.active === 0 && diagnostics.waiting === 0 && diagnostics.frames === 0 && diagnostics.liveRenderers === 0;
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task RefractiveOrbBackground_StaticResponse_PreservesFallbackAndSemanticChild()
+    {
+        using var client = new HttpClient();
+        var html = await client.GetStringAsync($"{fixture.TestHostUrl}/webgl-refractive-orb", TestContext.Current.CancellationToken);
+
+        html.ShouldContain("Refractive orb semantic content");
+        html.ShouldContain("syntax-circus-fancy-refractive-orb-background");
+        html.ShouldNotContain("data-webgl-state=\"active\"");
+    }
+
+    [Fact]
+    public async Task RefractiveOrbBackground_UpdatesParametersWithoutReplacingChildContent()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-refractive-orb");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'refractive-orb-first' && instance.active && instance.renderer)");
+
+        await page.EvaluateAsync("() => { globalThis.__refractiveOrbContent = document.querySelector('[data-testid=refractive-orb-first] article'); }");
+        await page.Locator("[data-testid='refractive-orb-update']").ClickAsync();
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.renderer?.distortion === 0.9)");
+        (await page.EvaluateAsync<bool>("() => globalThis.__refractiveOrbContent === document.querySelector('[data-testid=refractive-orb-first] article')")).ShouldBeTrue();
+
+        var surface = page.Locator("[data-testid='refractive-orb-first']");
+        await surface.Locator("button").ClickAsync();
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=refractive-orb-activation]')?.textContent === 'Activated'");
+        (await page.Locator("[data-testid='refractive-orb-activation']").InnerTextAsync()).ShouldBe("Activated");
+    }
+
+    [Fact]
+    public async Task RefractiveOrbBackground_ReducedMotionAndForcedFailure_KeepFallbackWithoutLoadingThree()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var reducedContext = await browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var reducedPage = await reducedContext.NewPageAsync();
+        await using var reducedCleanup = new WebGlPageCleanup(reducedPage);
+        await reducedPage.GotoAsync($"{fixture.TestHostUrl}/webgl-refractive-orb");
+        await reducedPage.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instanceCount === 1");
+        (await reducedPage.EvaluateAsync<bool>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().threeLoaded")).ShouldBeFalse();
+        (await reducedPage.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().animationFrameCount")).ShouldBe(0);
+
+        await using var failureContext = await browser.NewContextAsync();
+        await failureContext.AddInitScriptAsync("globalThis.__syntaxCircusFancyBlazorWebGlForceFailure = true;");
+        var failurePage = await failureContext.NewPageAsync();
+        await using var failureCleanup = new WebGlPageCleanup(failurePage);
+        await failurePage.GotoAsync($"{fixture.TestHostUrl}/webgl-refractive-orb");
+        await failurePage.WaitForFunctionAsync("() => document.querySelector('[data-testid=refractive-orb-first]')?.dataset.webglState === 'fallback'");
+        (await failurePage.Locator("[data-testid='refractive-orb-first'] article").InnerTextAsync()).ShouldContain("Refractive orb semantic content");
+        var fallback = failurePage.Locator("[data-testid='refractive-orb-first']");
+        (await fallback.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage"))
+            .StartsWith("radial-gradient", StringComparison.Ordinal).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task RefractiveOrbBackground_ReleasesContextForHiddenAndRestoresWhenVisible()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-refractive-orb");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+
+        await page.Locator("[data-testid='refractive-orb-first']").EvaluateAsync("element => element.style.display = 'none'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 0");
+
+        await page.Locator("[data-testid='refractive-orb-first']").EvaluateAsync("element => element.style.display = 'block'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 1");
+    }
+
+    [Fact]
+    public async Task RefractiveOrbBackground_RepeatedNavigationCycles_DisposeEveryContext()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+
+        for (var cycle = 0; cycle < 5; cycle++)
+        {
+            await page.GotoAsync($"{fixture.TestHostUrl}/webgl-refractive-orb");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+            await page.Locator("header a[href='/border']").ClickAsync();
+            await page.WaitForURLAsync("**/border");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instanceCount === 0");
+        }
+    }
+
+    [Fact]
+    public async Task RefractiveOrbBackground_Pagehide_DisposesEveryRuntimeResourceBeforeThePageCloses()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-refractive-orb");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'refractive-orb-first' && instance.active && instance.renderer)");
+        await page.EvaluateAsync("""
+            () => addEventListener('pagehide', () => {
+                const diagnostics = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics();
+                sessionStorage.setItem('refractive-orb-pagehide-diagnostics', JSON.stringify({
+                    instances: diagnostics.instanceCount,
+                    active: diagnostics.activeContexts,
+                    waiting: diagnostics.waitingContexts,
+                    frames: diagnostics.animationFrameCount,
+                    liveRenderers: diagnostics.liveRendererCount,
+                }));
+            }, { once: true })
+            """);
+
+        await page.GotoAsync($"{fixture.TestHostUrl}/border");
+        await page.WaitForFunctionAsync("""
+            () => {
+                const diagnostics = JSON.parse(sessionStorage.getItem('refractive-orb-pagehide-diagnostics') ?? 'null');
+                return diagnostics && diagnostics.instances === 0 && diagnostics.active === 0 && diagnostics.waiting === 0 && diagnostics.frames === 0 && diagnostics.liveRenderers === 0;
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task PrismFieldBackground_StaticResponse_PreservesFallbackAndSemanticChild()
+    {
+        using var client = new HttpClient();
+        var html = await client.GetStringAsync($"{fixture.TestHostUrl}/webgl-prism-field", TestContext.Current.CancellationToken);
+
+        html.ShouldContain("Prism field semantic content");
+        html.ShouldContain("syntax-circus-fancy-prism-field-background");
+        html.ShouldNotContain("data-webgl-state=\"active\"");
+    }
+
+    [Fact]
+    public async Task PrismFieldBackground_UpdatesParametersWithoutReplacingChildContent()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-prism-field");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'prism-field-first' && instance.active && instance.renderer)");
+
+        await page.EvaluateAsync("() => { globalThis.__prismFieldContent = document.querySelector('[data-testid=prism-field-first] article'); }");
+        await page.Locator("[data-testid='prism-field-update']").ClickAsync();
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.renderer?.dispersion === 0.9)");
+        (await page.EvaluateAsync<bool>("() => globalThis.__prismFieldContent === document.querySelector('[data-testid=prism-field-first] article')")).ShouldBeTrue();
+
+        var surface = page.Locator("[data-testid='prism-field-first']");
+        await surface.Locator("button").ClickAsync();
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=prism-field-activation]')?.textContent === 'Activated'");
+        (await page.Locator("[data-testid='prism-field-activation']").InnerTextAsync()).ShouldBe("Activated");
+    }
+
+    [Fact]
+    public async Task PrismFieldBackground_ReducedMotionAndForcedFailure_KeepFallbackWithoutLoadingThree()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var reducedContext = await browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var reducedPage = await reducedContext.NewPageAsync();
+        await using var reducedCleanup = new WebGlPageCleanup(reducedPage);
+        await reducedPage.GotoAsync($"{fixture.TestHostUrl}/webgl-prism-field");
+        await reducedPage.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instanceCount === 1");
+        (await reducedPage.EvaluateAsync<bool>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().threeLoaded")).ShouldBeFalse();
+        (await reducedPage.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().animationFrameCount")).ShouldBe(0);
+
+        await using var failureContext = await browser.NewContextAsync();
+        await failureContext.AddInitScriptAsync("globalThis.__syntaxCircusFancyBlazorWebGlForceFailure = true;");
+        var failurePage = await failureContext.NewPageAsync();
+        await using var failureCleanup = new WebGlPageCleanup(failurePage);
+        await failurePage.GotoAsync($"{fixture.TestHostUrl}/webgl-prism-field");
+        await failurePage.WaitForFunctionAsync("() => document.querySelector('[data-testid=prism-field-first]')?.dataset.webglState === 'fallback'");
+        (await failurePage.Locator("[data-testid='prism-field-first'] article").InnerTextAsync()).ShouldContain("Prism field semantic content");
+        var fallback = failurePage.Locator("[data-testid='prism-field-first']");
+        (await fallback.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage"))
+            .StartsWith("conic-gradient", StringComparison.Ordinal).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task PrismFieldBackground_ReleasesContextForHiddenAndRestoresWhenVisible()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-prism-field");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+
+        await page.Locator("[data-testid='prism-field-first']").EvaluateAsync("element => element.style.display = 'none'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 0");
+
+        await page.Locator("[data-testid='prism-field-first']").EvaluateAsync("element => element.style.display = 'block'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 1");
+    }
+
+    [Fact]
+    public async Task PrismFieldBackground_RepeatedNavigationCycles_DisposeEveryContext()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+
+        for (var cycle = 0; cycle < 5; cycle++)
+        {
+            await page.GotoAsync($"{fixture.TestHostUrl}/webgl-prism-field");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+            await page.Locator("header a[href='/border']").ClickAsync();
+            await page.WaitForURLAsync("**/border");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instanceCount === 0");
+        }
+    }
+
+    [Fact]
+    public async Task PrismFieldBackground_Pagehide_DisposesEveryRuntimeResourceBeforeThePageCloses()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-prism-field");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'prism-field-first' && instance.active && instance.renderer)");
+        await page.EvaluateAsync("""
+            () => addEventListener('pagehide', () => {
+                const diagnostics = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics();
+                sessionStorage.setItem('prism-field-pagehide-diagnostics', JSON.stringify({
+                    instances: diagnostics.instanceCount,
+                    active: diagnostics.activeContexts,
+                    waiting: diagnostics.waitingContexts,
+                    frames: diagnostics.animationFrameCount,
+                    liveRenderers: diagnostics.liveRendererCount,
+                }));
+            }, { once: true })
+            """);
+
+        await page.GotoAsync($"{fixture.TestHostUrl}/border");
+        await page.WaitForFunctionAsync("""
+            () => {
+                const diagnostics = JSON.parse(sessionStorage.getItem('prism-field-pagehide-diagnostics') ?? 'null');
+                return diagnostics && diagnostics.instances === 0 && diagnostics.active === 0 && diagnostics.waiting === 0 && diagnostics.frames === 0 && diagnostics.liveRenderers === 0;
+            }
+            """);
+    }
+
+    [Fact]
+    public async Task ParticleFieldBackground_StaticResponse_PreservesFallbackAndSemanticChild()
+    {
+        using var client = new HttpClient();
+        var html = await client.GetStringAsync($"{fixture.TestHostUrl}/webgl-particle-field", TestContext.Current.CancellationToken);
+
+        html.ShouldContain("Particle field semantic content");
+        html.ShouldContain("syntax-circus-fancy-particle-field-background");
+        html.ShouldNotContain("data-webgl-state=\"active\"");
+    }
+
+    [Fact]
+    public async Task ParticleFieldBackground_UpdatesParticleCountWithoutReplacingChildContent()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-particle-field");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'particle-field-first' && instance.active && instance.renderer)");
+
+        var initialCount = await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.find(instance => instance.testId === 'particle-field-first').renderer.particleCount");
+        await page.EvaluateAsync("() => { globalThis.__particleFieldContent = document.querySelector('[data-testid=particle-field-first] article'); }");
+        await page.Locator("[data-testid='particle-field-update']").ClickAsync();
+        await page.WaitForFunctionAsync($"() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instances.some(instance => instance.renderer?.particleCount > {initialCount})");
+        (await page.EvaluateAsync<bool>("() => globalThis.__particleFieldContent === document.querySelector('[data-testid=particle-field-first] article')")).ShouldBeTrue();
+
+        var surface = page.Locator("[data-testid='particle-field-first']");
+        await surface.Locator("button").ClickAsync();
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=particle-field-activation]')?.textContent === 'Activated'");
+        (await page.Locator("[data-testid='particle-field-activation']").InnerTextAsync()).ShouldBe("Activated");
+    }
+
+    [Fact]
+    public async Task ParticleFieldBackground_ReducedMotionAndForcedFailure_KeepFallbackWithoutLoadingThree()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var reducedContext = await browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var reducedPage = await reducedContext.NewPageAsync();
+        await using var reducedCleanup = new WebGlPageCleanup(reducedPage);
+        await reducedPage.GotoAsync($"{fixture.TestHostUrl}/webgl-particle-field");
+        await reducedPage.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instanceCount === 1");
+        (await reducedPage.EvaluateAsync<bool>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().threeLoaded")).ShouldBeFalse();
+        (await reducedPage.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().animationFrameCount")).ShouldBe(0);
+
+        await using var failureContext = await browser.NewContextAsync();
+        await failureContext.AddInitScriptAsync("globalThis.__syntaxCircusFancyBlazorWebGlForceFailure = true;");
+        var failurePage = await failureContext.NewPageAsync();
+        await using var failureCleanup = new WebGlPageCleanup(failurePage);
+        await failurePage.GotoAsync($"{fixture.TestHostUrl}/webgl-particle-field");
+        await failurePage.WaitForFunctionAsync("() => document.querySelector('[data-testid=particle-field-first]')?.dataset.webglState === 'fallback'");
+        (await failurePage.Locator("[data-testid='particle-field-first'] article").InnerTextAsync()).ShouldContain("Particle field semantic content");
+        var fallback = failurePage.Locator("[data-testid='particle-field-first']");
+        (await fallback.EvaluateAsync<string>("element => getComputedStyle(element).backgroundImage"))
+            .StartsWith("radial-gradient", StringComparison.Ordinal).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task ParticleFieldBackground_ReleasesContextForHiddenAndRestoresWhenVisible()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-particle-field");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+
+        await page.Locator("[data-testid='particle-field-first']").EvaluateAsync("element => element.style.display = 'none'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 0");
+
+        await page.Locator("[data-testid='particle-field-first']").EvaluateAsync("element => element.style.display = 'block'");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().activeContexts === 1");
+    }
+
+    [Fact]
+    public async Task ParticleFieldBackground_RepeatedNavigationCycles_DisposeEveryContext()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+
+        for (var cycle = 0; cycle < 5; cycle++)
+        {
+            await page.GotoAsync($"{fixture.TestHostUrl}/webgl-particle-field");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().activeContexts === 1");
+            await page.Locator("header a[href='/border']").ClickAsync();
+            await page.WaitForURLAsync("**/border");
+            await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics().instanceCount === 0");
+        }
+    }
+
+    [Fact]
+    public async Task ParticleFieldBackground_Pagehide_DisposesEveryRuntimeResourceBeforeThePageCloses()
+    {
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await using var webGlCleanup = new WebGlPageCleanup(page);
+        await page.GotoAsync($"{fixture.TestHostUrl}/webgl-particle-field");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazorWebGl?.getDiagnostics().instances.some(instance => instance.testId === 'particle-field-first' && instance.active && instance.renderer)");
+        await page.EvaluateAsync("""
+            () => addEventListener('pagehide', () => {
+                const diagnostics = globalThis.__syntaxCircusFancyBlazorWebGl.getDiagnostics();
+                sessionStorage.setItem('particle-field-pagehide-diagnostics', JSON.stringify({
+                    instances: diagnostics.instanceCount,
+                    active: diagnostics.activeContexts,
+                    waiting: diagnostics.waitingContexts,
+                    frames: diagnostics.animationFrameCount,
+                    liveRenderers: diagnostics.liveRendererCount,
+                }));
+            }, { once: true })
+            """);
+
+        await page.GotoAsync($"{fixture.TestHostUrl}/border");
+        await page.WaitForFunctionAsync("""
+            () => {
+                const diagnostics = JSON.parse(sessionStorage.getItem('particle-field-pagehide-diagnostics') ?? 'null');
+                return diagnostics && diagnostics.instances === 0 && diagnostics.active === 0 && diagnostics.waiting === 0 && diagnostics.frames === 0 && diagnostics.liveRenderers === 0;
+            }
+            """);
     }
 
     [Fact]

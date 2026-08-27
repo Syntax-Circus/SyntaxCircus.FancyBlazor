@@ -11,6 +11,23 @@ called out clearly as potentially breaking.
 
 ### Added
 
+- Add `WaveFieldBackground` to `SyntaxCircus.FancyBlazor.WebGL`: a
+  Three.js-backed interference wave field with typed `Amplitude`,
+  `Frequency`, and `Foam` controls, reusing the vendored r184 build and the
+  shared companion runtime's lifecycle, fallback, and disposal guarantees.
+- Add `RefractiveOrbBackground` to `SyntaxCircus.FancyBlazor.WebGL`: a single
+  analytically-lensed glass orb with typed `Radius`, `Distortion`, and
+  `Sheen` controls, drawn in one shader pass with no textures or render
+  targets.
+- Add `PrismFieldBackground` to `SyntaxCircus.FancyBlazor.WebGL`: a
+  procedurally faceted tiling with typed `Facets`, `Dispersion`, and `Sheen`
+  controls, drawn in one shader pass with no mesh subdivision, textures, or
+  render targets.
+- Add `ParticleFieldBackground` to `SyntaxCircus.FancyBlazor.WebGL`, completing
+  the four-effect Phase 15 catalog: a quality-tiered, bounded GPU point-sprite
+  field with typed `Density`, `Size`, and `Drift` controls that rebuilds its
+  point buffer in place when the resolved particle count changes.
+
 - Add a five-phase pre-1.0 roadmap for core kinetic effects, four WebGL fields
   and materials, the optional `SyntaxCircus.FancyBlazor.UI` companion, its
   marketing/content catalog, and cross-package stabilization.

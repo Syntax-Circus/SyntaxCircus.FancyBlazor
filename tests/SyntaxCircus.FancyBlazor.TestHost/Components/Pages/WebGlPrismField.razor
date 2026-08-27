@@ -1,0 +1,26 @@
+@page "/webgl-prism-field"
+
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["_content/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.bundle.scp.css"]" />
+</HeadContent>
+
+<main>
+    <button type="button" data-testid="prism-field-update" @onclick="IncreaseDispersion">Increase dispersion</button>
+    <button type="button" data-testid="prism-field-disabled" @onclick="ToggleDisabled">Toggle disabled</button>
+    <p data-testid="prism-field-activation">@_activation</p>
+    <PrismFieldBackground data-testid="prism-field-first" Facets="@_facets" Dispersion="@_dispersion" Sheen="@_sheen" Disabled="@_disabled" Style="height:100px"><article>Prism field semantic content <button type="button" @onclick="Activate">Activate child</button></article></PrismFieldBackground>
+</main>
+
+@code {
+    private double _facets = 0.5;
+    private double _dispersion = 0.5;
+    private double _sheen = 0.5;
+    private bool _disabled;
+    private string _activation = "Not activated";
+
+    private void IncreaseDispersion() => _dispersion = 0.9;
+
+    private void ToggleDisabled() => _disabled = !_disabled;
+
+    private void Activate() => _activation = "Activated";
+}

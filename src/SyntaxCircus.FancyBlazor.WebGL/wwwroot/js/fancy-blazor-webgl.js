@@ -1,5 +1,32 @@
 const instances = new Map();
 const waiting = [];
+const EFFECTS = {
+    "holographic-surface": {
+        canvasClass: "syntax-circus-fancy-holographic-surface__canvas",
+        rendererModule: "./holographic-surface-renderer.js",
+        factory: "createHolographicSurface",
+    },
+    "wave-field-background": {
+        canvasClass: "syntax-circus-fancy-wave-field-background__canvas",
+        rendererModule: "./wave-field-renderer.js",
+        factory: "createWaveFieldBackground",
+    },
+    "refractive-orb-background": {
+        canvasClass: "syntax-circus-fancy-refractive-orb-background__canvas",
+        rendererModule: "./refractive-orb-renderer.js",
+        factory: "createRefractiveOrbBackground",
+    },
+    "prism-field-background": {
+        canvasClass: "syntax-circus-fancy-prism-field-background__canvas",
+        rendererModule: "./prism-field-renderer.js",
+        factory: "createPrismFieldBackground",
+    },
+    "particle-field-background": {
+        canvasClass: "syntax-circus-fancy-particle-field-background__canvas",
+        rendererModule: "./particle-field-renderer.js",
+        factory: "createParticleFieldBackground",
+    },
+};
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 let nextHandle = 1;
 let activeContexts = 0;
@@ -25,7 +52,7 @@ function logFailure(error) {
     }
 
     failureLogged = true;
-    console.warn("FancyBlazor WebGL could not initialize or update the holographic surface; the CSS fallback remains active.", error);
+    console.warn("FancyBlazor WebGL could not initialize or update the effect; the CSS fallback remains active.", error);
 }
 
 function isEligible(instance) {
@@ -109,7 +136,7 @@ async function pump() {
                 throw new Error("The test failure switch is enabled.");
             }
 
-            const rendererModule = await import(new URL("./holographic-surface-renderer.js", import.meta.url).href);
+            const rendererModule = await import(new URL(instance.registration.rendererModule, import.meta.url).href);
             if (!isEligible(instance) || !instance.active) {
                 release(instance, false);
                 continue;
@@ -122,7 +149,7 @@ async function pump() {
                 continue;
             }
 
-            const renderer = rendererModule.createHolographicSurface(instance.canvas, instance.options, instance.defaults, THREE);
+            const renderer = rendererModule[instance.registration.factory](instance.canvas, instance.options, instance.defaults, THREE);
             rendererObjectsCreated++;
             if (!isEligible(instance) || !instance.active || instances.get(instance.handle) !== instance) {
                 destroyRenderer(instance, renderer);
@@ -242,11 +269,12 @@ function reconcilePointer(instance) {
 }
 
 export function createEffect(element, effect, options, defaults) {
-    if (disposed || effect !== "holographic-surface") {
+    const registration = EFFECTS[effect];
+    if (disposed || !registration) {
         return null;
     }
 
-    const canvas = element.querySelector(".syntax-circus-fancy-holographic-surface__canvas");
+    const canvas = element.querySelector("." + registration.canvasClass);
     if (!(canvas instanceof HTMLCanvasElement)) {
         return null;
     }
@@ -256,6 +284,8 @@ export function createEffect(element, effect, options, defaults) {
         handle,
         element,
         canvas,
+        effect,
+        registration,
         options: { ...options },
         defaults: { ...defaults },
         active: false,
