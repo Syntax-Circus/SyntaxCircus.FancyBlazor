@@ -215,7 +215,7 @@ footer { border-top: 1px solid var(--line); color: var(--muted); display: grid; 
     .repository-link { display: none; }
     .footer-sitemap { gap: 2rem; grid-template-columns: 1fr; }.footer-nav { gap: 1rem; grid-template-columns: 1fr 1fr; }.footer-meta { align-items: flex-start; flex-direction: column; }
     .hero-grid { grid-template-columns: 1fr; }
-    .effect-grid, .catalog-directory__groups { grid-template-columns: 1fr 1fr; }
+    .effect-grid, .catalog-directory__groups { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
     .gesture-grid { grid-template-columns: 1fr; }
     .feedback-grid { grid-template-columns: 1fr; }
     .catalog-grid, .preset-grid, .divider-specimens { grid-template-columns: 1fr; }
