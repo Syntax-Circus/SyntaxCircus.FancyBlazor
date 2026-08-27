@@ -1,0 +1,40 @@
+@page "/core-kinetic-catalog"
+
+<PageTitle>Core kinetic catalog · FancyBlazor</PageTitle>
+
+<section class="demo-page expressive-effects-page">
+    <p class="kicker">MOTION / COUNT / SCRAMBLE / FIELD</p>
+    <h1>Six more ways to keep content moving.</h1>
+    <p class="lede">Three bounded Canvas fields and three semantic kinetic accents. Every example remains ordinary markup when motion is unavailable.</p>
+
+    <section class="gesture-grid" aria-label="Atmospheric background demonstrations">
+        <LightRaysBackground CssClass="gesture-card atmosphere-card constellation-card" Palette="FancyPalettes.Glacier" Density="10" data-testid="light-rays-example">
+            <article><span class="specimen-label">CANVAS / LIGHT RAYS</span><h2>LightRaysBackground</h2><p>Slow rays sweep behind this semantic article.</p></article>
+        </LightRaysBackground>
+        <MeteorBackground CssClass="gesture-card atmosphere-card trail-card" Palette="FancyPalettes.Midnight" Density="16" data-testid="meteor-example">
+            <article><span class="specimen-label">CANVAS / METEORS</span><h2>MeteorBackground</h2><p>Streaking meteors drift behind this semantic article.</p></article>
+        </MeteorBackground>
+        <FlickerGrid CssClass="gesture-card atmosphere-card constellation-card" Palette="FancyPalettes.Witchlight" Density="24" data-testid="flicker-grid-example">
+            <article><span class="specimen-label">CANVAS / FLICKER GRID</span><h2>FlickerGrid</h2><p>A grid of cells flickers gently behind this semantic article.</p></article>
+        </FlickerGrid>
+    </section>
+
+    <section class="surface-recipe" aria-labelledby="scramble-text-heading">
+        <div class="surface-recipe__copy">
+            <p class="specimen-label">SEMANTIC TEXT / CHARACTER SCRAMBLE</p>
+            <ScrambleText Element="TypeFlowElement.Heading2" Text="Decoded on arrival." data-testid="scramble-text-example" />
+            <NumberTicker Value="1284" Format="N0" data-testid="number-ticker-example" />
+        </div>
+        <pre class="surface-recipe__code"><code>&lt;ScrambleText Element="TypeFlowElement.Heading2"
+    Text="Decoded on arrival." /&gt;
+
+&lt;NumberTicker Value="1284" Format="N0" /&gt;</code></pre>
+    </section>
+
+    <section class="gesture-grid" aria-label="Looping content demonstration">
+        <Marquee CssClass="gesture-card accent-card ripple-card" Duration="@TimeSpan.FromSeconds(18)" PauseOnHover="true" data-testid="marquee-example">
+            <span class="specimen-label">MARQUEE</span>
+            <strong>One accessible copy, one decorative loop.</strong>
+        </Marquee>
+    </section>
+</section>

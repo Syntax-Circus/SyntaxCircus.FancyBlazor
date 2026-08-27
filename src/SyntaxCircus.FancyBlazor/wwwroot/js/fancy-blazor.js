@@ -66,7 +66,13 @@ const factories = {
     'cursor-trail': createCursorTrail,
     'constellation-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'constellation'),
     'arc-flow-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'arc-flow'),
+    'flicker-grid': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'flicker-grid'),
+    'meteor-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'meteor'),
+    'light-rays-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'light-rays'),
     'type-flow': createTextReveal,
+    'scramble-text': createScrambleText,
+    marquee: createMarquee,
+    'number-ticker': createNumberTicker,
     'scroll-scene': createScrollProgressEffect,
     'scroll-indicator': createScrollProgressEffect,
     'scroll-backdrop': createScrollProgressEffect,
@@ -451,6 +457,166 @@ function createTextReveal(element, initialOptions, defaults) {
     };
 }
 
+const SCRAMBLE_GLYPHS = '!@#$%^&*_+-=[]{}|;:,.<>?/0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+function createScrambleText(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let observer = null;
+    let frame = null;
+    let timer = null;
+    let destroyed = false;
+    let tokens = [];
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+
+    const buildTokens = () => {
+        element.replaceChildren();
+        element.setAttribute('aria-label', options.text ?? '');
+        tokens = [];
+        let index = 0;
+        for (const character of Array.from(options.text ?? '')) {
+            if (/^\s$/.test(character)) { element.append(document.createTextNode(character)); continue; }
+            const token = document.createElement('span');
+            token.className = 'syntax-circus-fancy-scramble-text__token';
+            token.setAttribute('aria-hidden', 'true');
+            token.textContent = character;
+            element.append(token);
+            tokens.push({ el: token, final: character, index: index++ });
+        }
+    };
+    const settle = () => tokens.forEach(token => { token.el.textContent = token.final; });
+    const animate = () => {
+        if (frame !== null) cancelAnimationFrame(frame);
+        const duration = Math.max(1, Number(options.duration) || 1);
+        const stagger = Math.max(0, Number(options.stagger) || 0);
+        const start = performance.now();
+        const step = now => {
+            if (destroyed) return;
+            let running = false;
+            for (const token of tokens) {
+                const elapsed = now - (start + token.index * stagger);
+                if (elapsed < 0) { running = true; continue; }
+                if (elapsed >= duration) { token.el.textContent = token.final; continue; }
+                running = true;
+                token.el.textContent = SCRAMBLE_GLYPHS[Math.floor(Math.random() * SCRAMBLE_GLYPHS.length)];
+            }
+            frame = running ? requestAnimationFrame(step) : null;
+        };
+        frame = requestAnimationFrame(step);
+    };
+    const configure = (replay = false) => {
+        observer?.disconnect(); observer = null;
+        if (frame !== null) cancelAnimationFrame(frame);
+        if (timer !== null) clearTimeout(timer);
+        buildTokens();
+        element.dataset.fancyReady = 'true';
+        if (motionReduced(defaults.motionPreference, media)) { settle(); return; }
+        const start = () => {
+            observer = new IntersectionObserver(entries => entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                animate();
+                if (options.once !== false) { observer?.disconnect(); observer = null; }
+            }), { threshold: .1 });
+            observer.observe(element);
+        };
+        if (replay) timer = setTimeout(() => { timer = null; start(); }, 80); else start();
+    };
+    const mediaHandler = () => { if (!destroyed) configure(); };
+    media?.addEventListener('change', mediaHandler);
+    configure();
+    return {
+        update(next) { const replay = next.replayToken !== options.replayToken; options = next; configure(replay); },
+        setDocumentVisible() {}, hasActiveAnimationFrame() { return frame !== null; },
+        destroy() { destroyed = true; if (frame !== null) cancelAnimationFrame(frame); if (timer !== null) clearTimeout(timer); observer?.disconnect(); media?.removeEventListener('change', mediaHandler); element.textContent = options.text ?? ''; element.removeAttribute('aria-label'); delete element.dataset.fancyReady; },
+    };
+}
+
+function createMarquee(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let intersecting = false;
+    let documentVisible = !document.hidden;
+    let hovering = false;
+    let destroyed = false;
+    const track = element.querySelector('.syntax-circus-fancy-marquee__track');
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+    const apply = () => {
+        if (!track) return;
+        const running = !destroyed && intersecting && documentVisible && !reduced() && !(options.pauseOnHover && hovering);
+        track.style.animationPlayState = running ? 'running' : 'paused';
+    };
+    const observer = new IntersectionObserver(entries => { intersecting = entries.some(entry => entry.isIntersecting); apply(); }, { threshold: 0 });
+    const pointerEnter = () => { hovering = true; apply(); };
+    const pointerLeave = () => { hovering = false; apply(); };
+    const mediaHandler = () => apply();
+    observer.observe(element);
+    element.addEventListener('pointerenter', pointerEnter);
+    element.addEventListener('pointerleave', pointerLeave);
+    media?.addEventListener('change', mediaHandler);
+    apply();
+    return {
+        update(next) { options = next; apply(); },
+        setDocumentVisible(visible) { documentVisible = visible; apply(); },
+        hasActiveAnimationFrame() { return track?.style.animationPlayState === 'running'; },
+        destroy() { destroyed = true; observer.disconnect(); element.removeEventListener('pointerenter', pointerEnter); element.removeEventListener('pointerleave', pointerLeave); media?.removeEventListener('change', mediaHandler); if (track) track.style.animationPlayState = 'paused'; },
+    };
+}
+
+function createNumberTicker(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let frame = null;
+    let current = 0;
+    let destroyed = false;
+    let observer = null;
+    let timer = null;
+    const display = element.querySelector('.syntax-circus-fancy-number-ticker__display');
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const format = value => {
+        const decimals = Math.max(0, Number(options.decimals) || 0);
+        return new Intl.NumberFormat(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(value);
+    };
+    const settle = () => { if (display) display.textContent = options.formatted ?? format(Number(options.value) || 0); current = Number(options.value) || 0; };
+    const animate = () => {
+        if (frame !== null) cancelAnimationFrame(frame);
+        const target = Number(options.value) || 0;
+        const start = current;
+        const duration = Math.max(1, Number(options.duration) || 1);
+        const startTime = performance.now();
+        const step = now => {
+            if (destroyed || !display) return;
+            const progress = Math.min(1, (now - startTime) / duration);
+            const eased = 1 - Math.pow(1 - progress, 3);
+            current = start + (target - start) * eased;
+            display.textContent = format(current);
+            if (progress < 1) frame = requestAnimationFrame(step);
+            else { display.textContent = options.formatted ?? format(target); current = target; frame = null; }
+        };
+        frame = requestAnimationFrame(step);
+    };
+    const configure = (replay = false) => {
+        observer?.disconnect(); observer = null;
+        if (frame !== null) cancelAnimationFrame(frame);
+        if (timer !== null) clearTimeout(timer);
+        if (motionReduced(defaults.motionPreference, media)) { settle(); return; }
+        const start = () => {
+            observer = new IntersectionObserver(entries => entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                animate();
+                if (options.once !== false) { observer?.disconnect(); observer = null; }
+            }), { threshold: .3 });
+            observer.observe(element);
+        };
+        if (replay) timer = setTimeout(() => { timer = null; current = 0; start(); }, 80); else start();
+    };
+    const mediaHandler = () => { if (!destroyed) configure(); };
+    media?.addEventListener('change', mediaHandler);
+    configure();
+    return {
+        update(next) { const replay = next.replayToken !== options.replayToken; options = next; configure(replay); },
+        setDocumentVisible() {}, hasActiveAnimationFrame() { return frame !== null; },
+        destroy() { destroyed = true; if (frame !== null) cancelAnimationFrame(frame); if (timer !== null) clearTimeout(timer); observer?.disconnect(); media?.removeEventListener('change', mediaHandler); if (display) display.textContent = options.formatted ?? ''; },
+    };
+}
+
 function createRipple(element, initialOptions, defaults) {
     let options = initialOptions;
     const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
@@ -545,7 +711,10 @@ function createCanvasAtmosphere(element, initialOptions, defaults, kind) {
         clear();
         const speed = clamp(options.speed, 0, 3) * .25;
         if (kind === 'constellation') drawConstellation(context, particles, rect, now, speed, colors, clamp(options.lineOpacity, 0, 1));
-        else drawArcFlow(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else if (kind === 'arc-flow') drawArcFlow(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else if (kind === 'flicker-grid') drawFlickerGrid(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else if (kind === 'meteor') drawMeteors(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else drawLightRays(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
         frame = requestAnimationFrame(draw);
     };
     const start = () => {
@@ -606,6 +775,64 @@ function drawArcFlow(context, particles, rect, now, speed, colors, intensity) {
         context.strokeStyle = `rgba(${rgb},${.1 + intensity * .38})`;
         context.beginPath(); context.arc(x, y, arc.radius, Math.PI * .15, Math.PI * 1.15); context.stroke();
     }
+}
+
+function drawFlickerGrid(context, particles, rect, now, speed, colors, intensity) {
+    const time = now * .001 * speed;
+    const columns = Math.max(1, Math.ceil(Math.sqrt(particles.length)));
+    const rows = Math.max(1, Math.ceil(particles.length / columns));
+    const cellWidth = rect.width / columns;
+    const cellHeight = rect.height / rows;
+    const inset = Math.min(cellWidth, cellHeight) * .18;
+    particles.forEach((cell, index) => {
+        const column = index % columns;
+        const row = Math.floor(index / columns);
+        const flicker = .5 + .5 * Math.sin(time * (1.5 + cell.drift) + cell.phase);
+        const rgb = colors[cell.color].map(value => Math.round(value * 255)).join(',');
+        context.fillStyle = `rgba(${rgb},${flicker * intensity * .6})`;
+        context.fillRect(column * cellWidth + inset, row * cellHeight + inset, Math.max(0, cellWidth - inset * 2), Math.max(0, cellHeight - inset * 2));
+    });
+}
+
+function drawMeteors(context, particles, rect, now, speed, colors, intensity) {
+    const time = now * .001 * speed;
+    const diagonal = rect.width + rect.height;
+    context.lineCap = 'round';
+    for (const meteor of particles) {
+        const travel = (time * 220 * (.5 + meteor.drift) + meteor.phase * 80) % (diagonal + 200) - 100;
+        const x = meteor.x + travel;
+        const y = meteor.y + travel;
+        const length = 40 + meteor.radius;
+        const rgb = colors[meteor.color].map(value => Math.round(value * 255)).join(',');
+        const gradient = context.createLinearGradient(x, y, x - length, y - length);
+        gradient.addColorStop(0, `rgba(${rgb},${.15 + intensity * .55})`);
+        gradient.addColorStop(1, `rgba(${rgb},0)`);
+        context.strokeStyle = gradient;
+        context.lineWidth = 1.5;
+        context.beginPath(); context.moveTo(x, y); context.lineTo(x - length, y - length); context.stroke();
+    }
+}
+
+function drawLightRays(context, particles, rect, now, speed, colors, intensity) {
+    const time = now * .001 * speed;
+    const originX = rect.width * .5;
+    const originY = -rect.height * .15;
+    const maxRadius = Math.hypot(rect.width, rect.height) * 1.1;
+    const count = particles.length;
+    const halfWidth = (Math.PI / count) * .8;
+    particles.forEach((ray, index) => {
+        const angle = (index / count) * Math.PI * 2 + time * .12 * (.4 + ray.drift * .2) + ray.phase;
+        const rgb = colors[ray.color].map(value => Math.round(value * 255)).join(',');
+        const gradient = context.createRadialGradient(originX, originY, 0, originX, originY, maxRadius);
+        gradient.addColorStop(0, `rgba(${rgb},${.05 + intensity * .22})`);
+        gradient.addColorStop(1, `rgba(${rgb},0)`);
+        context.fillStyle = gradient;
+        context.beginPath();
+        context.moveTo(originX, originY);
+        context.arc(originX, originY, maxRadius, angle - halfWidth, angle + halfWidth);
+        context.closePath();
+        context.fill();
+    });
 }
 
 function ensureVisibilityListener() {

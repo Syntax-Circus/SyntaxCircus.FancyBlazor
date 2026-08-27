@@ -47,6 +47,12 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [TypeFlow](components/type-flow.md)
 - [StatusPulse](components/status-pulse.md)
 - [LaunchHalo](components/launch-halo.md)
+- [FlickerGrid](components/flicker-grid.md)
+- [MeteorBackground](components/meteor-background.md)
+- [LightRaysBackground](components/light-rays-background.md)
+- [ScrambleText](components/scramble-text.md)
+- [Marquee](components/marquee.md)
+- [NumberTicker](components/number-ticker.md)
 - [HolographicSurface (optional WebGL preview)](components/holographic-surface.md)
 
 ## Guides

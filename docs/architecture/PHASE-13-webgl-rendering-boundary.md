@@ -63,6 +63,28 @@ fallback, reduced-motion, lifecycle cleanup, package, and documentation
 contracts. The components are roadmap commitments but are not part of the
 current published catalog until Phase 15 completes.
 
+## Actionable tasks
+
+- [x] Add `SyntaxCircus.FancyBlazor.WebGL` as a companion RCL with its own
+  `AddFancyBlazorWebGl()` registration, JavaScript lifecycle, and CSS
+  isolation.
+- [x] Vendor unmodified Three.js r184 ESM build files under MIT with SHA-256
+  provenance; ship the companion NuGet README with install, registration,
+  fallback, and preview guidance.
+- [x] Implement `HolographicSurface` with static SSR, reduced-motion,
+  explicit-disablement, and runtime-failure CSS fallbacks that retain
+  semantic content.
+- [x] Add `eng/verify-webgl-package.ps1` (Node/external-fetch rejection,
+  Three build files plus license and provenance check, adapter/renderer
+  budget below 1 MiB raw and 250 KiB Brotli, clean-consumer compile) and
+  `eng/verify-release-packages.ps1` (exactly one package per ID, matching
+  versions).
+- [x] Wire CI to pack both packages into `artifacts`, run both verifiers
+  plus the core verifier, and push both through one NuGet Trusted
+  Publishing step with tag derivation from the core package.
+- [x] Document the boundary decision (ADR-013) and same-version publication
+  decision (ADR-014) in the decision log.
+
 ## Validation gate
 
 The phase is complete only when local disposable-version commands produce both

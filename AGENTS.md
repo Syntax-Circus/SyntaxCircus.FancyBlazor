@@ -14,7 +14,10 @@ approved pre-1.0 roadmap also plans an optional, same-version
 core preview catalog includes shader and gradient backgrounds,
 glow and shimmer surfaces, reveal and stagger entrances, and pointer/scroll
 motion effects, including semantic text entrances, ambient overlays, bounded
-pointer particles, CSS-first spatial surfaces, in-flow narrative motion, and additive interaction feedback. FancyBlazor owns effect markup, scoped styles, coarse
+pointer particles, CSS-first spatial surfaces, in-flow narrative motion,
+additive interaction feedback, and core kinetic and atmospheric accents
+(looping content, animated counters, character-scramble text, and bounded
+Canvas 2D fields). FancyBlazor owns effect markup, scoped styles, coarse
 Blazor-to-JavaScript lifecycle calls, and the JavaScript rendering loop.
 
 The core and WebGL packages are not general UI frameworks. Do not add buttons,

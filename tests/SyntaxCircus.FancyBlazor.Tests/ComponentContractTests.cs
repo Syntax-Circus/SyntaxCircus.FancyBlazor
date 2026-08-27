@@ -321,6 +321,92 @@ public sealed class ComponentContractTests
             .Find(".syntax-circus-fancy-launch-halo__content").InnerHtml.ShouldContain("syntax-circus-fancy-launch-halo__layer");
     }
 
+    [Fact]
+    public void FlickerGrid_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var grid = context.Render<FlickerGrid>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 999).Add(x => x.Intensity, 2)).Markup;
+
+        grid.ShouldContain("syntax-circus-fancy-flicker-grid__canvas");
+        grid.ShouldContain("aria-hidden=\"true\"");
+        grid.ShouldContain("--sc-fancy-flicker-grid-density:96");
+        grid.ShouldContain("--sc-fancy-flicker-grid-intensity:1");
+        grid.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
+    [Fact]
+    public void MeteorBackground_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var meteors = context.Render<MeteorBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 999).Add(x => x.Intensity, 2)).Markup;
+
+        meteors.ShouldContain("syntax-circus-fancy-meteor-background__canvas");
+        meteors.ShouldContain("aria-hidden=\"true\"");
+        meteors.ShouldContain("--sc-fancy-meteor-density:48");
+        meteors.ShouldContain("--sc-fancy-meteor-intensity:1");
+        meteors.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
+    [Fact]
+    public void LightRaysBackground_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var rays = context.Render<LightRaysBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 1).Add(x => x.Intensity, -1)).Markup;
+
+        rays.ShouldContain("syntax-circus-fancy-light-rays-background__canvas");
+        rays.ShouldContain("aria-hidden=\"true\"");
+        rays.ShouldContain("--sc-fancy-light-rays-density:3");
+        rays.ShouldContain("--sc-fancy-light-rays-intensity:0");
+        rays.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
+    [Fact]
+    public void ScrambleText_RendersSemanticElementWithAccessibleText()
+    {
+        using var context = CreateContext();
+
+        var markup = context.Render<ScrambleText>(p => p.Add(x => x.Text, "Decoded").Add(x => x.Element, TypeFlowElement.Heading3).Add(x => x.Duration, TimeSpan.FromSeconds(-1))).Markup;
+
+        markup.ShouldContain("data-fancy-effect=\"scramble-text\"");
+        markup.ShouldContain("<h3");
+        markup.ShouldContain("Decoded");
+    }
+
+    [Fact]
+    public void Marquee_DuplicatesContentWithOneAccessibleInertCopy()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var markup = context.Render<Marquee>(p => p.Add(x => x.ChildContent, content).Add(x => x.Reverse, true).Add(x => x.Duration, TimeSpan.FromSeconds(-1))).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-marquee__track");
+        markup.ShouldContain("data-fancy-reverse=\"true\"");
+        markup.ShouldContain("--sc-fancy-marquee-duration:0ms");
+        markup.ShouldContain("inert");
+        var first = markup.IndexOf("Continue", StringComparison.Ordinal);
+        var second = markup.IndexOf("Continue", first + 1, StringComparison.Ordinal);
+        second.ShouldBeGreaterThan(first);
+    }
+
+    [Fact]
+    public void NumberTicker_RendersAccessibleFinalValue()
+    {
+        using var context = CreateContext();
+
+        var markup = context.Render<NumberTicker>(p => p.Add(x => x.Value, 1234.5).Add(x => x.Format, "N1")).Markup;
+
+        markup.ShouldContain("data-fancy-effect=\"number-ticker\"");
+        markup.ShouldContain("syntax-circus-fancy-number-ticker__sr-only");
+        markup.ShouldContain("1,234.5");
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();

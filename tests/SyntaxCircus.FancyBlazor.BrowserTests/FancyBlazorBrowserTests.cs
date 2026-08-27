@@ -737,7 +737,74 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         var constellation = page.Locator("[data-testid='constellation-example']");
         (await constellation.Locator("article").InnerTextAsync()).ShouldBe("Constellation content");
         (await constellation.EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor")).ShouldNotBe("rgba(0, 0, 0, 0)");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount === 0");
+    }
+
+    [Fact]
+    public async Task CoreKineticCatalog_PausesCanvasBackgroundsOffscreenAndPreservesSemantics()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/core-kinetic-catalog");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 6");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=scramble-text-example]')?.textContent === 'Decoded on arrival.'");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=number-ticker-example] .syntax-circus-fancy-number-ticker__display')?.textContent === '1,284'");
+
+        var rays = page.Locator("[data-testid='light-rays-example']");
+        var meteors = page.Locator("[data-testid='meteor-example']");
+        var grid = page.Locator("[data-testid='flicker-grid-example']");
+        (await rays.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await meteors.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await grid.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await page.Locator("[data-testid='number-ticker-example'] .syntax-circus-fancy-number-ticker__sr-only").InnerTextAsync()).ShouldBe("1,284");
+        (await page.Locator("[data-testid='marquee-example'] .syntax-circus-fancy-marquee__content[aria-hidden='true']").GetAttributeAsync("inert")).ShouldNotBeNull();
+
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount >= 3");
+        var before = await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount");
+        await rays.EvaluateAsync("element => element.style.transform = 'translateY(3000px)'");
+        await meteors.EvaluateAsync("element => element.style.transform = 'translateY(3000px)'");
+        await grid.EvaluateAsync("element => element.style.transform = 'translateY(3000px)'");
+        await page.WaitForFunctionAsync($"() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount === {before - 3}");
+    }
+
+    [Fact]
+    public async Task CoreKineticCatalog_WithReducedMotion_UsesStaticFallbacksAndFinalValues()
+    {
+        await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/core-kinetic-catalog");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 6");
+
+        (await page.Locator("[data-testid='light-rays-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.Locator("[data-testid='meteor-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.Locator("[data-testid='flicker-grid-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.Locator("[data-testid='scramble-text-example']").InnerTextAsync()).ShouldBe("Decoded on arrival.");
+        (await page.Locator("[data-testid='number-ticker-example'] .syntax-circus-fancy-number-ticker__sr-only").InnerTextAsync()).ShouldBe("1,284");
+        (await page.Locator("[data-testid='marquee-example'] .syntax-circus-fancy-marquee__track").EvaluateAsync<string>("element => getComputedStyle(element).animationName")).ShouldBe("none");
         (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount")).ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task CoreKineticCatalog_EnhancedNavigation_ReleasesAllSixEffects()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync(fixture.TestHostUrl);
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount >= 4");
+
+        await page.Locator("header a[href='/core-kinetic-catalog']").ClickAsync();
+        await page.WaitForURLAsync("**/core-kinetic-catalog");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 6");
+
+        await page.Locator("header a[href='/border']").ClickAsync();
+        await page.WaitForURLAsync("**/border");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 0");
+
+        await page.Locator("a.wordmark").ClickAsync();
+        await page.WaitForURLAsync(fixture.TestHostUrl + "/");
+        await page.Locator("header a[href='/core-kinetic-catalog']").ClickAsync();
+        await page.WaitForURLAsync("**/core-kinetic-catalog");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 6");
     }
 
     [Fact]
@@ -769,7 +836,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         var artifactDirectory = Path.Combine(Environment.CurrentDirectory, "TestResults", "visual");
         Directory.CreateDirectory(artifactDirectory);
 
-        foreach (var route in new[] { "/background", "/border", "/reveal", "/tilt", "/spatial-surfaces", "/css-first-catalog", "/composition-authoring", "/threeui-inspiration" })
+        foreach (var route in new[] { "/background", "/border", "/reveal", "/tilt", "/spatial-surfaces", "/css-first-catalog", "/composition-authoring", "/threeui-inspiration", "/core-kinetic-catalog" })
         {
             await page.GotoAsync(fixture.TestHostUrl + route);
             await page.WaitForLoadStateAsync(LoadState.NetworkIdle);

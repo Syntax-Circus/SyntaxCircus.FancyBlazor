@@ -1,0 +1,6 @@
+.syntax-circus-fancy-light-rays-background { background: var(--sc-fancy-background); isolation: isolate; overflow: hidden; position: relative; }
+@supports (color: color-mix(in srgb, black, white)) { .syntax-circus-fancy-light-rays-background { background: conic-gradient(from 200deg at 50% -10%, color-mix(in srgb, var(--sc-fancy-primary) 22%, transparent), transparent 18%, color-mix(in srgb, var(--sc-fancy-secondary) 18%, transparent) 32%, transparent 46%), var(--sc-fancy-background); } }
+.syntax-circus-fancy-light-rays-background__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-light-rays-background__canvas { inset: 0; opacity: .8; pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-light-rays-background[data-fancy-disabled="true"] .syntax-circus-fancy-light-rays-background__canvas { display: none; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-light-rays-background__canvas { display: none; } }

@@ -1,0 +1,8 @@
+@keyframes syntax-circus-fancy-marquee-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.syntax-circus-fancy-marquee { overflow: hidden; position: relative; }
+.syntax-circus-fancy-marquee__track { animation: syntax-circus-fancy-marquee-scroll var(--sc-fancy-marquee-duration) linear infinite; animation-play-state: paused; display: flex; width: max-content; will-change: transform; }
+.syntax-circus-fancy-marquee__content { flex: 0 0 auto; }
+.syntax-circus-fancy-marquee[data-fancy-reverse="true"] .syntax-circus-fancy-marquee__track { animation-direction: reverse; }
+.syntax-circus-fancy-marquee[data-fancy-disabled="true"] .syntax-circus-fancy-marquee__track { animation: none; }
+.syntax-circus-fancy-marquee[data-fancy-disabled="true"] .syntax-circus-fancy-marquee__content[aria-hidden="true"] { display: none; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-marquee__track { animation: none !important; transform: none !important; } }

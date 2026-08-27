@@ -16,16 +16,16 @@ atmospheric fields without adding widget semantics or another rendering engine.
 
 ## Actionable tasks
 
-- [ ] Define typed parameters, stable hooks, CSS variables, clamping, and
+- [x] Define typed parameters, stable hooks, CSS variables, clamping, and
   static/reduced-motion behavior for all six components.
-- [ ] Preserve one meaningful semantic representation for moving or transformed
+- [x] Preserve one meaningful semantic representation for moving or transformed
   content; visual duplicates and generated glyphs must be decorative and
   unfocusable.
-- [ ] Bound Canvas/DOM work, pause it while hidden or offscreen, and release all
+- [x] Bound Canvas/DOM work, pause it while hidden or offscreen, and release all
   frames, observers, listeners, and generated nodes on disposal.
-- [ ] Add compiling demos, component guides, README catalog entries,
+- [x] Add compiling demos, component guides, README catalog entries,
   accessibility/performance guidance, changelog notes, and contributor rules.
-- [ ] Add bUnit and browser coverage for SSR/final states, semantics, motion
+- [x] Add bUnit and browser coverage for SSR/final states, semantics, motion
   preferences, visibility pausing, input clamping, and disposal.
 
 ## Success criteria

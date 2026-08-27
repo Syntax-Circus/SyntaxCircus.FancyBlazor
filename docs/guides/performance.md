@@ -29,6 +29,8 @@ for focal content; avoid stacking many scroll-driven wrappers on long lists.
 
 ConstellationBackground and ArcFlowBackground use bounded Canvas 2D particle or arc sets, a quality-capped DPR, `ResizeObserver`, and intersection/document-visibility gates. They have one frame at most while visible and release observers, frames, and canvas contents on disposal. NeonText, StatusPulse, and LaunchHalo are CSS-first; TypeFlow uses viewport observation only.
 
+FlickerGrid, MeteorBackground, and LightRaysBackground share the same bounded Canvas 2D, quality-capped DPR, `ResizeObserver`, and intersection/document-visibility gating as ConstellationBackground and ArcFlowBackground. ScrambleText uses viewport observation only, staggering its character animation across at most one `requestAnimationFrame` chain. Marquee is a CSS animation whose `animation-play-state` is toggled by an `IntersectionObserver`, document visibility, and pointer hover, so it runs no JavaScript animation frame of its own. NumberTicker runs one `requestAnimationFrame` chain only while its target value is counting and stops once the final value is reached. Every one of the six releases its observers, listeners, and frames on disposal.
+
 ## WebGL preview companion
 
 `HolographicSurface` is opt-in through `SyntaxCircus.FancyBlazor.WebGL`, so the

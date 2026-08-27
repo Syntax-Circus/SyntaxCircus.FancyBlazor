@@ -134,6 +134,12 @@ parameters, defaults, and visual output as preview API that may change before
 | `EdgeGlow` | CSS-first | Focused decorative edge bloom |
 | `ConstellationBackground` | Canvas 2D + JavaScript | Bounded decorative point-and-line field behind real DOM |
 | `ArcFlowBackground` | Canvas 2D + JavaScript | Bounded drifting-arc field behind real DOM |
+| `FlickerGrid` | Canvas 2D + JavaScript | Bounded flickering cell grid behind real DOM |
+| `MeteorBackground` | Canvas 2D + JavaScript | Bounded streaking-meteor field behind real DOM |
+| `LightRaysBackground` | Canvas 2D + JavaScript | Bounded sweeping light-ray field behind real DOM |
+| `ScrambleText` | CSS + `IntersectionObserver` | Semantic character-scramble text reveal |
+| `Marquee` | CSS animation + JavaScript | Seamless looping content scroll with one accessible copy |
+| `NumberTicker` | JavaScript + `IntersectionObserver` | Animated numeric count-up with an always-correct accessible value |
 | `NeonText` | CSS-first | Semantic text glow and optional outline |
 | `TypeFlow` | CSS + `IntersectionObserver` | Semantic word or character entrance |
 | `StatusPulse` | CSS-first | Decorative pulse around consumer-owned content |
@@ -196,6 +202,7 @@ continuous rendering stops while hidden or offscreen.
 - [Composition and authoring](docs/guides/composition-and-authoring.md)
 - [Composition-and-authoring demo](samples/FancyBlazor.Demo.Client/Pages/CompositionAuthoring.razor)
 - [Atmosphere-and-accents demo](samples/FancyBlazor.Demo.Client/Pages/ThreeUiInspiration.razor)
+- [Core-kinetic-catalog demo](samples/FancyBlazor.Demo.Client/Pages/CoreKineticCatalog.razor)
 - [Changelog](CHANGELOG.md)
 - [Compiling Interactive Auto demo](samples/FancyBlazor.Demo.Client/Pages/Home.razor)
 
