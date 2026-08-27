@@ -153,6 +153,8 @@ code { color: #c8d4e2; font: .78rem/1.5 ui-monospace, "SFMono-Regular", Consolas
 .gesture-card small { color: var(--muted); font-size: 1rem; }
 .ripple-card { background: linear-gradient(145deg, #102b3d, #0b1727); }
 .trail-card { background: linear-gradient(145deg, #132032, #0b1727); }
+.marquee-card { align-items: center; background: linear-gradient(145deg, #102b3d, #0b1727); border: 1px solid var(--line); border-radius: 20px; display: flex; min-height: 280px; padding: 2rem; }
+.marquee-card strong { font: 400 clamp(2rem, 4vw, 3.5rem) Georgia, serif; }
 .narrative-motion-page, .interaction-feedback-page { display: grid; gap: 2rem; }
 .narrative-motion-page > .lede, .interaction-feedback-page > .lede { margin: 0; }
 .narrative-stage { border: 1px solid var(--line); border-radius: 28px; min-height: 520px; }

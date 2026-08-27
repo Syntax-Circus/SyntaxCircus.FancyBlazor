@@ -1,0 +1,6 @@
+.syntax-circus-fancy-flicker-grid { background: var(--sc-fancy-background); isolation: isolate; overflow: hidden; position: relative; }
+@supports (color: color-mix(in srgb, black, white)) { .syntax-circus-fancy-flicker-grid { background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--sc-fancy-primary) 12%, transparent) 0, color-mix(in srgb, var(--sc-fancy-primary) 12%, transparent) 1px, transparent 1px, transparent 24px), repeating-linear-gradient(0deg, color-mix(in srgb, var(--sc-fancy-primary) 12%, transparent) 0, color-mix(in srgb, var(--sc-fancy-primary) 12%, transparent) 1px, transparent 1px, transparent 24px), var(--sc-fancy-background); } }
+.syntax-circus-fancy-flicker-grid__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-flicker-grid__canvas { inset: 0; opacity: .8; pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-flicker-grid[data-fancy-disabled="true"] .syntax-circus-fancy-flicker-grid__canvas { display: none; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-flicker-grid__canvas { display: none; } }

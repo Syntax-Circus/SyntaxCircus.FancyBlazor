@@ -22,11 +22,21 @@ called out clearly as potentially breaking.
 - Add a discoverable WebGL showcase with live typed controls, calibrated
   presets, fallback inspection, preview/setup guidance, ThreeUI inspiration
   attribution, and semantic-content preservation coverage.
+- Add six core kinetic and atmospheric components: bounded Canvas 2D
+  `FlickerGrid`, `MeteorBackground`, and `LightRaysBackground`; semantic
+  `ScrambleText` character-scramble reveal; `Marquee` seamless looping
+  content scroll; and `NumberTicker` animated count-up with an
+  always-accessible final value.
+- Add a compiling Core Kinetic Catalog demo route with each new component,
+  plus component guides and accessibility/performance documentation.
 
 ### Fixed
 
 - Recreate `HolographicSurface`'s decorative canvas after disabling its WebGL
   runtime so re-enabling cannot reuse a deliberately context-lost canvas.
+- Wait for `TypeFlow`'s warm-up animation frame to settle before asserting
+  zero active frames in the no-canvas-context browser test, instead of
+  sampling once immediately after `data-fancy-ready` is set.
 
 ## [0.2.0] - 2026-08-23
 
