@@ -1,14 +1,21 @@
 .syntax-circus-fancy-ui-link {
+    background-image: linear-gradient(120deg, var(--sc-fancy-ui-accent), color-mix(in srgb, var(--sc-fancy-ui-accent) 55%, white));
+    background-clip: text;
+    -webkit-background-clip: text;
     box-sizing: border-box;
-    color: var(--sc-fancy-ui-accent);
+    color: transparent;
     cursor: pointer;
+    font-weight: 600;
     text-decoration: underline;
-    text-underline-offset: 0.15em;
-    transition: opacity 150ms ease;
+    text-decoration-color: color-mix(in srgb, var(--sc-fancy-ui-accent) 45%, transparent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: .2em;
+    transition: text-decoration-color 150ms ease, text-underline-offset 150ms ease;
 }
 
 .syntax-circus-fancy-ui-link:hover {
-    opacity: 0.82;
+    text-decoration-color: var(--sc-fancy-ui-accent);
+    text-underline-offset: .28em;
 }
 
 .syntax-circus-fancy-ui-link:focus-visible {
@@ -17,6 +24,7 @@
 }
 
 .syntax-circus-fancy-ui-link[aria-disabled="true"] {
+    background-image: none;
     color: var(--sc-fancy-ui-border);
     cursor: not-allowed;
     pointer-events: none;

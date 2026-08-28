@@ -1,7 +1,9 @@
 .syntax-circus-fancy-ui-card {
     background-color: var(--sc-fancy-ui-surface);
-    border: 1px solid var(--sc-fancy-ui-border);
+    background-image: radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--sc-fancy-ui-accent) 16%, transparent), transparent 55%);
+    border: 1px solid color-mix(in srgb, var(--sc-fancy-ui-accent) 30%, var(--sc-fancy-ui-border));
     border-radius: var(--sc-fancy-ui-radius);
+    box-shadow: 0 1px 0 color-mix(in srgb, white 8%, transparent) inset, 0 24px 48px -24px color-mix(in srgb, var(--sc-fancy-ui-accent) 55%, transparent), 0 2px 8px rgba(0, 0, 0, .28);
     box-sizing: border-box;
     color: var(--sc-fancy-ui-text);
     display: flex;
@@ -13,6 +15,7 @@
 
 .syntax-circus-fancy-ui-card__header {
     font-weight: 600;
+    letter-spacing: .01em;
 }
 
 .syntax-circus-fancy-ui-card__body {

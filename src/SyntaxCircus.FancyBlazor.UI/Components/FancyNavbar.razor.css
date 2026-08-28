@@ -1,14 +1,33 @@
 .syntax-circus-fancy-ui-navbar {
     align-items: center;
-    background-color: var(--sc-fancy-ui-surface);
-    border-bottom: 1px solid var(--sc-fancy-ui-border);
+    background-color: color-mix(in srgb, var(--sc-fancy-ui-surface) 88%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     box-sizing: border-box;
     color: var(--sc-fancy-ui-text);
     display: flex;
     flex-wrap: wrap;
     font: inherit;
-    gap: 1em;
-    padding: var(--sc-fancy-ui-spacing);
+    gap: 1.25em;
+    isolation: isolate;
+    padding: calc(var(--sc-fancy-ui-radius) * .8) calc(var(--sc-fancy-ui-radius) * 1.6);
+    position: relative;
+}
+
+.syntax-circus-fancy-ui-navbar::after {
+    background-image: linear-gradient(90deg, transparent, color-mix(in srgb, var(--sc-fancy-ui-accent) 70%, transparent) 20%, color-mix(in srgb, var(--sc-fancy-ui-accent) 70%, transparent) 80%, transparent);
+    bottom: 0;
+    content: "";
+    height: 1px;
+    left: 0;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+}
+
+.syntax-circus-fancy-ui-navbar__brand {
+    font-size: 1.1em;
+    font-weight: 700;
 }
 
 .syntax-circus-fancy-ui-navbar__links {
@@ -16,7 +35,7 @@
     display: flex;
     flex: 1 1 auto;
     flex-wrap: wrap;
-    gap: 1em;
+    gap: 1.5em;
 }
 
 .syntax-circus-fancy-ui-navbar__actions {

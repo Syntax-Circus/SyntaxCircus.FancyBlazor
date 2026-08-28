@@ -11,45 +11,55 @@
         JavaScript lifecycle, no Node, and no transitive dependency on the WebGL companion.
     </p>
 
-    <section aria-labelledby="ui-button-heading">
+    <section class="ui-companion-specimen" aria-labelledby="ui-button-heading">
         <p class="specimen-label">NATIVE &lt;BUTTON&gt;</p>
         <h2 id="ui-button-heading">FancyButton</h2>
-        <FancyButton data-testid="ui-companion-button">Save changes</FancyButton>
+        <div class="component-stage quiet">
+            <FancyButton data-testid="ui-companion-button">Save changes</FancyButton>
+        </div>
     </section>
 
-    <section aria-labelledby="ui-link-heading">
+    <section class="ui-companion-specimen" aria-labelledby="ui-link-heading">
         <p class="specimen-label">NATIVE &lt;A&gt;</p>
         <h2 id="ui-link-heading">FancyLink</h2>
-        <FancyLink Href="/border" data-testid="ui-companion-link">Open details</FancyLink>
+        <div class="component-stage quiet">
+            <FancyLink Href="/border" data-testid="ui-companion-link">Open details</FancyLink>
+        </div>
     </section>
 
-    <section aria-labelledby="ui-badge-heading">
+    <section class="ui-companion-specimen" aria-labelledby="ui-badge-heading">
         <p class="specimen-label">STATUS LABEL</p>
         <h2 id="ui-badge-heading">FancyBadge</h2>
-        <FancyBadge data-testid="ui-companion-badge">New</FancyBadge>
+        <div class="component-stage quiet">
+            <FancyBadge data-testid="ui-companion-badge">New</FancyBadge>
+        </div>
     </section>
 
-    <section aria-labelledby="ui-card-heading">
+    <section class="ui-companion-specimen" aria-labelledby="ui-card-heading">
         <p class="specimen-label">CONTENT SURFACE</p>
         <h2 id="ui-card-heading">FancyCard</h2>
-        <FancyCard data-testid="ui-companion-card">
-            <Header>Plan: Pro</Header>
-            <ChildContent><p>Everything in Free, plus priority support.</p></ChildContent>
-            <Footer><FancyButton>Choose plan</FancyButton></Footer>
-        </FancyCard>
+        <div class="component-stage quiet">
+            <FancyCard data-testid="ui-companion-card">
+                <Header>Plan: Pro</Header>
+                <ChildContent><p>Everything in Free, plus priority support.</p></ChildContent>
+                <Footer><FancyButton>Choose plan</FancyButton></Footer>
+            </FancyCard>
+        </div>
     </section>
 
-    <section aria-labelledby="ui-navbar-heading">
+    <section class="ui-companion-specimen" aria-labelledby="ui-navbar-heading">
         <p class="specimen-label">LANDMARK NAV</p>
         <h2 id="ui-navbar-heading">FancyNavbar</h2>
-        <FancyNavbar AriaLabel="Example site" data-testid="ui-companion-navbar">
-            <Brand><FancyLink Href="/">Acme</FancyLink></Brand>
-            <Links>
-                <FancyLink Href="/ui-companion">Pricing</FancyLink>
-                <FancyLink Href="/ui-companion">Docs</FancyLink>
-            </Links>
-            <Actions><FancyButton>Sign in</FancyButton></Actions>
-        </FancyNavbar>
+        <div class="component-stage">
+            <FancyNavbar AriaLabel="Example site" data-testid="ui-companion-navbar">
+                <Brand><FancyLink Href="/">Acme</FancyLink></Brand>
+                <Links>
+                    <FancyLink Href="/ui-companion">Pricing</FancyLink>
+                    <FancyLink Href="/ui-companion">Docs</FancyLink>
+                </Links>
+                <Actions><FancyButton>Sign in</FancyButton></Actions>
+            </FancyNavbar>
+        </div>
     </section>
 
     <section class="surface-recipe" aria-labelledby="ui-bootstrap-heading">

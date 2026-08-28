@@ -192,6 +192,15 @@ code { color: #c8d4e2; font: .78rem/1.5 ui-monospace, "SFMono-Regular", Consolas
 .reconnect-panel .specimen-label { color: var(--nacre); }
 .reconnect-panel__message { color: var(--paper); font: 400 clamp(1.35rem, 3vw, 1.8rem)/1.2 Georgia, serif; margin: 0; }
 pre { background: #040a12; border: 1px solid var(--line); border-radius: 12px; overflow-x: auto; padding: 1.25rem; }
+.ui-companion-page { display: grid; gap: 1rem; }
+.ui-companion-page > .lede { margin: 0 0 1rem; max-width: 52rem; }
+.ui-companion-specimen { border-top: 1px solid var(--line); display: grid; gap: 1.5rem; padding-top: clamp(2.5rem, 5vw, 4rem); }
+.ui-companion-specimen h2 { font-size: clamp(2rem, 4vw, 3rem); margin: 0; }
+.ui-companion-bootstrap-demo { display: grid; gap: 1.5rem; padding: clamp(2rem, 5vw, 4rem); place-content: center; }
+.ui-companion-bootstrap-demo > button { appearance: none; background: transparent; border: 1px solid var(--line); border-radius: 999px; color: var(--paper); cursor: pointer; font: .72rem ui-monospace, monospace; justify-self: start; letter-spacing: .06em; padding: .7rem 1.1rem; text-transform: uppercase; white-space: nowrap; }
+.ui-companion-bootstrap-demo > button:hover { border-color: var(--cyan); color: var(--cyan); }
+.ui-companion-bootstrap-demo__pair { align-items: center; display: grid; gap: 2rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ui-companion-bootstrap-demo__pair > div { display: grid; gap: .75rem; justify-items: start; }
 footer { border-top: 1px solid var(--line); color: var(--muted); display: grid; font-size: .75rem; gap: 0; grid-template-columns: minmax(0, var(--content-width)); justify-content: center; max-width: none; padding: 0; }
 .footer-sitemap, .footer-meta { padding-inline: clamp(1rem, 4vw, 3rem); width: 100%; }
 .footer-sitemap { display: grid; gap: 3rem; grid-template-columns: minmax(14rem, .8fr) minmax(0, 1.2fr); padding-block: clamp(2.5rem, 6vw, 5rem); }
@@ -221,6 +230,7 @@ footer { border-top: 1px solid var(--line); color: var(--muted); display: grid; 
     .catalog-grid, .preset-grid, .divider-specimens { grid-template-columns: 1fr; }
     .preset-card--aurora { grid-column: auto; }
     .surface-recipe { grid-template-columns: 1fr; }
+    .ui-companion-bootstrap-demo__pair { grid-template-columns: 1fr; }
     .surface-recipe__copy { border-bottom: 1px solid var(--line); border-right: 0; }
     .effect-grid a { min-height: 190px; }
     .catalog-directory__groups-meta { flex-basis: 100%; justify-content: flex-end; margin-left: 0; max-width: none; }

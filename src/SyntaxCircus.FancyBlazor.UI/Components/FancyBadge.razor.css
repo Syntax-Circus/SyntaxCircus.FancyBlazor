@@ -1,14 +1,18 @@
 .syntax-circus-fancy-ui-badge {
-    background-color: var(--sc-fancy-ui-surface);
-    border: 1px solid var(--sc-fancy-ui-border);
+    background-color: color-mix(in srgb, var(--sc-fancy-ui-accent) 22%, var(--sc-fancy-ui-surface));
+    background-image: linear-gradient(120deg, color-mix(in srgb, var(--sc-fancy-ui-accent) 38%, transparent), transparent 70%);
+    border: 1px solid color-mix(in srgb, var(--sc-fancy-ui-accent) 55%, transparent);
     border-radius: calc(var(--sc-fancy-ui-radius) * 2);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--sc-fancy-ui-accent) 20%, transparent), 0 4px 14px -6px color-mix(in srgb, var(--sc-fancy-ui-accent) 70%, transparent);
     box-sizing: border-box;
-    color: var(--sc-fancy-ui-accent);
+    color: color-mix(in srgb, var(--sc-fancy-ui-accent) 70%, white);
     display: inline-flex;
     font: inherit;
     font-size: 0.8em;
+    font-weight: 600;
+    letter-spacing: .02em;
     line-height: 1.4;
-    padding: 0.2em 0.7em;
+    padding: 0.25em 0.85em;
     text-decoration: none;
     white-space: nowrap;
 }
