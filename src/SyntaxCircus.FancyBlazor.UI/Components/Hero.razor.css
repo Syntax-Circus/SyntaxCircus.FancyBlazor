@@ -1,0 +1,55 @@
+.syntax-circus-fancy-ui-hero {
+    box-sizing: border-box;
+    color: var(--sc-fancy-ui-text);
+    display: flex;
+    flex-direction: column;
+    font: inherit;
+    padding: calc(var(--sc-fancy-ui-spacing) * 2);
+    position: relative;
+}
+
+.syntax-circus-fancy-ui-hero--center {
+    align-items: center;
+    text-align: center;
+}
+
+.syntax-circus-fancy-ui-hero__background {
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 0;
+}
+
+.syntax-circus-fancy-ui-hero__content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75em;
+    max-width: 48rem;
+    position: relative;
+    z-index: 1;
+}
+
+.syntax-circus-fancy-ui-hero--center .syntax-circus-fancy-ui-hero__content {
+    align-items: center;
+    max-width: 40rem;
+}
+
+.syntax-circus-fancy-ui-hero__heading {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.syntax-circus-fancy-ui-hero__subheading {
+    color: color-mix(in srgb, var(--sc-fancy-ui-text) 78%, transparent);
+    font-size: 1.1em;
+    line-height: 1.5;
+}
+
+.syntax-circus-fancy-ui-hero__actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75em;
+    margin-top: 0.5em;
+}

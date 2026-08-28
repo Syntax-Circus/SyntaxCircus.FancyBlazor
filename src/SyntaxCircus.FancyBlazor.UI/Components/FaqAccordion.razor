@@ -1,0 +1,75 @@
+@namespace SyntaxCircus.FancyBlazor
+@implements IAsyncDisposable
+@inject IJSRuntime JSRuntime
+
+<div @attributes="RootAttributes" @ref="_root">
+    @ChildContent
+</div>
+
+@code {
+    private const string ModulePath = "./_content/SyntaxCircus.FancyBlazor.UI/js/faq-accordion.js";
+
+    [Inject] private IOptions<FancyUiOptions> UiOptions { get; set; } = default!;
+
+    private ElementReference _root;
+    private IJSObjectReference? _module;
+    private bool _created;
+
+    /// <summary>Gets or sets the accordion items, typically one or more <see cref="FaqAccordionItem"/>.</summary>
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gets or sets whether opening an item closes the others. Defaults to <see langword="true"/>.</summary>
+    [Parameter] public bool SingleOpen { get; set; } = true;
+
+    /// <summary>Gets or sets the theme tokens. Falls back to the configured <see cref="FancyUiOptions.Theme"/>.</summary>
+    [Parameter] public FancyUiTheme? Theme { get; set; }
+
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private FancyUiTheme EffectiveTheme => Theme ?? UiOptions.Value.Theme;
+
+    private IReadOnlyDictionary<string, object> RootAttributes => UiAttributeComposer.Compose(
+        "syntax-circus-fancy-ui-faq-accordion",
+        CssClass,
+        $"--sc-fancy-ui-text:{EffectiveTheme.Text};--sc-fancy-ui-accent:{EffectiveTheme.Accent};--sc-fancy-ui-border:{EffectiveTheme.Border};--sc-fancy-ui-spacing:{EffectiveTheme.Spacing};--sc-fancy-ui-focus-ring:{EffectiveTheme.FocusRing}",
+        Style,
+        AdditionalAttributes);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+        {
+            return;
+        }
+
+        _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", ModulePath);
+        await _module.InvokeVoidAsync("create", _root, new { singleOpen = SingleOpen });
+        _created = true;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is null)
+        {
+            return;
+        }
+
+        try
+        {
+            if (_created)
+            {
+                await _module.InvokeVoidAsync("destroy", _root);
+            }
+
+            await _module.DisposeAsync();
+        }
+        catch (JSDisconnectedException)
+        {
+        }
+        catch (ObjectDisposedException)
+        {
+        }
+    }
+}

@@ -28,6 +28,31 @@ called out clearly as potentially breaking.
 - Add `FancyNavbar` to `SyntaxCircus.FancyBlazor.UI`: a themed `<nav>`
   landmark with optional brand/links/actions slots, laid out with no
   JavaScript and no built-in mobile disclosure.
+- Add `LogoCloud` to `SyntaxCircus.FancyBlazor.UI`: a themed `<ul>` list for
+  consumer-owned partner/customer logos with a typed `Layout` (`Wrap`/`Dense`)
+  presentation option and no embedded logo content.
+- Add `Testimonial` to `SyntaxCircus.FancyBlazor.UI`: a themed
+  `<figure>`/`<blockquote>` for a single quote with optional attribution and
+  avatar slots, omitted from the DOM when not provided.
+- Add `CallToAction` to `SyntaxCircus.FancyBlazor.UI`: a themed heading/copy/
+  actions block with a typed `Layout` (`Inline`/`Stacked`) presentation
+  option; does not choose a heading level for consumers.
+- Add `FeatureGrid` to `SyntaxCircus.FancyBlazor.UI`: a themed `<ul>`
+  responsive grid for consumer-owned feature callouts with a typed `Columns`
+  (`Two`/`Three`/`Four`) presentation option.
+- Add `Hero` to `SyntaxCircus.FancyBlazor.UI`: a themed heading/subheading/
+  actions block with an optional `aria-hidden`, pointer-transparent
+  `Background` slot that never requires WebGL or core renderer internals.
+- Add `PricingTable` to `SyntaxCircus.FancyBlazor.UI`: a themed `<table>` for
+  consumer-owned plan/feature comparisons with a typed `Density`
+  (`Comfortable`/`Compact`) presentation option; works with or without a
+  featured tier.
+- Add `FaqAccordion`/`FaqAccordionItem` to `SyntaxCircus.FancyBlazor.UI`: a
+  themed, keyboard-operable disclosure list with a typed `SingleOpen`
+  presentation option. This is the first control in the UI companion package
+  with a JavaScript lifecycle (`faq-accordion.js`): it owns click-driven
+  open/closed state and listener cleanup, and never sends per-frame updates
+  to Blazor. Every other UI companion control remains JavaScript-free.
 - Verify (ADR-016) that every `SyntaxCircus.FancyBlazor.UI` control coexists
   cleanly with Bootstrap 5's Reboot: dedicated Playwright coverage renders
   the catalog with and without a locally vendored, unmodified Bootstrap 5

@@ -18,7 +18,7 @@
 | 14 | [Core Kinetic Catalog](PHASE-14-core-kinetic-catalog.md) | Complete | WebGL Rendering Boundary and Preview | Six semantic, fallback-safe kinetic and atmospheric effects |
 | 15 | [WebGL Fields and Materials](PHASE-15-webgl-fields-and-materials.md) | Complete | Core Kinetic Catalog | Four typed Three.js effects with lifecycle, fallback, and package-budget proof |
 | 16 | [UI Companion Foundation](PHASE-16-ui-companion-foundation.md) | Complete | WebGL Fields and Materials | Exact-version core-only companion package with tokens and five accessible primitives |
-| 17 | [Marketing and Content UI](PHASE-17-marketing-and-content-ui.md) | Approved | UI Companion Foundation | Seven slot-driven site controls with accessible interaction and compiling examples |
+| 17 | [Marketing and Content UI](PHASE-17-marketing-and-content-ui.md) | Complete | UI Companion Foundation | Seven slot-driven site controls with accessible interaction and compiling examples |
 | 18 | [1.0 Stabilization](PHASE-18-1.0-stabilization.md) | Approved | All prior phases | Resolved preview APIs, migration notes, and cross-package release-readiness evidence |
 
 A phase is complete only when its task boxes and validation gate are supported by current command output or inspected artifacts.

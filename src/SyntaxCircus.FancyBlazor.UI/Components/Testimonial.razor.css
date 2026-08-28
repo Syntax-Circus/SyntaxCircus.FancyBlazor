@@ -1,0 +1,41 @@
+.syntax-circus-fancy-ui-testimonial {
+    background-color: var(--sc-fancy-ui-surface);
+    border: 1px solid color-mix(in srgb, var(--sc-fancy-ui-accent) 30%, var(--sc-fancy-ui-border));
+    border-radius: var(--sc-fancy-ui-radius);
+    box-sizing: border-box;
+    color: var(--sc-fancy-ui-text);
+    display: flex;
+    flex-direction: column;
+    font: inherit;
+    gap: 1em;
+    margin: 0;
+    padding: var(--sc-fancy-ui-spacing);
+}
+
+.syntax-circus-fancy-ui-testimonial__quote {
+    font-size: 1.05em;
+    line-height: 1.6;
+    margin: 0;
+    quotes: none;
+}
+
+.syntax-circus-fancy-ui-testimonial__attribution {
+    align-items: center;
+    color: color-mix(in srgb, var(--sc-fancy-ui-text) 72%, transparent);
+    display: flex;
+    font-size: 0.9em;
+    gap: 0.75em;
+}
+
+.syntax-circus-fancy-ui-testimonial__avatar {
+    display: flex;
+    flex: none;
+}
+
+.syntax-circus-fancy-ui-testimonial__avatar ::deep img {
+    block-size: 2.5em;
+    border-radius: 999px;
+    display: block;
+    inline-size: 2.5em;
+    object-fit: cover;
+}

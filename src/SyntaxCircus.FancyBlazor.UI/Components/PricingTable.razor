@@ -1,0 +1,39 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<table aria-label="@AriaLabel" @attributes="RootAttributes">
+    @ChildContent
+</table>
+
+@code {
+    [Inject] private IOptions<FancyUiOptions> UiOptions { get; set; } = default!;
+
+    /// <summary>Gets or sets the table content. Consumers supply their own <c>&lt;thead&gt;</c>/<c>&lt;tbody&gt;</c>/
+    /// <c>&lt;tfoot&gt;</c> markup, including plan headers, feature rows, and per-plan actions.</summary>
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gets or sets the optional accessible label describing the table.</summary>
+    [Parameter] public string? AriaLabel { get; set; }
+
+    /// <summary>Gets or sets the cell density.</summary>
+    [Parameter] public PricingTableDensity Density { get; set; } = PricingTableDensity.Comfortable;
+
+    /// <summary>Gets or sets the theme tokens. Falls back to the configured <see cref="FancyUiOptions.Theme"/>.</summary>
+    [Parameter] public FancyUiTheme? Theme { get; set; }
+
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private FancyUiTheme EffectiveTheme => Theme ?? UiOptions.Value.Theme;
+
+    private string StableClass => Density == PricingTableDensity.Compact
+        ? "syntax-circus-fancy-ui-pricing-table syntax-circus-fancy-ui-pricing-table--compact"
+        : "syntax-circus-fancy-ui-pricing-table";
+
+    private IReadOnlyDictionary<string, object> RootAttributes => UiAttributeComposer.Compose(
+        StableClass,
+        CssClass,
+        $"--sc-fancy-ui-surface:{EffectiveTheme.Surface};--sc-fancy-ui-text:{EffectiveTheme.Text};--sc-fancy-ui-border:{EffectiveTheme.Border};--sc-fancy-ui-accent:{EffectiveTheme.Accent};--sc-fancy-ui-radius:{EffectiveTheme.Radius};--sc-fancy-ui-spacing:{EffectiveTheme.Spacing}",
+        Style,
+        AdditionalAttributes);
+}

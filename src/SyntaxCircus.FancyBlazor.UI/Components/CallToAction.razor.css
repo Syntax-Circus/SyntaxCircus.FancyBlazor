@@ -1,0 +1,43 @@
+.syntax-circus-fancy-ui-cta {
+    align-items: center;
+    background-color: var(--sc-fancy-ui-surface);
+    background-image: radial-gradient(circle at 85% 0%, color-mix(in srgb, var(--sc-fancy-ui-accent) 18%, transparent), transparent 55%);
+    border: 1px solid color-mix(in srgb, var(--sc-fancy-ui-accent) 30%, var(--sc-fancy-ui-border));
+    border-radius: var(--sc-fancy-ui-radius);
+    box-sizing: border-box;
+    color: var(--sc-fancy-ui-text);
+    display: flex;
+    flex-wrap: wrap;
+    font: inherit;
+    gap: 1.5em;
+    justify-content: space-between;
+    padding: var(--sc-fancy-ui-spacing);
+}
+
+.syntax-circus-fancy-ui-cta--stacked {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.syntax-circus-fancy-ui-cta__heading {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.syntax-circus-fancy-ui-cta__body {
+    color: color-mix(in srgb, var(--sc-fancy-ui-text) 80%, transparent);
+    min-width: 0;
+}
+
+.syntax-circus-fancy-ui-cta__actions {
+    align-items: center;
+    display: flex;
+    flex: none;
+    flex-wrap: wrap;
+    gap: 0.75em;
+}
+
+.syntax-circus-fancy-ui-cta--stacked .syntax-circus-fancy-ui-cta__actions {
+    justify-content: center;
+}

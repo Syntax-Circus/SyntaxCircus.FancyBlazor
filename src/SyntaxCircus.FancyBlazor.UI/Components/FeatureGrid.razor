@@ -1,0 +1,41 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<ul aria-label="@AriaLabel" @attributes="RootAttributes">
+    @ChildContent
+</ul>
+
+@code {
+    [Inject] private IOptions<FancyUiOptions> UiOptions { get; set; } = default!;
+
+    /// <summary>Gets or sets the feature list items. Consumers supply their own <c>&lt;li&gt;</c> content.</summary>
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Gets or sets the optional accessible label describing the list of features.</summary>
+    [Parameter] public string? AriaLabel { get; set; }
+
+    /// <summary>Gets or sets the target column count on wide viewports.</summary>
+    [Parameter] public FeatureGridColumns Columns { get; set; } = FeatureGridColumns.Three;
+
+    /// <summary>Gets or sets the theme tokens. Falls back to the configured <see cref="FancyUiOptions.Theme"/>.</summary>
+    [Parameter] public FancyUiTheme? Theme { get; set; }
+
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private FancyUiTheme EffectiveTheme => Theme ?? UiOptions.Value.Theme;
+
+    private string ColumnsModifier => Columns switch
+    {
+        FeatureGridColumns.Two => "syntax-circus-fancy-ui-feature-grid--two",
+        FeatureGridColumns.Four => "syntax-circus-fancy-ui-feature-grid--four",
+        _ => "syntax-circus-fancy-ui-feature-grid--three",
+    };
+
+    private IReadOnlyDictionary<string, object> RootAttributes => UiAttributeComposer.Compose(
+        $"syntax-circus-fancy-ui-feature-grid {ColumnsModifier}",
+        CssClass,
+        $"--sc-fancy-ui-text:{EffectiveTheme.Text};--sc-fancy-ui-spacing:{EffectiveTheme.Spacing}",
+        Style,
+        AdditionalAttributes);
+}

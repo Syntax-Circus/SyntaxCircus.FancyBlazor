@@ -1,0 +1,46 @@
+.syntax-circus-fancy-ui-pricing-table {
+    background-color: var(--sc-fancy-ui-surface);
+    border: 1px solid var(--sc-fancy-ui-border);
+    border-collapse: separate;
+    border-radius: var(--sc-fancy-ui-radius);
+    border-spacing: 0;
+    box-sizing: border-box;
+    color: var(--sc-fancy-ui-text);
+    font: inherit;
+    overflow: hidden;
+    width: 100%;
+}
+
+.syntax-circus-fancy-ui-pricing-table ::deep th,
+.syntax-circus-fancy-ui-pricing-table ::deep td {
+    border-bottom: 1px solid var(--sc-fancy-ui-border);
+    padding: var(--sc-fancy-ui-spacing);
+    text-align: left;
+    vertical-align: top;
+}
+
+.syntax-circus-fancy-ui-pricing-table--compact ::deep th,
+.syntax-circus-fancy-ui-pricing-table--compact ::deep td {
+    padding: calc(var(--sc-fancy-ui-spacing) * 0.5);
+}
+
+.syntax-circus-fancy-ui-pricing-table ::deep thead th {
+    font-size: 1.05em;
+    font-weight: 700;
+}
+
+.syntax-circus-fancy-ui-pricing-table ::deep tbody th[scope='row'] {
+    font-weight: 500;
+}
+
+.syntax-circus-fancy-ui-pricing-table ::deep tbody tr:last-child th,
+.syntax-circus-fancy-ui-pricing-table ::deep tbody tr:last-child td,
+.syntax-circus-fancy-ui-pricing-table ::deep tfoot th,
+.syntax-circus-fancy-ui-pricing-table ::deep tfoot td {
+    border-bottom: none;
+}
+
+.syntax-circus-fancy-ui-pricing-table ::deep th[aria-current='true'],
+.syntax-circus-fancy-ui-pricing-table ::deep td[aria-current='true'] {
+    background-color: color-mix(in srgb, var(--sc-fancy-ui-accent) 12%, transparent);
+}

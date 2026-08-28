@@ -1,0 +1,133 @@
+@page "/marketing"
+
+<PageTitle>Marketing showcase · FancyBlazor</PageTitle>
+
+<section class="demo-page marketing-page">
+    <p class="kicker">UI COMPANION / MARKETING AND CONTENT</p>
+    <h1>Build a page, not a design system.</h1>
+    <p class="lede">
+        The seven marketing and content controls in
+        <code>SyntaxCircus.FancyBlazor.UI</code> compose into a real landing
+        page while you keep ownership of copy, links, and hierarchy. This page
+        assembles them together, in the order a marketing page typically
+        reads.
+    </p>
+
+    <section class="marketing-section" aria-labelledby="marketing-hero-heading">
+        <p class="specimen-label">PAGE INTRO</p>
+        <h2 id="marketing-hero-heading">Hero</h2>
+        <div class="component-stage quiet">
+            <Hero Alignment="HeroAlignment.Center" data-testid="marketing-hero">
+                <Heading><h3>Composable effects for Blazor.</h3></Heading>
+                <Subheading>Ship expressive UI with ordinary semantic HTML at the center.</Subheading>
+                <Actions><FancyLink Href="/ui-companion">Get started</FancyLink></Actions>
+            </Hero>
+        </div>
+    </section>
+
+    <section class="marketing-section" aria-labelledby="marketing-feature-grid-heading">
+        <p class="specimen-label">CAPABILITIES</p>
+        <h2 id="marketing-feature-grid-heading">FeatureGrid</h2>
+        <div class="component-stage quiet">
+            <FeatureGrid AriaLabel="Features" data-testid="marketing-feature-grid">
+                <li>
+                    <h3>Fast</h3>
+                    <p>CSS-first effects with no required JavaScript.</p>
+                </li>
+                <li>
+                    <h3>Accessible</h3>
+                    <p>Reduced motion and semantic content by default.</p>
+                </li>
+                <li>
+                    <h3>Themeable</h3>
+                    <p>Typed tokens, no framework CSS required.</p>
+                </li>
+            </FeatureGrid>
+        </div>
+    </section>
+
+    <section class="marketing-section" aria-labelledby="marketing-logo-cloud-heading">
+        <p class="specimen-label">SOCIAL PROOF</p>
+        <h2 id="marketing-logo-cloud-heading">LogoCloud</h2>
+        <div class="component-stage quiet">
+            <LogoCloud AriaLabel="Trusted by teams at" data-testid="marketing-logo-cloud">
+                <li>Acme</li>
+                <li>Globex</li>
+                <li>Initech</li>
+                <li>Umbrella</li>
+                <li>Soylent</li>
+            </LogoCloud>
+        </div>
+    </section>
+
+    <section class="marketing-section" aria-labelledby="marketing-testimonial-heading">
+        <p class="specimen-label">CUSTOMER QUOTE</p>
+        <h2 id="marketing-testimonial-heading">Testimonial</h2>
+        <div class="component-stage quiet">
+            <Testimonial data-testid="marketing-testimonial">
+                <ChildContent><p>FancyBlazor let us ship a landing page without adopting a whole design system.</p></ChildContent>
+                <Attribution><cite>Jane Doe</cite>, CEO of Acme</Attribution>
+            </Testimonial>
+        </div>
+    </section>
+
+    <section class="marketing-section" aria-labelledby="marketing-pricing-heading">
+        <p class="specimen-label">PLANS</p>
+        <h2 id="marketing-pricing-heading">PricingTable</h2>
+        <div class="component-stage quiet">
+            <PricingTable AriaLabel="Plans" data-testid="marketing-pricing">
+                <thead>
+                    <tr>
+                        <th scope="col">Feature</th>
+                        <th scope="col">Free</th>
+                        <th scope="col" aria-current="true">Pro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><th scope="row">Projects</th><td>3</td><td>Unlimited</td></tr>
+                    <tr><th scope="row">Support</th><td>Community</td><td>Priority</td></tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td><FancyButton>Choose Free</FancyButton></td>
+                        <td><FancyButton>Choose Pro</FancyButton></td>
+                    </tr>
+                </tfoot>
+            </PricingTable>
+        </div>
+    </section>
+
+    <section class="marketing-section" aria-labelledby="marketing-faq-heading">
+        <p class="specimen-label">QUESTIONS</p>
+        <h2 id="marketing-faq-heading">FaqAccordion</h2>
+        <div class="component-stage quiet">
+            <FaqAccordion SingleOpen="true" data-testid="marketing-faq">
+                <FaqAccordionItem DefaultOpen="true">
+                    <Question>What is FancyBlazor?</Question>
+                    <Answer>A visual-effects and UI component library for Blazor.</Answer>
+                </FaqAccordionItem>
+                <FaqAccordionItem>
+                    <Question>Does it require WebGL?</Question>
+                    <Answer>No, the core and UI packages never require the WebGL companion.</Answer>
+                </FaqAccordionItem>
+                <FaqAccordionItem>
+                    <Question>Is it accessible?</Question>
+                    <Answer>Every control preserves native semantics and reduced-motion support by default.</Answer>
+                </FaqAccordionItem>
+            </FaqAccordion>
+        </div>
+    </section>
+
+    <section class="marketing-section" aria-labelledby="marketing-cta-heading">
+        <p class="specimen-label">CONVERSION</p>
+        <h2 id="marketing-cta-heading">CallToAction</h2>
+        <div class="component-stage quiet">
+            <CallToAction Layout="CallToActionLayout.Stacked" data-testid="marketing-cta">
+                <Heading><h3>Ready to try FancyBlazor?</h3></Heading>
+                <ChildContent>Start building your first effect in minutes.</ChildContent>
+                <Actions><FancyLink Href="/ui-companion">Get started</FancyLink></Actions>
+            </CallToAction>
+        </div>
+    </section>
+</section>
