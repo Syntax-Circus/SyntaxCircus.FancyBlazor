@@ -26,6 +26,79 @@
             <Actions><FancyButton>Sign in</FancyButton></Actions>
         </FancyNavbar>
     </section>
+    <section data-testid="logo-cloud-example">
+        <LogoCloud AriaLabel="Trusted by">
+            <li>Acme</li>
+            <li>Globex</li>
+        </LogoCloud>
+    </section>
+    <section data-testid="testimonial-example">
+        <Testimonial>
+            <ChildContent><p>Great library.</p></ChildContent>
+            <Attribution><cite>Jane Doe</cite></Attribution>
+        </Testimonial>
+    </section>
+    <section data-testid="cta-example">
+        <CallToAction>
+            <Heading><h3>Ready?</h3></Heading>
+            <Actions><FancyButton>Go</FancyButton></Actions>
+        </CallToAction>
+    </section>
+    <section data-testid="feature-grid-example">
+        <FeatureGrid AriaLabel="Features">
+            <li><h3>Fast</h3></li>
+            <li><h3>Accessible</h3></li>
+        </FeatureGrid>
+    </section>
+    <section data-testid="hero-example">
+        <Hero>
+            <Heading><h1>Welcome</h1></Heading>
+        </Hero>
+    </section>
+    <section data-testid="pricing-table-example">
+        <PricingTable AriaLabel="Plans">
+            <thead>
+                <tr><th scope="col">Feature</th><th scope="col">Free</th></tr>
+            </thead>
+            <tbody>
+                <tr><th scope="row">Projects</th><td>3</td></tr>
+            </tbody>
+        </PricingTable>
+    </section>
+    <section data-testid="faq-accordion-example">
+        <FaqAccordion>
+            <FaqAccordionItem>
+                <Question>Question one</Question>
+                <Answer>Answer one</Answer>
+            </FaqAccordionItem>
+            <FaqAccordionItem>
+                <Question>Question two</Question>
+                <Answer>Answer two</Answer>
+            </FaqAccordionItem>
+        </FaqAccordion>
+    </section>
+
+    <section data-testid="faq-accordion-width-example" style="display:grid; place-items:center;">
+        <FaqAccordion>
+            <FaqAccordionItem>
+                <Question>Short</Question>
+                <Answer>Short answer.</Answer>
+            </FaqAccordionItem>
+            <FaqAccordionItem>
+                <Question>Long</Question>
+                <Answer>This is a deliberately much longer answer, wide enough that if the accordion shrank to fit its collapsed content it would visibly grow once this panel opens.</Answer>
+            </FaqAccordionItem>
+        </FaqAccordion>
+    </section>
+
+    <section data-testid="faq-accordion-animated-example">
+        <FaqAccordion Animated="true">
+            <FaqAccordionItem>
+                <Question>Animated question</Question>
+                <Answer>Animated answer.</Answer>
+            </FaqAccordionItem>
+        </FaqAccordion>
+    </section>
 
     @* Plain Bootstrap markup for visual contrast only; FancyBlazor never emits these classes. *@
     <section data-testid="bootstrap-contrast">

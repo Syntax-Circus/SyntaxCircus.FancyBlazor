@@ -1,0 +1,41 @@
+.syntax-circus-fancy-ui-faq-accordion__item {
+    border-bottom: 1px solid var(--sc-fancy-ui-border);
+}
+
+.syntax-circus-fancy-ui-faq-accordion__item:last-child {
+    border-bottom: none;
+}
+
+.syntax-circus-fancy-ui-faq-accordion__item-heading {
+    font: inherit;
+    margin: 0;
+}
+
+.syntax-circus-fancy-ui-faq-accordion__trigger {
+    appearance: none;
+    background: transparent;
+    border: none;
+    box-sizing: border-box;
+    color: inherit;
+    cursor: pointer;
+    display: block;
+    font: inherit;
+    font-weight: 600;
+    padding: var(--sc-fancy-ui-spacing);
+    text-align: left;
+    width: 100%;
+}
+
+.syntax-circus-fancy-ui-faq-accordion__trigger:focus-visible {
+    outline: 2px solid var(--sc-fancy-ui-focus-ring);
+    outline-offset: -2px;
+}
+
+.syntax-circus-fancy-ui-faq-accordion__trigger[aria-expanded='true'] {
+    color: var(--sc-fancy-ui-accent);
+}
+
+.syntax-circus-fancy-ui-faq-accordion__panel {
+    color: color-mix(in srgb, var(--sc-fancy-ui-text) 82%, transparent);
+    padding: 0 var(--sc-fancy-ui-spacing) var(--sc-fancy-ui-spacing);
+}

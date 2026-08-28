@@ -152,6 +152,13 @@ dated GitVersion package-version section.
 
 ## JavaScript and CSS rules
 
+- The UI companion (`src/SyntaxCircus.FancyBlazor.UI/`) is JavaScript-free by
+  default; `FaqAccordion` is the sole exception, using a small module scoped
+  to its own click-driven open/closed disclosure state. Do not assume the UI
+  companion has no JavaScript at all — check for an existing pattern before
+  reaching for a new one, and keep any future UI companion JavaScript this
+  narrowly scoped (state a native element can't own on its own) rather than
+  routing interaction through Blazor round-trips.
 - JavaScript owns animation frames, pointer tracking, observers, WebGL objects,
   and cleanup. Never send frame updates through `IJSRuntime`.
 - Components send only create, coarse update, pause/resume, and destroy calls.

@@ -120,8 +120,10 @@ need to configure the shared motion, quality, pause, or diagnostics options.
 ```
 
 Every control is a native HTML element (`<button>`, `<a>`, `<span>`,
-`<article>`, `<nav>`) with typed theme tokens and no JavaScript lifecycle.
-Controls coexist cleanly with Bootstrap 5's Reboot and other CSS frameworks:
+`<article>`, `<nav>`, `<table>`, …) with typed theme tokens. All but one are
+JavaScript-free; `FaqAccordion` is the sole exception, using a small module to
+own click-driven open/closed state. Controls coexist cleanly with Bootstrap
+5's Reboot and other CSS frameworks:
 see [Bootstrap 5 compatibility](docs/guides/bootstrap-compatibility.md). Treat
 its components, parameters, defaults, and visual output as preview API that
 may change before 1.0.
@@ -189,6 +191,13 @@ may change before 1.0.
 | `FancyBadge` | Native `<span>` | Themed, non-interactive status label |
 | `FancyCard` | Native `<article>` | Themed content surface with optional header/footer slots |
 | `FancyNavbar` | Native `<nav>` | Themed landmark with optional brand/links/actions slots |
+| `LogoCloud` | Native `<ul>` | Themed list for consumer-owned partner/customer logos |
+| `Testimonial` | Native `<figure>`/`<blockquote>` | Themed quote with optional attribution/avatar slots |
+| `CallToAction` | Native `<div>` | Themed heading/copy/actions block; consumer chooses heading level |
+| `FeatureGrid` | Native `<ul>` | Themed responsive grid for consumer-owned feature callouts |
+| `Hero` | Native `<div>` | Themed intro block with optional decorative background slot |
+| `PricingTable` | Native `<table>` | Themed comparison table for consumer-owned plans and features |
+| `FaqAccordion`, `FaqAccordionItem` | Native `<button>`/disclosure panel | Themed, keyboard-operable Q&A list with an optional animated open/close; the only JavaScript-owning UI control |
 
 Components intentionally compose:
 

@@ -1,0 +1,39 @@
+.syntax-circus-fancy-ui-feature-grid {
+    box-sizing: border-box;
+    color: var(--sc-fancy-ui-text);
+    display: grid;
+    font: inherit;
+    gap: var(--sc-fancy-ui-spacing);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.syntax-circus-fancy-ui-feature-grid--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.syntax-circus-fancy-ui-feature-grid--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.syntax-circus-fancy-ui-feature-grid--four {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (max-width: 720px) {
+    .syntax-circus-fancy-ui-feature-grid--three,
+    .syntax-circus-fancy-ui-feature-grid--four {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .syntax-circus-fancy-ui-feature-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.syntax-circus-fancy-ui-feature-grid ::deep > li {
+    min-width: 0;
+}

@@ -1,0 +1,36 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<div class="syntax-circus-fancy-ui-faq-accordion__item">
+    <h3 class="syntax-circus-fancy-ui-faq-accordion__item-heading">
+        <button type="button"
+                class="syntax-circus-fancy-ui-faq-accordion__trigger"
+                data-faq-trigger
+                id="@_triggerId"
+                aria-expanded="@(DefaultOpen ? "true" : "false")"
+                aria-controls="@_panelId">
+            @Question
+        </button>
+    </h3>
+    <div class="syntax-circus-fancy-ui-faq-accordion__panel"
+         id="@_panelId"
+         role="region"
+         aria-labelledby="@_triggerId"
+         hidden="@(!DefaultOpen)">
+        @Answer
+    </div>
+</div>
+
+@code {
+    private readonly string _uid = Guid.NewGuid().ToString("N")[..8];
+    private string _triggerId => $"syntax-circus-fancy-ui-faq-trigger-{_uid}";
+    private string _panelId => $"syntax-circus-fancy-ui-faq-panel-{_uid}";
+
+    /// <summary>Gets or sets the question content, rendered inside the trigger <c>&lt;button&gt;</c>.</summary>
+    [Parameter, EditorRequired] public RenderFragment? Question { get; set; }
+
+    /// <summary>Gets or sets the answer content, rendered inside the disclosure panel.</summary>
+    [Parameter, EditorRequired] public RenderFragment? Answer { get; set; }
+
+    /// <summary>Gets or sets whether the item starts expanded.</summary>
+    [Parameter] public bool DefaultOpen { get; set; }
+}

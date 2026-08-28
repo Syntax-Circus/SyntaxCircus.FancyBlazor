@@ -39,6 +39,7 @@ try {
         "README.md",
         "THIRD-PARTY-NOTICES.md",
         "lib/net10.0/SyntaxCircus.FancyBlazor.UI.dll",
+        "staticwebassets/js/faq-accordion.js",
         "buildTransitive/SyntaxCircus.FancyBlazor.UI.props"
     )
     $missingEntries = @($requiredEntries | Where-Object { $_ -notin $entryNames })

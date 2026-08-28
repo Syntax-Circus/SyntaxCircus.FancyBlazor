@@ -31,6 +31,7 @@ function Get-CompleteShapeEntries {
         "README.md" = "readme"
         "THIRD-PARTY-NOTICES.md" = "notice"
         "lib/net10.0/SyntaxCircus.FancyBlazor.UI.dll" = "assembly"
+        "staticwebassets/js/faq-accordion.js" = "export {};"
         "buildTransitive/SyntaxCircus.FancyBlazor.UI.props" = "<Project />"
     }
 }

@@ -1159,6 +1159,127 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         withBootstrap.BadgeBorderRadius.ShouldBe(withoutBootstrap.BadgeBorderRadius);
         withBootstrap.CardBackgroundColor.ShouldBe(withoutBootstrap.CardBackgroundColor);
         withBootstrap.NavbarBackgroundColor.ShouldBe(withoutBootstrap.NavbarBackgroundColor);
+        withBootstrap.LogoCloudListStyleType.ShouldBe(withoutBootstrap.LogoCloudListStyleType);
+        withBootstrap.TestimonialBackgroundColor.ShouldBe(withoutBootstrap.TestimonialBackgroundColor);
+        withBootstrap.CallToActionBackgroundColor.ShouldBe(withoutBootstrap.CallToActionBackgroundColor);
+        withBootstrap.FeatureGridDisplay.ShouldBe(withoutBootstrap.FeatureGridDisplay);
+        withBootstrap.HeroHeadingFontSize.ShouldBe(withoutBootstrap.HeroHeadingFontSize);
+        withBootstrap.PricingTableBorderCollapse.ShouldBe(withoutBootstrap.PricingTableBorderCollapse);
+        withBootstrap.FaqAccordionTriggerFont.ShouldBe(withoutBootstrap.FaqAccordionTriggerFont);
+    }
+
+    [Fact]
+    public async Task FaqAccordion_ClickTogglesAndEnforcesSingleOpen()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/ui-companion-bootstrap?bootstrap=false");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var accordion = page.Locator("[data-testid='faq-accordion-example']");
+        var buttons = accordion.Locator("button");
+        var first = buttons.Nth(0);
+        var second = buttons.Nth(1);
+        await first.WaitForAsync();
+
+        (await first.GetAttributeAsync("aria-expanded")).ShouldBe("false");
+
+        await first.ClickAsync();
+        (await first.GetAttributeAsync("aria-expanded")).ShouldBe("true");
+        var firstPanelId = await first.GetAttributeAsync("aria-controls");
+        (await page.Locator($"#{firstPanelId}").IsHiddenAsync()).ShouldBeFalse();
+
+        await second.ClickAsync();
+        (await second.GetAttributeAsync("aria-expanded")).ShouldBe("true");
+        (await first.GetAttributeAsync("aria-expanded")).ShouldBe("false");
+        (await page.Locator($"#{firstPanelId}").IsHiddenAsync()).ShouldBeTrue();
+
+        await second.ClickAsync();
+        (await second.GetAttributeAsync("aria-expanded")).ShouldBe("false");
+    }
+
+    [Fact]
+    public async Task FaqAccordion_KeyboardActivation_TogglesTrigger()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/ui-companion-bootstrap?bootstrap=false");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var trigger = page.Locator("[data-testid='faq-accordion-example'] button").First;
+        await trigger.WaitForAsync();
+
+        await trigger.FocusAsync();
+        await page.Keyboard.PressAsync("Enter");
+        (await trigger.GetAttributeAsync("aria-expanded")).ShouldBe("true");
+
+        await page.Keyboard.PressAsync("Space");
+        (await trigger.GetAttributeAsync("aria-expanded")).ShouldBe("false");
+    }
+
+    [Fact]
+    public async Task FaqAccordion_ExpandingDoesNotChangeContainerWidth()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/ui-companion-bootstrap?bootstrap=false");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var accordion = page.Locator("[data-testid='faq-accordion-width-example'] .syntax-circus-fancy-ui-faq-accordion");
+        await accordion.WaitForAsync();
+        var collapsedBox = await accordion.BoundingBoxAsync();
+        collapsedBox.ShouldNotBeNull();
+
+        var longTrigger = page.Locator("[data-testid='faq-accordion-width-example'] button").Nth(1);
+        await longTrigger.ClickAsync();
+        (await longTrigger.GetAttributeAsync("aria-expanded")).ShouldBe("true");
+
+        var expandedBox = await accordion.BoundingBoxAsync();
+        expandedBox.ShouldNotBeNull();
+        expandedBox!.Width.ShouldBe(collapsedBox!.Width, 0.5);
+    }
+
+    [Fact]
+    public async Task FaqAccordion_Animated_TransitionsHeightOnToggle()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/ui-companion-bootstrap?bootstrap=false");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var animatedPanel = page.Locator("[data-testid='faq-accordion-animated-example'] .syntax-circus-fancy-ui-faq-accordion__panel");
+        var plainPanel = page.Locator("[data-testid='faq-accordion-example'] .syntax-circus-fancy-ui-faq-accordion__panel").First;
+        await animatedPanel.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Attached });
+
+        (await animatedPanel.EvaluateAsync<string>("element => getComputedStyle(element).transitionDuration")).ShouldNotBe("0s");
+        (await plainPanel.EvaluateAsync<string>("element => getComputedStyle(element).transitionDuration")).ShouldBe("0s");
+
+        var trigger = page.Locator("[data-testid='faq-accordion-animated-example'] button").First;
+        await trigger.ClickAsync();
+        (await trigger.GetAttributeAsync("aria-expanded")).ShouldBe("true");
+        await page.WaitForTimeoutAsync(300);
+        (await animatedPanel.IsHiddenAsync()).ShouldBeFalse();
+
+        await trigger.ClickAsync();
+        (await trigger.GetAttributeAsync("aria-expanded")).ShouldBe("false");
+        await page.WaitForTimeoutAsync(300);
+        (await animatedPanel.IsHiddenAsync()).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Marquee_TrackAndContentResistShrinkingForSeamlessLoop()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/core-kinetic-catalog");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var track = page.Locator("[data-testid='marquee-example'] .syntax-circus-fancy-marquee__track");
+        var content = page.Locator("[data-testid='marquee-example'] .syntax-circus-fancy-marquee__content").First;
+        await track.WaitForAsync();
+
+        (await track.EvaluateAsync<string>("element => getComputedStyle(element).flexShrink")).ShouldBe("0");
+        (await content.EvaluateAsync<string>("element => getComputedStyle(element).whiteSpace")).ShouldBe("nowrap");
     }
 
     private async Task<UiCompanionComputedStyles> GetUiCompanionComputedStylesAsync(bool bootstrap)
@@ -1177,7 +1298,14 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
             LinkTextDecorationLine: await page.Locator("[data-testid='fancy-link-example'] a").EvaluateAsync<string>("element => getComputedStyle(element).textDecorationLine"),
             BadgeBorderRadius: await page.Locator("[data-testid='fancy-badge-example'] span").EvaluateAsync<string>("element => getComputedStyle(element).borderRadius"),
             CardBackgroundColor: await page.Locator("[data-testid='fancy-card-example'] article").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"),
-            NavbarBackgroundColor: await page.Locator("[data-testid='fancy-navbar-example'] nav").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"));
+            NavbarBackgroundColor: await page.Locator("[data-testid='fancy-navbar-example'] nav").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"),
+            LogoCloudListStyleType: await page.Locator("[data-testid='logo-cloud-example'] ul").EvaluateAsync<string>("element => getComputedStyle(element).listStyleType"),
+            TestimonialBackgroundColor: await page.Locator("[data-testid='testimonial-example'] figure").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"),
+            CallToActionBackgroundColor: await page.Locator("[data-testid='cta-example'] > div").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"),
+            FeatureGridDisplay: await page.Locator("[data-testid='feature-grid-example'] ul").EvaluateAsync<string>("element => getComputedStyle(element).display"),
+            HeroHeadingFontSize: await page.Locator("[data-testid='hero-example'] .syntax-circus-fancy-ui-hero__heading").EvaluateAsync<string>("element => getComputedStyle(element).fontSize"),
+            PricingTableBorderCollapse: await page.Locator("[data-testid='pricing-table-example'] table").EvaluateAsync<string>("element => getComputedStyle(element).borderCollapse"),
+            FaqAccordionTriggerFont: await page.Locator("[data-testid='faq-accordion-example'] button").First.EvaluateAsync<string>("element => getComputedStyle(element).fontWeight"));
     }
 
     private sealed record UiCompanionComputedStyles(
@@ -1188,7 +1316,14 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         string LinkTextDecorationLine,
         string BadgeBorderRadius,
         string CardBackgroundColor,
-        string NavbarBackgroundColor);
+        string NavbarBackgroundColor,
+        string LogoCloudListStyleType,
+        string TestimonialBackgroundColor,
+        string CallToActionBackgroundColor,
+        string FeatureGridDisplay,
+        string HeroHeadingFontSize,
+        string PricingTableBorderCollapse,
+        string FaqAccordionTriggerFont);
 
     [Fact]
     public async Task EnhancedNavigation_TwentyCycles_ReleasesEveryEffect()
