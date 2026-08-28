@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -78,6 +79,33 @@ public sealed class FaqAccordionTests
         var root = cut.Find("div");
         root.GetAttribute("class").ShouldBe("syntax-circus-fancy-ui-faq-accordion marketing-faq test-hook");
         (root.GetAttribute("style") ?? string.Empty).ShouldContain("--sc-fancy-ui-focus-ring:#0ff");
+    }
+
+    [Fact]
+    public void FaqAccordion_AnimatedDefaultsToFalse()
+    {
+        using var context = CreateContext();
+
+        var cut = context.Render<FaqAccordion>(parameters => parameters
+            .Add(component => component.ChildContent, SingleItem));
+
+        cut.Instance.Animated.ShouldBeFalse();
+        cut.Find("div").ClassList.ShouldNotContain("syntax-circus-fancy-ui-faq-accordion--animated");
+    }
+
+    [Fact]
+    public void FaqAccordion_AnimatedTrue_AddsModifierClassAndPassesOptionToModule()
+    {
+        using var context = CreateContext();
+
+        var cut = context.Render<FaqAccordion>(parameters => parameters
+            .Add(component => component.ChildContent, SingleItem)
+            .Add(component => component.Animated, true));
+
+        cut.Find("div").ClassList.ShouldContain("syntax-circus-fancy-ui-faq-accordion--animated");
+
+        var invocation = context.JSInterop.VerifyInvoke("create");
+        JsonSerializer.Serialize(invocation.Arguments[1]).ShouldContain("\"animated\":true");
     }
 
     [Fact]

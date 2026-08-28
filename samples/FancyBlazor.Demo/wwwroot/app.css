@@ -97,6 +97,14 @@ code { color: #c8d4e2; font: .78rem/1.5 ui-monospace, "SFMono-Regular", Consolas
 .stage-content { align-content: center; display: grid; gap: .8rem; min-height: 400px; padding: 3rem; text-align: center; }
 .stage-content strong { font: 400 clamp(1.6rem, 4vw, 3rem) Georgia, serif; }
 .stage-content span { color: var(--muted); }
+
+.marketing-stage { background: #0b1727; border: 1px solid var(--line); border-radius: 24px; margin: 3rem 0; padding: clamp(1.75rem, 4vw, 3rem); }
+.marketing-stage--narrow { margin-inline: auto; max-width: 40rem; }
+.marketing-page .syntax-circus-fancy-ui-feature-grid > li { background: #07111f; border: 1px solid var(--line); border-radius: 16px; padding: 1.5rem; }
+.marketing-page .syntax-circus-fancy-ui-feature-grid h3 { color: var(--nacre); font: 400 1.4rem Georgia, serif; margin: 0 0 .5rem; }
+.marketing-page .syntax-circus-fancy-ui-feature-grid p { color: var(--muted); line-height: 1.5; margin: 0; }
+.marketing-page .syntax-circus-fancy-ui-logo-cloud > li { background: #07111f; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font: 700 .8rem ui-monospace, monospace; letter-spacing: .06em; padding: .6rem 1.25rem; text-transform: uppercase; }
+.marketing-page .syntax-circus-fancy-ui-testimonial__quote { font: 400 clamp(1.3rem, 2.4vw, 1.75rem)/1.5 Georgia, serif; font-style: italic; }
 .example-card { max-width: 520px; }
 .reveal-demo-header { align-items: end; display: flex; gap: 1rem; justify-content: space-between; margin-top: 2rem; }
 .reveal-demo-header .lede { margin: 0; }

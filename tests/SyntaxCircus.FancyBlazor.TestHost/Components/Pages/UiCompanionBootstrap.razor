@@ -78,6 +78,28 @@
         </FaqAccordion>
     </section>
 
+    <section data-testid="faq-accordion-width-example" style="display:grid; place-items:center;">
+        <FaqAccordion>
+            <FaqAccordionItem>
+                <Question>Short</Question>
+                <Answer>Short answer.</Answer>
+            </FaqAccordionItem>
+            <FaqAccordionItem>
+                <Question>Long</Question>
+                <Answer>This is a deliberately much longer answer, wide enough that if the accordion shrank to fit its collapsed content it would visibly grow once this panel opens.</Answer>
+            </FaqAccordionItem>
+        </FaqAccordion>
+    </section>
+
+    <section data-testid="faq-accordion-animated-example">
+        <FaqAccordion Animated="true">
+            <FaqAccordionItem>
+                <Question>Animated question</Question>
+                <Answer>Animated answer.</Answer>
+            </FaqAccordionItem>
+        </FaqAccordion>
+    </section>
+
     @* Plain Bootstrap markup for visual contrast only; FancyBlazor never emits these classes. *@
     <section data-testid="bootstrap-contrast">
         <button type="button" class="btn btn-primary">Bootstrap button</button>

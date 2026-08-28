@@ -49,10 +49,13 @@ called out clearly as potentially breaking.
   featured tier.
 - Add `FaqAccordion`/`FaqAccordionItem` to `SyntaxCircus.FancyBlazor.UI`: a
   themed, keyboard-operable disclosure list with a typed `SingleOpen`
-  presentation option. This is the first control in the UI companion package
-  with a JavaScript lifecycle (`faq-accordion.js`): it owns click-driven
-  open/closed state and listener cleanup, and never sends per-frame updates
-  to Blazor. Every other UI companion control remains JavaScript-free.
+  presentation option, an optional `Animated` CSS height-transition open/close
+  that respects `prefers-reduced-motion`, and a full-width-by-default layout
+  that stays stable inside a centering flex or grid parent. This is the first
+  control in the UI companion package with a JavaScript lifecycle
+  (`faq-accordion.js`): it owns click-driven open/closed state and listener
+  cleanup, and never sends per-frame updates to Blazor. Every other UI
+  companion control remains JavaScript-free.
 - Verify (ADR-016) that every `SyntaxCircus.FancyBlazor.UI` control coexists
   cleanly with Bootstrap 5's Reboot: dedicated Playwright coverage renders
   the catalog with and without a locally vendored, unmodified Bootstrap 5
@@ -102,6 +105,9 @@ called out clearly as potentially breaking.
 - Wait for `TypeFlow`'s warm-up animation frame to settle before asserting
   zero active frames in the no-canvas-context browser test, instead of
   sampling once immediately after `data-fancy-ready` is set.
+- Fix `Marquee`'s track shrinking inside a constrained flex/grid ancestor,
+  which broke the seamless `-50%` loop and caused it to reset before
+  scrolling the full duplicated content.
 
 ## [0.2.0] - 2026-08-23
 

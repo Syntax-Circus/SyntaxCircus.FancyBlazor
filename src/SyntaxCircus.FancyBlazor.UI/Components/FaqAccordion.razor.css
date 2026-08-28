@@ -2,4 +2,16 @@
     box-sizing: border-box;
     color: var(--sc-fancy-ui-text);
     font: inherit;
+    width: 100%;
+}
+
+.syntax-circus-fancy-ui-faq-accordion--animated ::deep .syntax-circus-fancy-ui-faq-accordion__panel {
+    overflow: hidden;
+    transition: height 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .syntax-circus-fancy-ui-faq-accordion--animated ::deep .syntax-circus-fancy-ui-faq-accordion__panel {
+        transition: none;
+    }
 }

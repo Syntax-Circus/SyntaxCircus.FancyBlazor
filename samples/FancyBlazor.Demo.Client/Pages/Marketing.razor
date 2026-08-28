@@ -28,7 +28,7 @@
     <section class="marketing-section" aria-labelledby="marketing-feature-grid-heading">
         <p class="specimen-label">CAPABILITIES</p>
         <h2 id="marketing-feature-grid-heading">FeatureGrid</h2>
-        <div class="component-stage quiet">
+        <div class="marketing-stage">
             <FeatureGrid AriaLabel="Features" data-testid="marketing-feature-grid">
                 <li>
                     <h3>Fast</h3>
@@ -49,7 +49,7 @@
     <section class="marketing-section" aria-labelledby="marketing-logo-cloud-heading">
         <p class="specimen-label">SOCIAL PROOF</p>
         <h2 id="marketing-logo-cloud-heading">LogoCloud</h2>
-        <div class="component-stage quiet">
+        <div class="marketing-stage">
             <LogoCloud AriaLabel="Trusted by teams at" data-testid="marketing-logo-cloud">
                 <li>Acme</li>
                 <li>Globex</li>
@@ -63,7 +63,7 @@
     <section class="marketing-section" aria-labelledby="marketing-testimonial-heading">
         <p class="specimen-label">CUSTOMER QUOTE</p>
         <h2 id="marketing-testimonial-heading">Testimonial</h2>
-        <div class="component-stage quiet">
+        <div class="marketing-stage">
             <Testimonial data-testid="marketing-testimonial">
                 <ChildContent><p>FancyBlazor let us ship a landing page without adopting a whole design system.</p></ChildContent>
                 <Attribution><cite>Jane Doe</cite>, CEO of Acme</Attribution>
@@ -74,13 +74,13 @@
     <section class="marketing-section" aria-labelledby="marketing-pricing-heading">
         <p class="specimen-label">PLANS</p>
         <h2 id="marketing-pricing-heading">PricingTable</h2>
-        <div class="component-stage quiet">
+        <div class="marketing-stage">
             <PricingTable AriaLabel="Plans" data-testid="marketing-pricing">
                 <thead>
                     <tr>
                         <th scope="col">Feature</th>
                         <th scope="col">Free</th>
-                        <th scope="col" aria-current="true">Pro</th>
+                        <th scope="col" aria-current="true">Pro <FancyBadge>Popular</FancyBadge></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -101,8 +101,8 @@
     <section class="marketing-section" aria-labelledby="marketing-faq-heading">
         <p class="specimen-label">QUESTIONS</p>
         <h2 id="marketing-faq-heading">FaqAccordion</h2>
-        <div class="component-stage quiet">
-            <FaqAccordion SingleOpen="true" data-testid="marketing-faq">
+        <div class="marketing-stage marketing-stage--narrow">
+            <FaqAccordion SingleOpen="true" Animated="true" data-testid="marketing-faq">
                 <FaqAccordionItem DefaultOpen="true">
                     <Question>What is FancyBlazor?</Question>
                     <Answer>A visual-effects and UI component library for Blazor.</Answer>

@@ -1217,6 +1217,71 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         (await trigger.GetAttributeAsync("aria-expanded")).ShouldBe("false");
     }
 
+    [Fact]
+    public async Task FaqAccordion_ExpandingDoesNotChangeContainerWidth()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/ui-companion-bootstrap?bootstrap=false");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var accordion = page.Locator("[data-testid='faq-accordion-width-example'] .syntax-circus-fancy-ui-faq-accordion");
+        await accordion.WaitForAsync();
+        var collapsedBox = await accordion.BoundingBoxAsync();
+        collapsedBox.ShouldNotBeNull();
+
+        var longTrigger = page.Locator("[data-testid='faq-accordion-width-example'] button").Nth(1);
+        await longTrigger.ClickAsync();
+        (await longTrigger.GetAttributeAsync("aria-expanded")).ShouldBe("true");
+
+        var expandedBox = await accordion.BoundingBoxAsync();
+        expandedBox.ShouldNotBeNull();
+        expandedBox!.Width.ShouldBe(collapsedBox!.Width, 0.5);
+    }
+
+    [Fact]
+    public async Task FaqAccordion_Animated_TransitionsHeightOnToggle()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/ui-companion-bootstrap?bootstrap=false");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var animatedPanel = page.Locator("[data-testid='faq-accordion-animated-example'] .syntax-circus-fancy-ui-faq-accordion__panel");
+        var plainPanel = page.Locator("[data-testid='faq-accordion-example'] .syntax-circus-fancy-ui-faq-accordion__panel").First;
+        await animatedPanel.WaitForAsync(new LocatorWaitForOptions { State = WaitForSelectorState.Attached });
+
+        (await animatedPanel.EvaluateAsync<string>("element => getComputedStyle(element).transitionDuration")).ShouldNotBe("0s");
+        (await plainPanel.EvaluateAsync<string>("element => getComputedStyle(element).transitionDuration")).ShouldBe("0s");
+
+        var trigger = page.Locator("[data-testid='faq-accordion-animated-example'] button").First;
+        await trigger.ClickAsync();
+        (await trigger.GetAttributeAsync("aria-expanded")).ShouldBe("true");
+        await page.WaitForTimeoutAsync(300);
+        (await animatedPanel.IsHiddenAsync()).ShouldBeFalse();
+
+        await trigger.ClickAsync();
+        (await trigger.GetAttributeAsync("aria-expanded")).ShouldBe("false");
+        await page.WaitForTimeoutAsync(300);
+        (await animatedPanel.IsHiddenAsync()).ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task Marquee_TrackAndContentResistShrinkingForSeamlessLoop()
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/core-kinetic-catalog");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+
+        var track = page.Locator("[data-testid='marquee-example'] .syntax-circus-fancy-marquee__track");
+        var content = page.Locator("[data-testid='marquee-example'] .syntax-circus-fancy-marquee__content").First;
+        await track.WaitForAsync();
+
+        (await track.EvaluateAsync<string>("element => getComputedStyle(element).flexShrink")).ShouldBe("0");
+        (await content.EvaluateAsync<string>("element => getComputedStyle(element).whiteSpace")).ShouldBe("nowrap");
+    }
+
     private async Task<UiCompanionComputedStyles> GetUiCompanionComputedStylesAsync(bool bootstrap)
     {
         await using var context = await fixture.Browser.NewContextAsync();

@@ -1,8 +1,37 @@
 const instances = new WeakMap();
 
-function setExpanded(trigger, panel, expanded) {
+function prefersReducedMotion() {
+    return typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function setExpanded(trigger, panel, expanded, animated) {
     trigger.setAttribute("aria-expanded", expanded ? "true" : "false");
-    panel.hidden = !expanded;
+
+    if (!animated || prefersReducedMotion()) {
+        panel.style.height = "";
+        panel.hidden = !expanded;
+        return;
+    }
+
+    if (expanded) {
+        panel.hidden = false;
+        const target = panel.scrollHeight;
+        panel.style.height = "0px";
+        void panel.offsetHeight;
+        panel.style.height = `${target}px`;
+        panel.addEventListener("transitionend", () => {
+            panel.style.height = "";
+        }, { once: true });
+    } else {
+        const current = panel.scrollHeight;
+        panel.style.height = `${current}px`;
+        void panel.offsetHeight;
+        panel.style.height = "0px";
+        panel.addEventListener("transitionend", () => {
+            panel.hidden = true;
+            panel.style.height = "";
+        }, { once: true });
+    }
 }
 
 export function create(root, options) {
@@ -11,6 +40,7 @@ export function create(root, options) {
     }
 
     const singleOpen = !options || options.singleOpen !== false;
+    const animated = Boolean(options && options.animated);
     const triggers = Array.from(root.querySelectorAll("[data-faq-trigger]"));
 
     function onClick(event) {
@@ -23,17 +53,17 @@ export function create(root, options) {
         const expanded = trigger.getAttribute("aria-expanded") === "true";
         if (singleOpen && !expanded) {
             for (const other of triggers) {
-                if (other === trigger) {
+                if (other === trigger || other.getAttribute("aria-expanded") !== "true") {
                     continue;
                 }
                 const otherPanel = document.getElementById(other.getAttribute("aria-controls"));
                 if (otherPanel) {
-                    setExpanded(other, otherPanel, false);
+                    setExpanded(other, otherPanel, false, animated);
                 }
             }
         }
 
-        setExpanded(trigger, panel, !expanded);
+        setExpanded(trigger, panel, !expanded, animated);
     }
 
     for (const trigger of triggers) {

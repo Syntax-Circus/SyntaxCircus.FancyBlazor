@@ -21,6 +21,9 @@
     /// <summary>Gets or sets whether opening an item closes the others. Defaults to <see langword="true"/>.</summary>
     [Parameter] public bool SingleOpen { get; set; } = true;
 
+    /// <summary>Gets or sets whether opening and closing a panel animates with a CSS height transition. Respects <c>prefers-reduced-motion</c>.</summary>
+    [Parameter] public bool Animated { get; set; }
+
     /// <summary>Gets or sets the theme tokens. Falls back to the configured <see cref="FancyUiOptions.Theme"/>.</summary>
     [Parameter] public FancyUiTheme? Theme { get; set; }
 
@@ -30,8 +33,12 @@
 
     private FancyUiTheme EffectiveTheme => Theme ?? UiOptions.Value.Theme;
 
+    private string StableClass => Animated
+        ? "syntax-circus-fancy-ui-faq-accordion syntax-circus-fancy-ui-faq-accordion--animated"
+        : "syntax-circus-fancy-ui-faq-accordion";
+
     private IReadOnlyDictionary<string, object> RootAttributes => UiAttributeComposer.Compose(
-        "syntax-circus-fancy-ui-faq-accordion",
+        StableClass,
         CssClass,
         $"--sc-fancy-ui-text:{EffectiveTheme.Text};--sc-fancy-ui-accent:{EffectiveTheme.Accent};--sc-fancy-ui-border:{EffectiveTheme.Border};--sc-fancy-ui-spacing:{EffectiveTheme.Spacing};--sc-fancy-ui-focus-ring:{EffectiveTheme.FocusRing}",
         Style,
@@ -45,7 +52,7 @@
         }
 
         _module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", ModulePath);
-        await _module.InvokeVoidAsync("create", _root, new { singleOpen = SingleOpen });
+        await _module.InvokeVoidAsync("create", _root, new { singleOpen = SingleOpen, animated = Animated });
         _created = true;
     }
 

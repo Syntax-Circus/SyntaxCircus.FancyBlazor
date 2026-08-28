@@ -197,7 +197,7 @@ may change before 1.0.
 | `FeatureGrid` | Native `<ul>` | Themed responsive grid for consumer-owned feature callouts |
 | `Hero` | Native `<div>` | Themed intro block with optional decorative background slot |
 | `PricingTable` | Native `<table>` | Themed comparison table for consumer-owned plans and features |
-| `FaqAccordion`, `FaqAccordionItem` | Native `<button>`/disclosure panel | Themed, keyboard-operable Q&A list; the only JavaScript-owning UI control |
+| `FaqAccordion`, `FaqAccordionItem` | Native `<button>`/disclosure panel | Themed, keyboard-operable Q&A list with an optional animated open/close; the only JavaScript-owning UI control |
 
 Components intentionally compose:
 
