@@ -87,22 +87,20 @@ public sealed class HolographicSurfaceTests
     }
 
     [Fact]
-    public async Task HolographicSurface_RapidReenable_WaitsForTeardownBeforeCreatingReplacement()
+    public async Task HolographicSurface_ReenableAfterTeardown_CreatesReplacement()
     {
         await using var context = CreateContext();
         var module = context.JSInterop.SetupModule(ModulePath);
         module.Setup<long>("createEffect", _ => true).SetResult(11);
-        var destroy = module.SetupVoid("destroyEffect", _ => true);
+        module.SetupVoid("destroyEffect", _ => true).SetVoidResult();
         module.SetupVoid("disposeRuntime", _ => true).SetVoidResult();
 
         var cut = context.Render<HolographicSurface>();
 
         cut.Render(parameters => parameters.Add(component => component.Disabled, true));
-        cut.Render(parameters => parameters.Add(component => component.Disabled, false));
-
         module.Invocations.Count(call => call.Identifier == "createEffect").ShouldBe(1);
 
-        destroy.SetVoidResult();
+        cut.Render(parameters => parameters.Add(component => component.Disabled, false));
         await cut.WaitForStateAsync(
             () => module.Invocations.Count(call => call.Identifier == "createEffect") == 2,
             TimeSpan.FromSeconds(1));

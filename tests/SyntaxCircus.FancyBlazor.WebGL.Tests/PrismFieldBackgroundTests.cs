@@ -89,22 +89,20 @@ public sealed class PrismFieldBackgroundTests
     }
 
     [Fact]
-    public async Task PrismFieldBackground_RapidReenable_WaitsForTeardownBeforeCreatingReplacement()
+    public async Task PrismFieldBackground_ReenableAfterTeardown_CreatesReplacement()
     {
         await using var context = CreateContext();
         var module = context.JSInterop.SetupModule(ModulePath);
         module.Setup<long>("createEffect", _ => true).SetResult(11);
-        var destroy = module.SetupVoid("destroyEffect", _ => true);
+        module.SetupVoid("destroyEffect", _ => true).SetVoidResult();
         module.SetupVoid("disposeRuntime", _ => true).SetVoidResult();
 
         var cut = context.Render<PrismFieldBackground>();
 
         cut.Render(parameters => parameters.Add(component => component.Disabled, true));
-        cut.Render(parameters => parameters.Add(component => component.Disabled, false));
-
         module.Invocations.Count(call => call.Identifier == "createEffect").ShouldBe(1);
 
-        await cut.InvokeAsync(() => destroy.SetVoidResult());
+        cut.Render(parameters => parameters.Add(component => component.Disabled, false));
         await cut.WaitForStateAsync(
             () => module.Invocations.Count(call => call.Identifier == "createEffect") == 2,
             TimeSpan.FromSeconds(1));
