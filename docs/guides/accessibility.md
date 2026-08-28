@@ -26,9 +26,12 @@
   the duplicate is `aria-hidden` and `inert`. NumberTicker keeps its animated
   digits `aria-hidden` and exposes the exact final value through a visually
   hidden sibling at all times, so no `aria-live` announcement is needed.
-- The optional-preview `HolographicSurface` canvas is decorative, `aria-hidden`,
-  non-focusable, and pointer-transparent. Its child content remains the same
-  semantic DOM through WebGL startup, live updates, fallback, and teardown.
+- The optional-preview `HolographicSurface`, `WaveFieldBackground`,
+  `RefractiveOrbBackground`, `PrismFieldBackground`, and
+  `ParticleFieldBackground` canvases are decorative, `aria-hidden`,
+  non-focusable, and pointer-transparent. Their child content remains the
+  same semantic DOM through WebGL startup, live updates, fallback, and
+  teardown.
 - `FancyMotionPreference.RespectSystem` is the default. Continuous motion becomes
   a static/final state when `prefers-reduced-motion: reduce` is active.
 - `IgnoreSystem` is an explicit host decision; use it only when motion is

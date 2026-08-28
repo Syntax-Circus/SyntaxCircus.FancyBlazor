@@ -47,6 +47,78 @@ The canvas is decorative and pointer-transparent. Static SSR, reduced motion,
 disabled WebGL, context limits, and renderer failures retain the semantic child
 content and a palette-derived CSS treatment.
 
+## WaveFieldBackground
+
+```razor
+<WaveFieldBackground Palette="FancyPalettes.Witchlight"
+                      Intensity="0.6"
+                      Amplitude="0.55"
+                      Frequency="0.45"
+                      Foam="0.6"
+                      Speed="0.9"
+                      Interactive>
+    <article>Semantic content remains ordinary HTML.</article>
+</WaveFieldBackground>
+```
+
+The canvas is decorative and pointer-transparent. Static SSR, reduced motion,
+disabled WebGL, context limits, and renderer failures retain the semantic child
+content and a palette-derived CSS treatment.
+
+## RefractiveOrbBackground
+
+```razor
+<RefractiveOrbBackground Palette="FancyPalettes.Witchlight"
+                          Intensity="0.6"
+                          Radius="0.55"
+                          Distortion="0.5"
+                          Sheen="0.65"
+                          Speed="0.8"
+                          Interactive>
+    <article>Semantic content remains ordinary HTML.</article>
+</RefractiveOrbBackground>
+```
+
+The canvas is decorative and pointer-transparent. Static SSR, reduced motion,
+disabled WebGL, context limits, and renderer failures retain the semantic child
+content and a palette-derived CSS treatment.
+
+## PrismFieldBackground
+
+```razor
+<PrismFieldBackground Palette="FancyPalettes.Witchlight"
+                       Intensity="0.6"
+                       Facets="0.5"
+                       Dispersion="0.5"
+                       Sheen="0.6"
+                       Speed="0.7"
+                       Interactive>
+    <article>Semantic content remains ordinary HTML.</article>
+</PrismFieldBackground>
+```
+
+The canvas is decorative and pointer-transparent. Static SSR, reduced motion,
+disabled WebGL, context limits, and renderer failures retain the semantic child
+content and a palette-derived CSS treatment.
+
+## ParticleFieldBackground
+
+```razor
+<ParticleFieldBackground Palette="FancyPalettes.Witchlight"
+                          Intensity="0.6"
+                          Density="0.5"
+                          Size="0.5"
+                          Drift="0.5"
+                          Speed="0.9"
+                          Interactive>
+    <article>Semantic content remains ordinary HTML.</article>
+</ParticleFieldBackground>
+```
+
+The canvas is decorative and pointer-transparent. Static SSR, reduced motion,
+disabled WebGL, context limits, and renderer failures retain the semantic child
+content and a palette-derived CSS treatment.
+
 The package vendors the unmodified official Three.js r184 ESM build under the
 MIT License. FancyBlazor's visual direction was informed by the
 [ThreeUI effect catalog](https://github.com/MengTo/threeui), but no ThreeUI

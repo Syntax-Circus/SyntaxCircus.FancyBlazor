@@ -1,0 +1,26 @@
+@page "/webgl-wave-field"
+
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["_content/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.bundle.scp.css"]" />
+</HeadContent>
+
+<main>
+    <button type="button" data-testid="wave-field-update" @onclick="IncreaseAmplitude">Increase amplitude</button>
+    <button type="button" data-testid="wave-field-disabled" @onclick="ToggleDisabled">Toggle disabled</button>
+    <p data-testid="wave-field-activation">@_activation</p>
+    <WaveFieldBackground data-testid="wave-field-first" Amplitude="@_amplitude" Frequency="@_frequency" Foam="@_foam" Disabled="@_disabled" Style="height:100px"><article>Wave field semantic content <button type="button" @onclick="Activate">Activate child</button></article></WaveFieldBackground>
+</main>
+
+@code {
+    private double _amplitude = 0.5;
+    private double _frequency = 0.5;
+    private double _foam = 0.5;
+    private bool _disabled;
+    private string _activation = "Not activated";
+
+    private void IncreaseAmplitude() => _amplitude = 0.9;
+
+    private void ToggleDisabled() => _disabled = !_disabled;
+
+    private void Activate() => _activation = "Activated";
+}

@@ -1,0 +1,26 @@
+@page "/webgl-particle-field"
+
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["_content/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.bundle.scp.css"]" />
+</HeadContent>
+
+<main>
+    <button type="button" data-testid="particle-field-update" @onclick="IncreaseDensity">Increase density</button>
+    <button type="button" data-testid="particle-field-disabled" @onclick="ToggleDisabled">Toggle disabled</button>
+    <p data-testid="particle-field-activation">@_activation</p>
+    <ParticleFieldBackground data-testid="particle-field-first" Density="@_density" Size="@_size" Drift="@_drift" Disabled="@_disabled" Style="height:100px"><article>Particle field semantic content <button type="button" @onclick="Activate">Activate child</button></article></ParticleFieldBackground>
+</main>
+
+@code {
+    private double _density = 0.5;
+    private double _size = 0.5;
+    private double _drift = 0.5;
+    private bool _disabled;
+    private string _activation = "Not activated";
+
+    private void IncreaseDensity() => _density = 0.9;
+
+    private void ToggleDisabled() => _disabled = !_disabled;
+
+    private void Activate() => _activation = "Activated";
+}

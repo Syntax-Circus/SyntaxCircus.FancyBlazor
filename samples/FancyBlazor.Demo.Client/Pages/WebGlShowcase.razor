@@ -8,7 +8,7 @@
             <p class="kicker" data-testid="webgl-preview-status">PREVIEW COMPANION / WEBGL</p>
             <h1>Inspect light as material.</h1>
         </div>
-        <p class="lede">Tune one live holographic surface, move a fine pointer across it, and disable the renderer to inspect the CSS fallback. The article remains ordinary semantic HTML throughout.</p>
+        <p class="lede">Tune five live GPU materials, move a fine pointer across each one, and disable a renderer to inspect its CSS fallback. Every article remains ordinary semantic HTML throughout.</p>
     </header>
 
     <section class="webgl-workbench" aria-labelledby="webgl-specimen-heading">
@@ -102,6 +102,322 @@
         </aside>
     </section>
 
+    <section class="webgl-workbench" aria-labelledby="wave-field-specimen-heading">
+        <div class="webgl-stage">
+            <WaveFieldBackground Palette="_waveFieldPalette"
+                                  Intensity="_waveFieldIntensity"
+                                  Amplitude="_waveFieldAmplitude"
+                                  Frequency="_waveFieldFrequency"
+                                  Foam="_waveFieldFoam"
+                                  Speed="_waveFieldSpeed"
+                                  Interactive="_waveFieldInteractive"
+                                  Quality="_waveFieldQuality"
+                                  Disabled="_waveFieldDisabled"
+                                  CssClass="webgl-specimen"
+                                  data-testid="webgl-showcase-wave-field">
+                <article class="webgl-specimen__content">
+                    <div class="webgl-specimen__index" aria-hidden="true">
+                        <span>SC / OPT-02</span>
+                        <span>INTERFERENCE FIELD</span>
+                    </div>
+                    <div class="webgl-specimen__copy">
+                        <p class="specimen-label">LIVE SPECIMEN / WAVE FIELD BACKGROUND</p>
+                        <h2 id="wave-field-specimen-heading">Layered sine bands become an ambient field.</h2>
+                        <p>This selectable article sits above the decorative canvas. Disable WebGL, reduce motion, or lose the GPU—the reading plane remains.</p>
+                    </div>
+                    <dl class="webgl-readout" aria-label="Current wave field values">
+                        <div><dt>Intensity</dt><dd>@Format(_waveFieldIntensity)</dd></div>
+                        <div><dt>Amplitude</dt><dd>@Format(_waveFieldAmplitude)</dd></div>
+                        <div><dt>Frequency</dt><dd>@Format(_waveFieldFrequency)</dd></div>
+                        <div><dt>Foam</dt><dd>@Format(_waveFieldFoam)</dd></div>
+                    </dl>
+                </article>
+            </WaveFieldBackground>
+        </div>
+
+        <aside class="webgl-controls" aria-label="Wave field background controls">
+            <div class="webgl-controls__heading">
+                <p class="specimen-label">OPTICAL BENCH / LIVE VALUES</p>
+                <h2>Shape the field.</h2>
+            </div>
+
+            <div class="range-controls">
+                <label>
+                    <span>Intensity <output>@Format(_waveFieldIntensity)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_waveFieldIntensity" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Amplitude <output>@Format(_waveFieldAmplitude)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_waveFieldAmplitude" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Frequency <output>@Format(_waveFieldFrequency)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_waveFieldFrequency" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Foam <output>@Format(_waveFieldFoam)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_waveFieldFoam" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Speed <output>@Format(_waveFieldSpeed)</output></span>
+                    <input type="range" min="0" max="3" step="0.05" @bind="_waveFieldSpeed" @bind:event="oninput" />
+                </label>
+            </div>
+
+            <label class="quality-control">
+                <span>Render quality</span>
+                <select @bind="_waveFieldQuality">
+                    @foreach (var quality in Enum.GetValues<FancyQuality>())
+                    {
+                        <option value="@quality">@quality</option>
+                    }
+                </select>
+            </label>
+
+            <div class="switch-controls">
+                <label><input type="checkbox" @bind="_waveFieldInteractive" /> Fine-pointer response</label>
+                <label><input type="checkbox" @bind="_waveFieldDisabled" /> Show CSS fallback</label>
+            </div>
+        </aside>
+    </section>
+
+    <section class="webgl-workbench" aria-labelledby="refractive-orb-specimen-heading">
+        <div class="webgl-stage">
+            <RefractiveOrbBackground Palette="_refractiveOrbPalette"
+                                      Intensity="_refractiveOrbIntensity"
+                                      Radius="_refractiveOrbRadius"
+                                      Distortion="_refractiveOrbDistortion"
+                                      Sheen="_refractiveOrbSheen"
+                                      Speed="_refractiveOrbSpeed"
+                                      Interactive="_refractiveOrbInteractive"
+                                      Quality="_refractiveOrbQuality"
+                                      Disabled="_refractiveOrbDisabled"
+                                      CssClass="webgl-specimen"
+                                      data-testid="webgl-showcase-refractive-orb">
+                <article class="webgl-specimen__content">
+                    <div class="webgl-specimen__index" aria-hidden="true">
+                        <span>SC / OPT-03</span>
+                        <span>LENSING ORB</span>
+                    </div>
+                    <div class="webgl-specimen__copy">
+                        <p class="specimen-label">LIVE SPECIMEN / REFRACTIVE ORB BACKGROUND</p>
+                        <h2 id="refractive-orb-specimen-heading">One analytic orb bends light around it.</h2>
+                        <p>This selectable article sits above the decorative canvas. Disable WebGL, reduce motion, or lose the GPU—the reading plane remains.</p>
+                    </div>
+                    <dl class="webgl-readout" aria-label="Current refractive orb values">
+                        <div><dt>Intensity</dt><dd>@Format(_refractiveOrbIntensity)</dd></div>
+                        <div><dt>Radius</dt><dd>@Format(_refractiveOrbRadius)</dd></div>
+                        <div><dt>Distortion</dt><dd>@Format(_refractiveOrbDistortion)</dd></div>
+                        <div><dt>Sheen</dt><dd>@Format(_refractiveOrbSheen)</dd></div>
+                    </dl>
+                </article>
+            </RefractiveOrbBackground>
+        </div>
+
+        <aside class="webgl-controls" aria-label="Refractive orb background controls">
+            <div class="webgl-controls__heading">
+                <p class="specimen-label">OPTICAL BENCH / LIVE VALUES</p>
+                <h2>Shape the field.</h2>
+            </div>
+
+            <div class="range-controls">
+                <label>
+                    <span>Intensity <output>@Format(_refractiveOrbIntensity)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_refractiveOrbIntensity" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Radius <output>@Format(_refractiveOrbRadius)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_refractiveOrbRadius" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Distortion <output>@Format(_refractiveOrbDistortion)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_refractiveOrbDistortion" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Sheen <output>@Format(_refractiveOrbSheen)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_refractiveOrbSheen" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Speed <output>@Format(_refractiveOrbSpeed)</output></span>
+                    <input type="range" min="0" max="3" step="0.05" @bind="_refractiveOrbSpeed" @bind:event="oninput" />
+                </label>
+            </div>
+
+            <label class="quality-control">
+                <span>Render quality</span>
+                <select @bind="_refractiveOrbQuality">
+                    @foreach (var quality in Enum.GetValues<FancyQuality>())
+                    {
+                        <option value="@quality">@quality</option>
+                    }
+                </select>
+            </label>
+
+            <div class="switch-controls">
+                <label><input type="checkbox" @bind="_refractiveOrbInteractive" /> Fine-pointer response</label>
+                <label><input type="checkbox" @bind="_refractiveOrbDisabled" /> Show CSS fallback</label>
+            </div>
+        </aside>
+    </section>
+
+    <section class="webgl-workbench" aria-labelledby="prism-field-specimen-heading">
+        <div class="webgl-stage">
+            <PrismFieldBackground Palette="_prismFieldPalette"
+                                   Intensity="_prismFieldIntensity"
+                                   Facets="_prismFieldFacets"
+                                   Dispersion="_prismFieldDispersion"
+                                   Sheen="_prismFieldSheen"
+                                   Speed="_prismFieldSpeed"
+                                   Interactive="_prismFieldInteractive"
+                                   Quality="_prismFieldQuality"
+                                   Disabled="_prismFieldDisabled"
+                                   CssClass="webgl-specimen"
+                                   data-testid="webgl-showcase-prism-field">
+                <article class="webgl-specimen__content">
+                    <div class="webgl-specimen__index" aria-hidden="true">
+                        <span>SC / OPT-04</span>
+                        <span>FACETED FIELD</span>
+                    </div>
+                    <div class="webgl-specimen__copy">
+                        <p class="specimen-label">LIVE SPECIMEN / PRISM FIELD BACKGROUND</p>
+                        <h2 id="prism-field-specimen-heading">Procedural facets split light apart.</h2>
+                        <p>This selectable article sits above the decorative canvas. Disable WebGL, reduce motion, or lose the GPU—the reading plane remains.</p>
+                    </div>
+                    <dl class="webgl-readout" aria-label="Current prism field values">
+                        <div><dt>Intensity</dt><dd>@Format(_prismFieldIntensity)</dd></div>
+                        <div><dt>Facets</dt><dd>@Format(_prismFieldFacets)</dd></div>
+                        <div><dt>Dispersion</dt><dd>@Format(_prismFieldDispersion)</dd></div>
+                        <div><dt>Sheen</dt><dd>@Format(_prismFieldSheen)</dd></div>
+                    </dl>
+                </article>
+            </PrismFieldBackground>
+        </div>
+
+        <aside class="webgl-controls" aria-label="Prism field background controls">
+            <div class="webgl-controls__heading">
+                <p class="specimen-label">OPTICAL BENCH / LIVE VALUES</p>
+                <h2>Shape the field.</h2>
+            </div>
+
+            <div class="range-controls">
+                <label>
+                    <span>Intensity <output>@Format(_prismFieldIntensity)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_prismFieldIntensity" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Facets <output>@Format(_prismFieldFacets)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_prismFieldFacets" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Dispersion <output>@Format(_prismFieldDispersion)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_prismFieldDispersion" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Sheen <output>@Format(_prismFieldSheen)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_prismFieldSheen" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Speed <output>@Format(_prismFieldSpeed)</output></span>
+                    <input type="range" min="0" max="3" step="0.05" @bind="_prismFieldSpeed" @bind:event="oninput" />
+                </label>
+            </div>
+
+            <label class="quality-control">
+                <span>Render quality</span>
+                <select @bind="_prismFieldQuality">
+                    @foreach (var quality in Enum.GetValues<FancyQuality>())
+                    {
+                        <option value="@quality">@quality</option>
+                    }
+                </select>
+            </label>
+
+            <div class="switch-controls">
+                <label><input type="checkbox" @bind="_prismFieldInteractive" /> Fine-pointer response</label>
+                <label><input type="checkbox" @bind="_prismFieldDisabled" /> Show CSS fallback</label>
+            </div>
+        </aside>
+    </section>
+
+    <section class="webgl-workbench" aria-labelledby="particle-field-specimen-heading">
+        <div class="webgl-stage">
+            <ParticleFieldBackground Palette="_particleFieldPalette"
+                                      Intensity="_particleFieldIntensity"
+                                      Density="_particleFieldDensity"
+                                      Size="_particleFieldSize"
+                                      Drift="_particleFieldDrift"
+                                      Speed="_particleFieldSpeed"
+                                      Interactive="_particleFieldInteractive"
+                                      Quality="_particleFieldQuality"
+                                      Disabled="_particleFieldDisabled"
+                                      CssClass="webgl-specimen"
+                                      data-testid="webgl-showcase-particle-field">
+                <article class="webgl-specimen__content">
+                    <div class="webgl-specimen__index" aria-hidden="true">
+                        <span>SC / OPT-05</span>
+                        <span>PARTICLE FIELD</span>
+                    </div>
+                    <div class="webgl-specimen__copy">
+                        <p class="specimen-label">LIVE SPECIMEN / PARTICLE FIELD BACKGROUND</p>
+                        <h2 id="particle-field-specimen-heading">A bounded field of drifting points.</h2>
+                        <p>This selectable article sits above the decorative canvas. Disable WebGL, reduce motion, or lose the GPU—the reading plane remains.</p>
+                    </div>
+                    <dl class="webgl-readout" aria-label="Current particle field values">
+                        <div><dt>Intensity</dt><dd>@Format(_particleFieldIntensity)</dd></div>
+                        <div><dt>Density</dt><dd>@Format(_particleFieldDensity)</dd></div>
+                        <div><dt>Size</dt><dd>@Format(_particleFieldSize)</dd></div>
+                        <div><dt>Drift</dt><dd>@Format(_particleFieldDrift)</dd></div>
+                    </dl>
+                </article>
+            </ParticleFieldBackground>
+        </div>
+
+        <aside class="webgl-controls" aria-label="Particle field background controls">
+            <div class="webgl-controls__heading">
+                <p class="specimen-label">OPTICAL BENCH / LIVE VALUES</p>
+                <h2>Shape the field.</h2>
+            </div>
+
+            <div class="range-controls">
+                <label>
+                    <span>Intensity <output>@Format(_particleFieldIntensity)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_particleFieldIntensity" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Density <output>@Format(_particleFieldDensity)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_particleFieldDensity" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Size <output>@Format(_particleFieldSize)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_particleFieldSize" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Drift <output>@Format(_particleFieldDrift)</output></span>
+                    <input type="range" min="0" max="1" step="0.01" @bind="_particleFieldDrift" @bind:event="oninput" />
+                </label>
+                <label>
+                    <span>Speed <output>@Format(_particleFieldSpeed)</output></span>
+                    <input type="range" min="0" max="3" step="0.05" @bind="_particleFieldSpeed" @bind:event="oninput" />
+                </label>
+            </div>
+
+            <label class="quality-control">
+                <span>Render quality</span>
+                <select @bind="_particleFieldQuality">
+                    @foreach (var quality in Enum.GetValues<FancyQuality>())
+                    {
+                        <option value="@quality">@quality</option>
+                    }
+                </select>
+            </label>
+
+            <div class="switch-controls">
+                <label><input type="checkbox" @bind="_particleFieldInteractive" /> Fine-pointer response</label>
+                <label><input type="checkbox" @bind="_particleFieldDisabled" /> Show CSS fallback</label>
+            </div>
+        </aside>
+    </section>
+
     <section class="webgl-presets" aria-labelledby="webgl-presets-heading">
         <div class="webgl-presets__intro">
             <p class="specimen-label">CALIBRATED STARTING POINTS</p>
@@ -136,6 +452,42 @@
                       Interactive&gt;
     &lt;article&gt;Semantic content&lt;/article&gt;
 &lt;/HolographicSurface&gt;</code></pre>
+        <pre class="surface-recipe__code"><code>&lt;WaveFieldBackground Palette="FancyPalettes.Witchlight"
+                      Intensity="0.6"
+                      Amplitude="0.55"
+                      Frequency="0.45"
+                      Foam="0.6"
+                      Speed="0.9"
+                      Interactive&gt;
+    &lt;article&gt;Semantic content&lt;/article&gt;
+&lt;/WaveFieldBackground&gt;</code></pre>
+        <pre class="surface-recipe__code"><code>&lt;RefractiveOrbBackground Palette="FancyPalettes.Witchlight"
+                          Intensity="0.6"
+                          Radius="0.55"
+                          Distortion="0.5"
+                          Sheen="0.65"
+                          Speed="0.8"
+                          Interactive&gt;
+    &lt;article&gt;Semantic content&lt;/article&gt;
+&lt;/RefractiveOrbBackground&gt;</code></pre>
+        <pre class="surface-recipe__code"><code>&lt;PrismFieldBackground Palette="FancyPalettes.Witchlight"
+                       Intensity="0.6"
+                       Facets="0.5"
+                       Dispersion="0.5"
+                       Sheen="0.6"
+                       Speed="0.7"
+                       Interactive&gt;
+    &lt;article&gt;Semantic content&lt;/article&gt;
+&lt;/PrismFieldBackground&gt;</code></pre>
+        <pre class="surface-recipe__code"><code>&lt;ParticleFieldBackground Palette="FancyPalettes.Witchlight"
+                          Intensity="0.6"
+                          Density="0.5"
+                          Size="0.5"
+                          Drift="0.5"
+                          Speed="0.9"
+                          Interactive&gt;
+    &lt;article&gt;Semantic content&lt;/article&gt;
+&lt;/ParticleFieldBackground&gt;</code></pre>
     </section>
 </section>
 
@@ -156,6 +508,46 @@
     private bool _interactive = true;
     private bool _disabled;
     private FancyQuality _quality = FancyQuality.Auto;
+
+    private FancyPalette _waveFieldPalette = FancyPalettes.Witchlight;
+    private double _waveFieldIntensity = 0.6;
+    private double _waveFieldAmplitude = 0.55;
+    private double _waveFieldFrequency = 0.45;
+    private double _waveFieldFoam = 0.6;
+    private double _waveFieldSpeed = 0.9;
+    private bool _waveFieldInteractive = true;
+    private bool _waveFieldDisabled;
+    private FancyQuality _waveFieldQuality = FancyQuality.Auto;
+
+    private FancyPalette _refractiveOrbPalette = FancyPalettes.Witchlight;
+    private double _refractiveOrbIntensity = 0.6;
+    private double _refractiveOrbRadius = 0.55;
+    private double _refractiveOrbDistortion = 0.5;
+    private double _refractiveOrbSheen = 0.65;
+    private double _refractiveOrbSpeed = 0.8;
+    private bool _refractiveOrbInteractive = true;
+    private bool _refractiveOrbDisabled;
+    private FancyQuality _refractiveOrbQuality = FancyQuality.Auto;
+
+    private FancyPalette _prismFieldPalette = FancyPalettes.Witchlight;
+    private double _prismFieldIntensity = 0.6;
+    private double _prismFieldFacets = 0.5;
+    private double _prismFieldDispersion = 0.5;
+    private double _prismFieldSheen = 0.6;
+    private double _prismFieldSpeed = 0.7;
+    private bool _prismFieldInteractive = true;
+    private bool _prismFieldDisabled;
+    private FancyQuality _prismFieldQuality = FancyQuality.Auto;
+
+    private FancyPalette _particleFieldPalette = FancyPalettes.Witchlight;
+    private double _particleFieldIntensity = 0.6;
+    private double _particleFieldDensity = 0.5;
+    private double _particleFieldSize = 0.5;
+    private double _particleFieldDrift = 0.5;
+    private double _particleFieldSpeed = 0.9;
+    private bool _particleFieldInteractive = true;
+    private bool _particleFieldDisabled;
+    private FancyQuality _particleFieldQuality = FancyQuality.Auto;
 
     private static string Format(double value) => value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
 

@@ -63,6 +63,10 @@ function New-CompleteShapePackage {
         "lib/net10.0/SyntaxCircus.FancyBlazor.WebGL.dll" = "assembly"
         "staticwebassets/js/fancy-blazor-webgl.js" = $AdapterText
         "staticwebassets/js/holographic-surface-renderer.js" = $RendererText
+        "staticwebassets/js/wave-field-renderer.js" = ";"
+        "staticwebassets/js/refractive-orb-renderer.js" = ";"
+        "staticwebassets/js/prism-field-renderer.js" = ";"
+        "staticwebassets/js/particle-field-renderer.js" = ";"
         "staticwebassets/vendor/three/LICENSE" = $licenseText
         "staticwebassets/vendor/three/build/three.core.js" = $CoreVendorText
         "staticwebassets/vendor/three/build/three.module.js" = $moduleVendorText

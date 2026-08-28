@@ -1,0 +1,26 @@
+@page "/webgl-refractive-orb"
+
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["_content/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.bundle.scp.css"]" />
+</HeadContent>
+
+<main>
+    <button type="button" data-testid="refractive-orb-update" @onclick="IncreaseDistortion">Increase distortion</button>
+    <button type="button" data-testid="refractive-orb-disabled" @onclick="ToggleDisabled">Toggle disabled</button>
+    <p data-testid="refractive-orb-activation">@_activation</p>
+    <RefractiveOrbBackground data-testid="refractive-orb-first" Radius="@_radius" Distortion="@_distortion" Sheen="@_sheen" Disabled="@_disabled" Style="height:100px"><article>Refractive orb semantic content <button type="button" @onclick="Activate">Activate child</button></article></RefractiveOrbBackground>
+</main>
+
+@code {
+    private double _radius = 0.5;
+    private double _distortion = 0.5;
+    private double _sheen = 0.5;
+    private bool _disabled;
+    private string _activation = "Not activated";
+
+    private void IncreaseDistortion() => _distortion = 0.9;
+
+    private void ToggleDisabled() => _disabled = !_disabled;
+
+    private void Activate() => _activation = "Activated";
+}

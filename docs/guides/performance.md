@@ -33,11 +33,14 @@ FlickerGrid, MeteorBackground, and LightRaysBackground share the same bounded Ca
 
 ## WebGL preview companion
 
-`HolographicSurface` is opt-in through `SyntaxCircus.FancyBlazor.WebGL`, so the
-vendored Three.js r184 payload is absent from core-only applications. The
-companion defaults to at most four active WebGL contexts, clamps overrides from
-one through eight, quality-caps DPR, pauses while hidden or offscreen, and
-releases frames, observers, listeners, renderers, materials, geometry, and the
-GPU context on teardown. Prefer one or two focal surfaces, use `Low` for large
-mobile treatments, keep `Interactive` off when it adds no value, and design the
-palette-derived CSS fallback as an intentional state.
+`HolographicSurface`, `WaveFieldBackground`, `RefractiveOrbBackground`,
+`PrismFieldBackground`, and `ParticleFieldBackground` are opt-in through
+`SyntaxCircus.FancyBlazor.WebGL`, so the vendored Three.js r184 payload is
+absent from core-only applications. The companion defaults to at most four
+active WebGL contexts, clamps overrides from one through eight, quality-caps
+DPR, pauses while hidden or offscreen, and releases frames, observers,
+listeners, renderers, materials, geometry, and the GPU context on teardown.
+Each effect renders a single full-screen quad with one shader pass and no
+render targets or textures. Prefer one or two focal surfaces, use `Low` for
+large mobile treatments, keep `Interactive` off when it adds no value, and
+design the palette-derived CSS fallback as an intentional state.

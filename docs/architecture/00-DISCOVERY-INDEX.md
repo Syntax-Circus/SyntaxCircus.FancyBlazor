@@ -1,6 +1,6 @@
 # FancyBlazor Discovery Index
 
-- **Status:** Thirteen implementation phases complete; Phases 14–18 are approved pre-1.0 roadmap work
+- **Status:** Fifteen implementation phases complete; Phases 16–18 are approved pre-1.0 roadmap work
 - **Project brief:** [../PROJECT-PLAN.md](../PROJECT-PLAN.md)
 - **Requirements:** [01-REQUIREMENTS.md](01-REQUIREMENTS.md)
 - **Architecture:** [02-ARCHITECTURE.md](02-ARCHITECTURE.md)

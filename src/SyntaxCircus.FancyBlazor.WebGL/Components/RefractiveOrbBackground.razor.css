@@ -1,0 +1,27 @@
+.syntax-circus-fancy-refractive-orb-background {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--sc-fancy-background);
+    background-image:
+        radial-gradient(circle at 50% 50%,
+            color-mix(in srgb, var(--sc-fancy-accent) 55%, transparent),
+            transparent 32%),
+        radial-gradient(circle at 50% 50%,
+            color-mix(in srgb, var(--sc-fancy-primary) 40%, var(--sc-fancy-background)) 18%,
+            color-mix(in srgb, var(--sc-fancy-secondary) 32%, var(--sc-fancy-background)) 46%,
+            var(--sc-fancy-background) 72%);
+}
+
+.syntax-circus-fancy-refractive-orb-background__canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.syntax-circus-fancy-refractive-orb-background__content { position: relative; z-index: 1; }
+
+.syntax-circus-fancy-refractive-orb-background[data-fancy-disabled="true"] .syntax-circus-fancy-refractive-orb-background__canvas { display: none; }

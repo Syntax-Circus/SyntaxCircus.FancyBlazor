@@ -7,26 +7,27 @@ using Xunit;
 
 namespace SyntaxCircus.FancyBlazor.WebGL.Tests;
 
-public sealed class HolographicSurfaceTests
+public sealed class PrismFieldBackgroundTests
 {
     private const string ModulePath = "./_content/SyntaxCircus.FancyBlazor.WebGL/js/fancy-blazor-webgl.js";
 
     [Fact]
-    public void HolographicSurface_MergesAttributesAndPreservesSemanticChildContent()
+    public void PrismFieldBackground_MergesAttributesAndPreservesSemanticChildContent()
     {
         using var context = CreateContext();
         var module = context.JSInterop.SetupModule(ModulePath);
         module.Setup<long>("createEffect", _ => true).SetResult(1);
         RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
 
-        var cut = context.Render<HolographicSurface>(parameters => parameters
+        var cut = context.Render<PrismFieldBackground>(parameters => parameters
             .Add(component => component.ChildContent, content)
             .Add(component => component.CssClass, "product-surface")
             .Add(component => component.Style, "margin:1rem")
             .Add(component => component.Intensity, 9)
-            .Add(component => component.Depth, -1)
-            .Add(component => component.Sheen, 9)
-            .Add(component => component.Speed, -1)
+            .Add(component => component.Facets, -1)
+            .Add(component => component.Dispersion, 9)
+            .Add(component => component.Sheen, -1)
+            .Add(component => component.Speed, 9)
             .Add(component => component.AdditionalAttributes, new Dictionary<string, object>
             {
                 ["class"] = "test-hook",
@@ -34,24 +35,25 @@ public sealed class HolographicSurfaceTests
                 ["aria-label"] = "Featured surface",
             }));
         var markup = cut.Markup;
-        var style = cut.Find(".syntax-circus-fancy-holographic-surface").GetAttribute("style") ?? string.Empty;
+        var style = cut.Find(".syntax-circus-fancy-prism-field-background").GetAttribute("style") ?? string.Empty;
 
-        markup.ShouldContain("syntax-circus-fancy-holographic-surface product-surface test-hook");
-        markup.ShouldContain("--sc-fancy-holographic-intensity:1");
-        markup.ShouldContain("--sc-fancy-holographic-depth:0");
-        markup.ShouldContain("--sc-fancy-holographic-sheen:1");
-        markup.ShouldContain("--sc-fancy-holographic-speed:0");
+        markup.ShouldContain("syntax-circus-fancy-prism-field-background product-surface test-hook");
+        markup.ShouldContain("--sc-fancy-prism-field-intensity:1");
+        markup.ShouldContain("--sc-fancy-prism-field-facets:0");
+        markup.ShouldContain("--sc-fancy-prism-field-dispersion:1");
+        markup.ShouldContain("--sc-fancy-prism-field-sheen:0");
+        markup.ShouldContain("--sc-fancy-prism-field-speed:3");
         style.ShouldContain("margin:1rem");
         style.ShouldContain("padding:1rem");
         markup.ShouldContain("aria-label=\"Featured surface\"");
         markup.ShouldContain("<a href=\"/next\">Continue</a>");
-        markup.ShouldContain("syntax-circus-fancy-holographic-surface__canvas");
+        markup.ShouldContain("syntax-circus-fancy-prism-field-background__canvas");
         markup.ShouldContain("aria-hidden=\"true\"");
         markup.ShouldContain("tabindex=\"-1\"");
     }
 
     [Fact]
-    public void HolographicSurface_DisablingAfterCreation_DestroysDecorativeRuntimeAndRetainsContent()
+    public void PrismFieldBackground_DisablingAfterCreation_DestroysDecorativeRuntimeAndRetainsContent()
     {
         using var context = CreateContext();
         var module = context.JSInterop.SetupModule(ModulePath);
@@ -59,7 +61,7 @@ public sealed class HolographicSurfaceTests
         module.SetupVoid("destroyEffect", _ => true);
         RenderFragment content = builder => builder.AddMarkupContent(0, "<button type=\"button\">Save</button>");
 
-        var cut = context.Render<HolographicSurface>(parameters => parameters.Add(component => component.ChildContent, content));
+        var cut = context.Render<PrismFieldBackground>(parameters => parameters.Add(component => component.ChildContent, content));
         cut.Render(parameters => parameters.Add(component => component.Disabled, true));
 
         context.JSInterop.VerifyInvoke("import");
@@ -70,13 +72,13 @@ public sealed class HolographicSurfaceTests
     }
 
     [Fact]
-    public void HolographicSurface_CreateCall_UsesSharedFancyBlazorDefaults()
+    public void PrismFieldBackground_CreateCall_UsesSharedFancyBlazorDefaults()
     {
         using var context = CreateContext();
         var module = context.JSInterop.SetupModule(ModulePath);
         module.Setup<long>("createEffect", _ => true).SetResult(1);
 
-        context.Render<HolographicSurface>(parameters => parameters.Add(component => component.ChildContent, builder => builder.AddContent(0, "Readable")));
+        context.Render<PrismFieldBackground>(parameters => parameters.Add(component => component.ChildContent, builder => builder.AddContent(0, "Readable")));
 
         var invocation = module.Invocations.Single(call => call.Identifier == "createEffect");
         var defaults = JsonSerializer.Serialize(invocation.Arguments[3]);
@@ -87,7 +89,7 @@ public sealed class HolographicSurfaceTests
     }
 
     [Fact]
-    public async Task HolographicSurface_ReenableAfterTeardown_CreatesReplacement()
+    public async Task PrismFieldBackground_ReenableAfterTeardown_CreatesReplacement()
     {
         await using var context = CreateContext();
         var module = context.JSInterop.SetupModule(ModulePath);
@@ -95,7 +97,7 @@ public sealed class HolographicSurfaceTests
         module.SetupVoid("destroyEffect", _ => true).SetVoidResult();
         module.SetupVoid("disposeRuntime", _ => true).SetVoidResult();
 
-        var cut = context.Render<HolographicSurface>();
+        var cut = context.Render<PrismFieldBackground>();
 
         cut.Render(parameters => parameters.Add(component => component.Disabled, true));
         module.Invocations.Count(call => call.Identifier == "createEffect").ShouldBe(1);
@@ -107,7 +109,7 @@ public sealed class HolographicSurfaceTests
     }
 
     [Fact]
-    public async Task HolographicSurface_DisposalDuringCreation_DestroysTheStaleHandle()
+    public async Task PrismFieldBackground_DisposalDuringCreation_DestroysTheStaleHandle()
     {
         await using var context = CreateContext();
         var module = context.JSInterop.SetupModule(ModulePath);
@@ -115,7 +117,7 @@ public sealed class HolographicSurfaceTests
         module.SetupVoid("destroyEffect", _ => true).SetVoidResult();
         module.SetupVoid("disposeRuntime", _ => true).SetVoidResult();
 
-        context.Render<HolographicSurface>();
+        context.Render<PrismFieldBackground>();
 
         var disposal = context.DisposeComponentsAsync();
         create.SetResult(17);
@@ -126,14 +128,14 @@ public sealed class HolographicSurfaceTests
     }
 
     [Fact]
-    public async Task HolographicSurface_DisposalDuringTeardown_DoesNotCreateOrRenderAReplacement()
+    public async Task PrismFieldBackground_DisposalDuringTeardown_DoesNotCreateOrRenderAReplacement()
     {
         await using var context = CreateContext();
         var module = context.JSInterop.SetupModule(ModulePath);
         module.Setup<long>("createEffect", _ => true).SetResult(23);
         var destroy = module.SetupVoid("destroyEffect", _ => true);
         module.SetupVoid("disposeRuntime", _ => true).SetVoidResult();
-        var cut = context.Render<HolographicSurface>();
+        var cut = context.Render<PrismFieldBackground>();
 
         cut.Render(parameters => parameters.Add(component => component.Disabled, true));
         var disposal = context.DisposeComponentsAsync();

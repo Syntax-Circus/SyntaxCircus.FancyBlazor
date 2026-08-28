@@ -78,7 +78,7 @@ try {
         }
     }
 
-    $requiredEntries = @("README.md", "THIRD-PARTY-NOTICES.md", "licenses/three-LICENSE", "third-party/three/PROVENANCE.md", "lib/net10.0/SyntaxCircus.FancyBlazor.WebGL.dll", "staticwebassets/js/fancy-blazor-webgl.js", "staticwebassets/js/holographic-surface-renderer.js", "staticwebassets/vendor/three/LICENSE", "staticwebassets/vendor/three/build/three.core.js", "staticwebassets/vendor/three/build/three.module.js", "buildTransitive/SyntaxCircus.FancyBlazor.WebGL.props")
+    $requiredEntries = @("README.md", "THIRD-PARTY-NOTICES.md", "licenses/three-LICENSE", "third-party/three/PROVENANCE.md", "lib/net10.0/SyntaxCircus.FancyBlazor.WebGL.dll", "staticwebassets/js/fancy-blazor-webgl.js", "staticwebassets/js/holographic-surface-renderer.js", "staticwebassets/js/wave-field-renderer.js", "staticwebassets/js/refractive-orb-renderer.js", "staticwebassets/js/prism-field-renderer.js", "staticwebassets/js/particle-field-renderer.js", "staticwebassets/vendor/three/LICENSE", "staticwebassets/vendor/three/build/three.core.js", "staticwebassets/vendor/three/build/three.module.js", "buildTransitive/SyntaxCircus.FancyBlazor.WebGL.props")
     $missingEntries = @($requiredEntries | Where-Object { $_ -notin $entryNames })
     if ($missingEntries.Count -gt 0) { throw "Package is missing required entries: $($missingEntries -join ', ')" }
 
@@ -113,7 +113,7 @@ try {
         }
     }
 
-    $ownedScripts = @($archive.GetEntry("staticwebassets/js/fancy-blazor-webgl.js"), $archive.GetEntry("staticwebassets/js/holographic-surface-renderer.js"))
+    $ownedScripts = @($archive.GetEntry("staticwebassets/js/fancy-blazor-webgl.js"), $archive.GetEntry("staticwebassets/js/holographic-surface-renderer.js"), $archive.GetEntry("staticwebassets/js/wave-field-renderer.js"), $archive.GetEntry("staticwebassets/js/refractive-orb-renderer.js"), $archive.GetEntry("staticwebassets/js/prism-field-renderer.js"), $archive.GetEntry("staticwebassets/js/particle-field-renderer.js"))
     [long] $rawLength = 0
     [long] $brotliLength = 0
     foreach ($ownedScript in $ownedScripts) {

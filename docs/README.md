@@ -54,6 +54,10 @@ for the effect you want. All examples link to source compiled by the demo build.
 - [Marquee](components/marquee.md)
 - [NumberTicker](components/number-ticker.md)
 - [HolographicSurface (optional WebGL preview)](components/holographic-surface.md)
+- [WaveFieldBackground (optional WebGL preview)](components/wave-field-background.md)
+- [RefractiveOrbBackground (optional WebGL preview)](components/refractive-orb-background.md)
+- [PrismFieldBackground (optional WebGL preview)](components/prism-field-background.md)
+- [ParticleFieldBackground (optional WebGL preview)](components/particle-field-background.md)
 
 ## Guides
 
