@@ -15,6 +15,7 @@ public sealed class DemoCatalogTests
         "/reveal", "/tilt", "/narrative-motion",
         "/expressive-effects", "/css-first-catalog",
         "/interaction-feedback", "/composition-authoring",
+        "/ui-companion",
     ];
 
     [Fact]

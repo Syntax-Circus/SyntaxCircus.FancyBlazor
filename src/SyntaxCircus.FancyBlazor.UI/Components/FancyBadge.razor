@@ -1,0 +1,24 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<span @attributes="RootAttributes">@ChildContent</span>
+
+@code {
+    [Inject] private IOptions<FancyUiOptions> UiOptions { get; set; } = default!;
+
+    /// <summary>Gets or sets the theme tokens. Falls back to the configured <see cref="FancyUiOptions.Theme"/>.</summary>
+    [Parameter] public FancyUiTheme? Theme { get; set; }
+
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private FancyUiTheme EffectiveTheme => Theme ?? UiOptions.Value.Theme;
+
+    private IReadOnlyDictionary<string, object> RootAttributes => UiAttributeComposer.Compose(
+        "syntax-circus-fancy-ui-badge",
+        CssClass,
+        $"--sc-fancy-ui-accent:{EffectiveTheme.Accent};--sc-fancy-ui-surface:{EffectiveTheme.Surface};--sc-fancy-ui-border:{EffectiveTheme.Border};--sc-fancy-ui-radius:{EffectiveTheme.Radius}",
+        Style,
+        AdditionalAttributes);
+}

@@ -1,0 +1,75 @@
+.syntax-circus-fancy-ui-button {
+    align-items: center;
+    appearance: none;
+    background-color: var(--sc-fancy-ui-accent);
+    background-image: linear-gradient(135deg, color-mix(in srgb, var(--sc-fancy-ui-accent) 82%, white), var(--sc-fancy-ui-accent) 55%, color-mix(in srgb, var(--sc-fancy-ui-accent) 78%, black));
+    border: 1px solid color-mix(in srgb, var(--sc-fancy-ui-accent) 55%, white);
+    border-radius: var(--sc-fancy-ui-radius);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--sc-fancy-ui-accent) 55%, white) inset, 0 10px 24px -10px color-mix(in srgb, var(--sc-fancy-ui-accent) 85%, transparent);
+    box-sizing: border-box;
+    color: var(--sc-fancy-ui-text);
+    cursor: pointer;
+    display: inline-flex;
+    font: inherit;
+    font-weight: 600;
+    gap: 0.5em;
+    isolation: isolate;
+    justify-content: center;
+    letter-spacing: .01em;
+    line-height: 1.2;
+    overflow: hidden;
+    padding: var(--sc-fancy-ui-spacing);
+    position: relative;
+    text-decoration: none;
+    transition: box-shadow 200ms ease, transform 150ms ease, filter 150ms ease;
+}
+
+.syntax-circus-fancy-ui-button::after {
+    background: linear-gradient(110deg, transparent 35%, color-mix(in srgb, white 55%, transparent) 50%, transparent 65%);
+    content: "";
+    inset: 0;
+    pointer-events: none;
+    position: absolute;
+    transform: translateX(-120%);
+    z-index: 1;
+}
+
+.syntax-circus-fancy-ui-button:hover:not(:disabled) {
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--sc-fancy-ui-accent) 55%, white) inset, 0 14px 32px -8px color-mix(in srgb, var(--sc-fancy-ui-accent) 95%, transparent);
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+}
+
+.syntax-circus-fancy-ui-button:hover:not(:disabled)::after {
+    transition: transform 650ms ease;
+    transform: translateX(120%);
+}
+
+.syntax-circus-fancy-ui-button:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+}
+
+.syntax-circus-fancy-ui-button:focus-visible {
+    outline: 2px solid var(--sc-fancy-ui-focus-ring);
+    outline-offset: 2px;
+}
+
+.syntax-circus-fancy-ui-button:disabled {
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .syntax-circus-fancy-ui-button {
+        transition: none;
+    }
+
+    .syntax-circus-fancy-ui-button:hover:not(:disabled) {
+        transform: none;
+    }
+
+    .syntax-circus-fancy-ui-button::after {
+        display: none;
+    }
+}

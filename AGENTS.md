@@ -7,11 +7,11 @@ consumer-facing contract. Architecture decisions and phase status live in
 
 ## Purpose and boundary
 
-This repository publishes a core `net10.0` Razor Class Library plus an optional,
-same-version WebGL preview companion containing visual effects for Blazor. The
-approved pre-1.0 roadmap also plans an optional, same-version
-`SyntaxCircus.FancyBlazor.UI` companion for styled, accessible site controls. The
-core preview catalog includes shader and gradient backgrounds,
+This repository publishes a core `net10.0` Razor Class Library plus two optional,
+same-version companions: a WebGL preview companion containing visual effects for
+Blazor, and a `SyntaxCircus.FancyBlazor.UI` companion for styled, accessible site
+controls (`FancyButton`, `FancyLink`, `FancyBadge`, `FancyCard`, `FancyNavbar`).
+The core preview catalog includes shader and gradient backgrounds,
 glow and shimmer surfaces, reveal and stagger entrances, and pointer/scroll
 motion effects, including semantic text entrances, ambient overlays, bounded
 pointer particles, CSS-first spatial surfaces, in-flow narrative motion,
@@ -21,8 +21,8 @@ Canvas 2D fields). FancyBlazor owns effect markup, scoped styles, coarse
 Blazor-to-JavaScript lifecycle calls, and the JavaScript rendering loop.
 
 The core and WebGL packages are not general UI frameworks. Do not add buttons,
-inputs, layouts, or other semantic widgets to either package. Planned widget
-semantics belong only in the UI companion after its package-boundary phase begins.
+inputs, layouts, or other semantic widgets to either package. Widget semantics
+belong only in the UI companion (`src/SyntaxCircus.FancyBlazor.UI/`).
 No FancyBlazor package owns routing, middleware, authentication, SEO policy,
 business logic, a CSS framework, global resets, host typography, or
 product-specific content. Meaningful consumer content must remain semantic DOM;
@@ -38,6 +38,7 @@ discovery uses `SyntaxCircus.AspNetCore.Common`'s `MapRobotsTxt` and
 ```text
 src/SyntaxCircus.FancyBlazor/              package source and static assets
 src/SyntaxCircus.FancyBlazor.WebGL/        optional published WebGL preview companion
+src/SyntaxCircus.FancyBlazor.UI/           optional published UI companion (buttons, links, badges, cards, navbar)
 samples/FancyBlazor.Demo*/                 compiling Interactive Auto demo
 tests/SyntaxCircus.FancyBlazor.Tests/      xUnit, Shouldly, and bUnit contracts
 tests/SyntaxCircus.FancyBlazor.BrowserTests/ Playwright lifecycle tests
@@ -55,9 +56,11 @@ dotnet build SyntaxCircus.FancyBlazor.slnx --no-restore --configuration Release
 dotnet test SyntaxCircus.FancyBlazor.slnx --no-build --configuration Release
 dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release --output artifacts/release-preview
 dotnet pack src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj --no-build --configuration Release --output artifacts/release-preview
+dotnet pack src/SyntaxCircus.FancyBlazor.UI/SyntaxCircus.FancyBlazor.UI.csproj --no-build --configuration Release --output artifacts/release-preview
 pwsh eng/verify-docs.ps1
 pwsh eng/verify-package.ps1 -PackageDirectory artifacts/release-preview
 pwsh eng/verify-webgl-package.ps1 -PackageDirectory artifacts/release-preview -CorePackageDirectory artifacts/release-preview
+pwsh eng/verify-ui-package.ps1 -PackageDirectory artifacts/release-preview -CorePackageDirectory artifacts/release-preview
 pwsh eng/verify-release-packages.ps1 -PackageDirectory artifacts/release-preview
 pwsh eng/tests/publish-nuget-packages.tests.ps1
 docker build --file samples/FancyBlazor.Demo/Dockerfile --tag fancyblazor-demo:local .
@@ -80,24 +83,27 @@ dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-bu
 
 That override is for local validation only; CI and releases must use GitVersion.
 
-The WebGL companion is a published preview and must use the exact core package
-version. To validate locally, pack both packages to a clean
-`artifacts/release-preview` directory with the same disposable version, run
-both content verifiers, then run the release-set
-verifier. CI derives both versions from the same Git history and publishes the
-pair through one main-branch release job.
+The WebGL and UI companions are published alongside core and must use the
+exact core package version. To validate locally, pack all three packages to
+a clean `artifacts/release-preview` directory with the same disposable
+version, run all three content verifiers, then run the release-set
+verifier. CI derives all three versions from the same Git history and
+publishes the set through one main-branch release job.
 
-Before the companion's first NuGet release, confirm the trusted-publishing
+Before a companion's first NuGet release, confirm the trusted-publishing
 policy owner represented by `NUGET_USER` is the intended owner of the new
-`SyntaxCircus.FancyBlazor.WebGL` package ID and is authorized to create it. Keep
-the `release` GitHub environment, `build.yml` policy identity, and
-`id-token: write` permission aligned with the NuGet trusted-publishing policy.
+package ID (`SyntaxCircus.FancyBlazor.WebGL` or `SyntaxCircus.FancyBlazor.UI`)
+and is authorized to create it. Keep the `release` GitHub environment,
+`build.yml` policy identity, and `id-token: write` permission aligned with
+the NuGet trusted-publishing policy.
 
 ```bash
 dotnet pack src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj --no-build --configuration Release --output artifacts/release-preview -p:DisableGitVersionTask=true -p:PackageVersion=0.2.1-preview.1
 dotnet pack src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj --no-build --configuration Release --output artifacts/release-preview -p:DisableGitVersionTask=true -p:PackageVersion=0.2.1-preview.1
+dotnet pack src/SyntaxCircus.FancyBlazor.UI/SyntaxCircus.FancyBlazor.UI.csproj --no-build --configuration Release --output artifacts/release-preview -p:DisableGitVersionTask=true -p:PackageVersion=0.2.1-preview.1
 pwsh eng/verify-package.ps1 -PackageDirectory artifacts/release-preview -PackageVersion 0.2.1-preview.1
 pwsh eng/verify-webgl-package.ps1 -PackageDirectory artifacts/release-preview -CorePackageDirectory artifacts/release-preview -PackageVersion 0.2.1-preview.1
+pwsh eng/verify-ui-package.ps1 -PackageDirectory artifacts/release-preview -CorePackageDirectory artifacts/release-preview -PackageVersion 0.2.1-preview.1
 pwsh eng/verify-release-packages.ps1 -PackageDirectory artifacts/release-preview
 ```
 
@@ -113,9 +119,20 @@ Every public component, parameter, enum value, default, rendered hook, CSS
 custom property, and setup step is consumer API.
 
 - Keep public types in `SyntaxCircus.FancyBlazor` so one Razor import is enough.
-- Keep the planned UI companion in that namespace and register it through
+- Keep the UI companion in that namespace and register it through
   `AddFancyBlazorUi()`; it depends on core at the exact package version and must
   never pull in WebGL transitively.
+- UI companion hooks use a `syntax-circus-fancy-ui-*` prefix and custom properties
+  use `--sc-fancy-ui-*`. This is a deliberate `-ui-` infix that WebGL's own hooks
+  do not use (WebGL reuses the plain `syntax-circus-fancy-<component>` prefix);
+  it is not an inconsistency to fix.
+- UI companion controls must coexist cleanly with Bootstrap 5's Reboot and other
+  CSS frameworks: never emit framework classes, and self-declare every
+  presentational property a framework reset might otherwise supply (`box-sizing`,
+  `color`, `background-color`, `border`, `text-decoration`, `font`/`line-height`,
+  `appearance`) on the component's own stable-hook selector rather than relying on
+  inherited or browser-default styling. See
+  [docs/guides/bootstrap-compatibility.md](docs/guides/bootstrap-compatibility.md).
 - Prefer typed C# parameters; do not expose renderer names, raw uniforms,
   shader-gallery slugs, runtime handles, or provider internals.
 - Use `TimeSpan` for durations and clamp unsafe numeric inputs.
@@ -175,6 +192,14 @@ asset load, and remain under the dedicated raw/Brotli adapter-renderer size gate
 ThreeUI is visual-direction inspiration only; do not copy or vendor its source,
 shaders, or assets without a separate intake, license, and provenance decision.
 
+`third-party/bootstrap/bootstrap.min.css` is an unmodified, test/demo-only
+vendored Bootstrap 5 stylesheet used solely to prove the UI companion's
+Bootstrap coexistence contract (see `docs/guides/bootstrap-compatibility.md`
+and `third-party/bootstrap/PROVENANCE.md`). It is linked into
+`tests/SyntaxCircus.FancyBlazor.TestHost` and
+`samples/FancyBlazor.Demo.Client` via MSBuild links, never copied, and must
+never appear in the packed `SyntaxCircus.FancyBlazor.UI` NuGet package.
+
 ## Testing and completion
 
 - Use xUnit v3, Shouldly, and bUnit for .NET/rendering contracts.
@@ -207,7 +232,8 @@ shaders, or assets without a separate intake, license, and provenance decision.
 - Composition presets require bUnit coverage for nested stable hooks and child
   semantics, plus browser coverage for any included interactive behavior.
 - Keep documentation snippets linked to compiling sample components.
-- Run restore, Release build, all tests, browser tests, pack, both package-content
-  inspections, and the same-version release-set verifier before declaring completion.
+- Run restore, Release build, all tests, browser tests, pack, all three
+  package-content inspections, and the same-version release-set verifier
+  before declaring completion.
 - Confirm each clean package consumer needs no Node, npm, CDN, manual script
   import, or project reference.

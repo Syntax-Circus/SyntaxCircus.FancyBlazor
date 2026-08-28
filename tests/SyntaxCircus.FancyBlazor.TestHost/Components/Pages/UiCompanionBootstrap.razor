@@ -1,0 +1,44 @@
+@page "/ui-companion-bootstrap"
+
+<HeadContent>
+    <link rel="stylesheet" href="@Assets["_content/SyntaxCircus.FancyBlazor.UI/SyntaxCircus.FancyBlazor.UI.bundle.scp.css"]" />
+    @if (Bootstrap)
+    {
+        <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css" data-testid="bootstrap-stylesheet" />
+    }
+</HeadContent>
+
+<main>
+    <section data-testid="fancy-button-example"><FancyButton>Save changes</FancyButton></section>
+    <section data-testid="fancy-link-example"><FancyLink Href="/border">Open details</FancyLink></section>
+    <section data-testid="fancy-badge-example"><FancyBadge>New</FancyBadge></section>
+    <section data-testid="fancy-card-example">
+        <FancyCard>
+            <Header>Plan: Pro</Header>
+            <ChildContent><p>Everything in Free, plus priority support.</p></ChildContent>
+            <Footer><FancyButton>Choose plan</FancyButton></Footer>
+        </FancyCard>
+    </section>
+    <section data-testid="fancy-navbar-example">
+        <FancyNavbar AriaLabel="Site">
+            <Brand><FancyLink Href="/">Acme</FancyLink></Brand>
+            <Links><FancyLink Href="/pricing">Pricing</FancyLink></Links>
+            <Actions><FancyButton>Sign in</FancyButton></Actions>
+        </FancyNavbar>
+    </section>
+
+    @* Plain Bootstrap markup for visual contrast only; FancyBlazor never emits these classes. *@
+    <section data-testid="bootstrap-contrast">
+        <button type="button" class="btn btn-primary">Bootstrap button</button>
+        <a class="btn btn-link" href="/border">Bootstrap link</a>
+        <span class="badge text-bg-primary">Bootstrap badge</span>
+        <div class="card"><div class="card-body">Bootstrap card</div></div>
+        <nav class="navbar navbar-expand navbar-dark bg-dark"><span class="navbar-brand">Bootstrap navbar</span></nav>
+    </section>
+</main>
+
+@code {
+    [SupplyParameterFromQuery(Name = "bootstrap")]
+    [Parameter]
+    public bool Bootstrap { get; set; }
+}

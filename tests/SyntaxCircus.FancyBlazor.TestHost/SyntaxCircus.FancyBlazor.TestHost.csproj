@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor\SyntaxCircus.FancyBlazor.csproj" />
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor.WebGL\SyntaxCircus.FancyBlazor.WebGL.csproj" />
+    <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor.UI\SyntaxCircus.FancyBlazor.UI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -18,6 +19,11 @@
           CopyToOutputDirectory="PreserveNewest" />
     <None Include="..\..\src\SyntaxCircus.FancyBlazor.WebGL\wwwroot\**\*"
           Link="wwwroot\_content\SyntaxCircus.FancyBlazor.WebGL\%(RecursiveDir)%(Filename)%(Extension)"
+          CopyToOutputDirectory="PreserveNewest" />
+    <!-- Test/demo-only Bootstrap 5 coexistence fixture; see third-party/bootstrap/PROVENANCE.md.
+         Never referenced by the packable SyntaxCircus.FancyBlazor.UI project. -->
+    <None Include="..\..\third-party\bootstrap\bootstrap.min.css"
+          Link="wwwroot\vendor\bootstrap\bootstrap.min.css"
           CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

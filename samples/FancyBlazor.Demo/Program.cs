@@ -11,6 +11,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveWebAssemblyComponents();
 builder.Services.AddFancyBlazor(options => options.EnableDiagnostics = true);
 builder.Services.AddFancyBlazorWebGl();
+builder.Services.AddFancyBlazorUi();
 builder.Services.AddSyntaxCircusTracking(builder.Configuration);
 
 var app = builder.Build();

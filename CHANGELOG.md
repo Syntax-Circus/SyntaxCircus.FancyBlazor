@@ -11,6 +11,29 @@ called out clearly as potentially breaking.
 
 ### Added
 
+- Add the optional `SyntaxCircus.FancyBlazor.UI` companion package with typed
+  `FancyUiTheme`/`FancyUiThemes` tokens and `AddFancyBlazorUi()` registration,
+  depending only on core and never pulling in WebGL.
+- Add `FancyButton` to `SyntaxCircus.FancyBlazor.UI`: a native `<button>`
+  with typed theme tokens, native keyboard operability, and no JavaScript
+  lifecycle.
+- Add `FancyLink` to `SyntaxCircus.FancyBlazor.UI`: a native `<a>` with typed
+  theme tokens, automatic `rel="noopener noreferrer"` for `target="_blank"`,
+  and an `href`-omitting disabled state.
+- Add `FancyBadge` to `SyntaxCircus.FancyBlazor.UI`: a themed, non-interactive
+  `<span>` status label.
+- Add `FancyCard` to `SyntaxCircus.FancyBlazor.UI`: a themed `<article>`
+  content surface with optional header/footer slots that are omitted from
+  the DOM when not provided.
+- Add `FancyNavbar` to `SyntaxCircus.FancyBlazor.UI`: a themed `<nav>`
+  landmark with optional brand/links/actions slots, laid out with no
+  JavaScript and no built-in mobile disclosure.
+- Verify (ADR-016) that every `SyntaxCircus.FancyBlazor.UI` control coexists
+  cleanly with Bootstrap 5's Reboot: dedicated Playwright coverage renders
+  the catalog with and without a locally vendored, unmodified Bootstrap 5
+  stylesheet (test/demo-only; never packed) and asserts identical computed
+  styles.
+
 - Add `WaveFieldBackground` to `SyntaxCircus.FancyBlazor.WebGL`: a
   Three.js-backed interference wave field with typed `Amplitude`,
   `Frequency`, and `Foam` controls, reusing the vendored r184 build and the
