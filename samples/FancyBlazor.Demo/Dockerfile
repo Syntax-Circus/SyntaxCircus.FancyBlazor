@@ -6,6 +6,7 @@ WORKDIR /src
 COPY ["global.json", "Directory.Build.props", "Directory.Packages.props", "GitVersion.yml", "./"]
 COPY ["src/SyntaxCircus.FancyBlazor/SyntaxCircus.FancyBlazor.csproj", "src/SyntaxCircus.FancyBlazor/"]
 COPY ["src/SyntaxCircus.FancyBlazor.WebGL/SyntaxCircus.FancyBlazor.WebGL.csproj", "src/SyntaxCircus.FancyBlazor.WebGL/"]
+COPY ["src/SyntaxCircus.FancyBlazor.UI/SyntaxCircus.FancyBlazor.UI.csproj", "src/SyntaxCircus.FancyBlazor.UI/"]
 COPY ["samples/FancyBlazor.Demo.Client/FancyBlazor.Demo.Client.csproj", "samples/FancyBlazor.Demo.Client/"]
 COPY ["samples/FancyBlazor.Demo/FancyBlazor.Demo.csproj", "samples/FancyBlazor.Demo/"]
 RUN dotnet restore "samples/FancyBlazor.Demo/FancyBlazor.Demo.csproj"
