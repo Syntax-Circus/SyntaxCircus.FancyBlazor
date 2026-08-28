@@ -1240,7 +1240,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
             FeatureGridDisplay: await page.Locator("[data-testid='feature-grid-example'] ul").EvaluateAsync<string>("element => getComputedStyle(element).display"),
             HeroHeadingFontSize: await page.Locator("[data-testid='hero-example'] .syntax-circus-fancy-ui-hero__heading").EvaluateAsync<string>("element => getComputedStyle(element).fontSize"),
             PricingTableBorderCollapse: await page.Locator("[data-testid='pricing-table-example'] table").EvaluateAsync<string>("element => getComputedStyle(element).borderCollapse"),
-            FaqAccordionTriggerFont: await page.Locator("[data-testid='faq-accordion-example'] button").EvaluateAsync<string>("element => getComputedStyle(element).fontWeight"));
+            FaqAccordionTriggerFont: await page.Locator("[data-testid='faq-accordion-example'] button").First.EvaluateAsync<string>("element => getComputedStyle(element).fontWeight"));
     }
 
     private sealed record UiCompanionComputedStyles(
