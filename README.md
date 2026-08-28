@@ -3,6 +3,7 @@
 [![Build](https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor/actions/workflows/build.yml/badge.svg)](https://github.com/Syntax-Circus/SyntaxCircus.FancyBlazor/actions/workflows/build.yml)
 [![NuGet](https://img.shields.io/nuget/v/SyntaxCircus.FancyBlazor.svg)](https://www.nuget.org/packages/SyntaxCircus.FancyBlazor)
 [![WebGL Preview](https://img.shields.io/nuget/v/SyntaxCircus.FancyBlazor.WebGL.svg?label=WebGL%20preview)](https://www.nuget.org/packages/SyntaxCircus.FancyBlazor.WebGL)
+[![UI Companion](https://img.shields.io/nuget/v/SyntaxCircus.FancyBlazor.UI.svg?label=UI%20companion)](https://www.nuget.org/packages/SyntaxCircus.FancyBlazor.UI)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 <p align="center">
@@ -92,6 +93,39 @@ but it includes no ThreeUI source code or assets. Treat its components,
 parameters, defaults, and visual output as preview API that may change before
 1.0.
 
+## Optional UI companion
+
+`SyntaxCircus.FancyBlazor.UI` is a separately installed companion for styled,
+accessible controls: buttons, links, badges, cards, and a navbar. It publishes
+at the same version as the core package and depends only on core—installing it
+never pulls in the WebGL preview.
+
+```bash
+dotnet add package SyntaxCircus.FancyBlazor.UI
+```
+
+```csharp
+builder.Services.AddFancyBlazorUi();
+```
+
+This also registers core defaults. Call `AddFancyBlazor(...)` first when you
+need to configure the shared motion, quality, pause, or diagnostics options.
+
+```razor
+<FancyNavbar AriaLabel="Site">
+    <Brand><FancyLink Href="/">Acme</FancyLink></Brand>
+    <Links><FancyLink Href="/pricing">Pricing</FancyLink></Links>
+    <Actions><FancyButton>Sign in</FancyButton></Actions>
+</FancyNavbar>
+```
+
+Every control is a native HTML element (`<button>`, `<a>`, `<span>`,
+`<article>`, `<nav>`) with typed theme tokens and no JavaScript lifecycle.
+Controls coexist cleanly with Bootstrap 5's Reboot and other CSS frameworks:
+see [Bootstrap 5 compatibility](docs/guides/bootstrap-compatibility.md). Treat
+its components, parameters, defaults, and visual output as preview API that
+may change before 1.0.
+
 ## Preview components
 
 | Component | Rendering path | Purpose |
@@ -145,6 +179,16 @@ parameters, defaults, and visual output as preview API that may change before
 | `StatusPulse` | CSS-first | Decorative pulse around consumer-owned content |
 | `LaunchHalo` | CSS-first | Decorative launch halo around consumer-owned content |
 | `AuroraHero`, `ReadingSurface`, `ActionCard`, `EditorialHero`, `FeaturePanel` | Composition presets | Named, typed decorative stacks around semantic child content |
+
+## UI companion components
+
+| Component | Rendering path | Purpose |
+| --- | --- | --- |
+| `FancyButton` | Native `<button>` | Themed action control with native keyboard operability |
+| `FancyLink` | Native `<a>` | Themed navigation control; `href`-omitting disabled state |
+| `FancyBadge` | Native `<span>` | Themed, non-interactive status label |
+| `FancyCard` | Native `<article>` | Themed content surface with optional header/footer slots |
+| `FancyNavbar` | Native `<nav>` | Themed landmark with optional brand/links/actions slots |
 
 Components intentionally compose:
 
@@ -203,6 +247,8 @@ continuous rendering stops while hidden or offscreen.
 - [Composition-and-authoring demo](samples/FancyBlazor.Demo.Client/Pages/CompositionAuthoring.razor)
 - [Atmosphere-and-accents demo](samples/FancyBlazor.Demo.Client/Pages/ThreeUiInspiration.razor)
 - [Core-kinetic-catalog demo](samples/FancyBlazor.Demo.Client/Pages/CoreKineticCatalog.razor)
+- [Bootstrap 5 compatibility](docs/guides/bootstrap-compatibility.md)
+- [UI companion demo](samples/FancyBlazor.Demo.Client/Pages/UiCompanion.razor)
 - [Changelog](CHANGELOG.md)
 - [Compiling Interactive Auto demo](samples/FancyBlazor.Demo.Client/Pages/Home.razor)
 

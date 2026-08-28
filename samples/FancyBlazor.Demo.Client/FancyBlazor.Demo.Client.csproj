@@ -9,6 +9,14 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor\SyntaxCircus.FancyBlazor.csproj" />
     <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor.WebGL\SyntaxCircus.FancyBlazor.WebGL.csproj" />
+    <ProjectReference Include="..\..\src\SyntaxCircus.FancyBlazor.UI\SyntaxCircus.FancyBlazor.UI.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Demo-only Bootstrap 5 coexistence fixture for the /ui-companion showcase;
+         see third-party/bootstrap/PROVENANCE.md. Never part of any published package. -->
+    <None Include="..\..\third-party\bootstrap\bootstrap.min.css"
+          Link="wwwroot\vendor\bootstrap\bootstrap.min.css"
+          CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

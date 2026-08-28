@@ -1,0 +1,27 @@
+.syntax-circus-fancy-ui-navbar {
+    align-items: center;
+    background-color: var(--sc-fancy-ui-surface);
+    border-bottom: 1px solid var(--sc-fancy-ui-border);
+    box-sizing: border-box;
+    color: var(--sc-fancy-ui-text);
+    display: flex;
+    flex-wrap: wrap;
+    font: inherit;
+    gap: 1em;
+    padding: var(--sc-fancy-ui-spacing);
+}
+
+.syntax-circus-fancy-ui-navbar__links {
+    align-items: center;
+    display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    gap: 1em;
+}
+
+.syntax-circus-fancy-ui-navbar__actions {
+    align-items: center;
+    display: flex;
+    gap: 0.5em;
+    margin-left: auto;
+}

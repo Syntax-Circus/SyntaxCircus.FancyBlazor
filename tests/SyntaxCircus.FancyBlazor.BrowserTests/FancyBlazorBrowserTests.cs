@@ -1144,6 +1144,53 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task UiCompanion_CoexistsCleanlyWithBootstrap5Reboot()
+    {
+        var withoutBootstrap = await GetUiCompanionComputedStylesAsync(bootstrap: false);
+        var withBootstrap = await GetUiCompanionComputedStylesAsync(bootstrap: true);
+
+        withBootstrap.BootstrapStylesheetLoaded.ShouldBeTrue();
+        withoutBootstrap.BootstrapStylesheetLoaded.ShouldBeFalse();
+
+        withBootstrap.ButtonBackgroundColor.ShouldBe(withoutBootstrap.ButtonBackgroundColor);
+        withBootstrap.ButtonTextDecoration.ShouldBe(withoutBootstrap.ButtonTextDecoration);
+        withBootstrap.LinkColor.ShouldBe(withoutBootstrap.LinkColor);
+        withBootstrap.LinkTextDecorationLine.ShouldBe(withoutBootstrap.LinkTextDecorationLine);
+        withBootstrap.BadgeBorderRadius.ShouldBe(withoutBootstrap.BadgeBorderRadius);
+        withBootstrap.CardBackgroundColor.ShouldBe(withoutBootstrap.CardBackgroundColor);
+        withBootstrap.NavbarBackgroundColor.ShouldBe(withoutBootstrap.NavbarBackgroundColor);
+    }
+
+    private async Task<UiCompanionComputedStyles> GetUiCompanionComputedStylesAsync(bool bootstrap)
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/ui-companion-bootstrap?bootstrap={(bootstrap ? "true" : "false")}");
+        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
+        await page.Locator("[data-testid='fancy-button-example'] button").WaitForAsync();
+
+        return new UiCompanionComputedStyles(
+            BootstrapStylesheetLoaded: await page.Locator("[data-testid='bootstrap-stylesheet']").CountAsync() == 1,
+            ButtonBackgroundColor: await page.Locator("[data-testid='fancy-button-example'] button").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"),
+            ButtonTextDecoration: await page.Locator("[data-testid='fancy-button-example'] button").EvaluateAsync<string>("element => getComputedStyle(element).textDecorationLine"),
+            LinkColor: await page.Locator("[data-testid='fancy-link-example'] a").EvaluateAsync<string>("element => getComputedStyle(element).color"),
+            LinkTextDecorationLine: await page.Locator("[data-testid='fancy-link-example'] a").EvaluateAsync<string>("element => getComputedStyle(element).textDecorationLine"),
+            BadgeBorderRadius: await page.Locator("[data-testid='fancy-badge-example'] span").EvaluateAsync<string>("element => getComputedStyle(element).borderRadius"),
+            CardBackgroundColor: await page.Locator("[data-testid='fancy-card-example'] article").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"),
+            NavbarBackgroundColor: await page.Locator("[data-testid='fancy-navbar-example'] nav").EvaluateAsync<string>("element => getComputedStyle(element).backgroundColor"));
+    }
+
+    private sealed record UiCompanionComputedStyles(
+        bool BootstrapStylesheetLoaded,
+        string ButtonBackgroundColor,
+        string ButtonTextDecoration,
+        string LinkColor,
+        string LinkTextDecorationLine,
+        string BadgeBorderRadius,
+        string CardBackgroundColor,
+        string NavbarBackgroundColor);
+
+    [Fact]
     public async Task EnhancedNavigation_TwentyCycles_ReleasesEveryEffect()
     {
         await using var context = await fixture.Browser.NewContextAsync();

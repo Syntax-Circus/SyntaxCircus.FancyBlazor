@@ -58,8 +58,10 @@ try {
     New-Item -ItemType Directory -Path $matchingDirectory | Out-Null
     New-PackageFile -Directory $matchingDirectory -Name "SyntaxCircus.FancyBlazor.0.3.0-preview.2.nupkg"
     New-PackageFile -Directory $matchingDirectory -Name "SyntaxCircus.FancyBlazor.WebGL.0.3.0-preview.2.nupkg"
+    New-PackageFile -Directory $matchingDirectory -Name "SyntaxCircus.FancyBlazor.UI.0.3.0-preview.2.nupkg"
     New-PackageFile -Directory $matchingDirectory -Name "SyntaxCircus.FancyBlazor.0.3.0-preview.2.snupkg"
     New-PackageFile -Directory $matchingDirectory -Name "SyntaxCircus.FancyBlazor.WebGL.0.3.0-preview.2.snupkg"
+    New-PackageFile -Directory $matchingDirectory -Name "SyntaxCircus.FancyBlazor.UI.0.3.0-preview.2.snupkg"
 
     $matchingOutput = & pwsh -NoProfile -File $verifier -PackageDirectory $matchingDirectory 2>&1
     if ($LASTEXITCODE -ne 0) {
@@ -70,20 +72,34 @@ try {
     }
 
     Assert-VerifierRejects -Name "missing-webgl" `
-        -Packages @("SyntaxCircus.FancyBlazor.0.3.0.nupkg") `
+        -Packages @("SyntaxCircus.FancyBlazor.0.3.0.nupkg", "SyntaxCircus.FancyBlazor.UI.0.3.0.nupkg") `
         -ExpectedMessage "exactly one SyntaxCircus.FancyBlazor.WebGL package"
 
-    Assert-VerifierRejects -Name "mismatched-version" `
+    Assert-VerifierRejects -Name "missing-ui" `
+        -Packages @("SyntaxCircus.FancyBlazor.0.3.0.nupkg", "SyntaxCircus.FancyBlazor.WebGL.0.3.0.nupkg") `
+        -ExpectedMessage "exactly one SyntaxCircus.FancyBlazor.UI package"
+
+    Assert-VerifierRejects -Name "mismatched-webgl-version" `
         -Packages @(
             "SyntaxCircus.FancyBlazor.0.3.0.nupkg",
-            "SyntaxCircus.FancyBlazor.WebGL.0.3.1.nupkg"
+            "SyntaxCircus.FancyBlazor.WebGL.0.3.1.nupkg",
+            "SyntaxCircus.FancyBlazor.UI.0.3.0.nupkg"
         ) `
-        -ExpectedMessage "must use the same version"
+        -ExpectedMessage "SyntaxCircus.FancyBlazor.WebGL must use the same version"
+
+    Assert-VerifierRejects -Name "mismatched-ui-version" `
+        -Packages @(
+            "SyntaxCircus.FancyBlazor.0.3.0.nupkg",
+            "SyntaxCircus.FancyBlazor.WebGL.0.3.0.nupkg",
+            "SyntaxCircus.FancyBlazor.UI.0.3.1.nupkg"
+        ) `
+        -ExpectedMessage "SyntaxCircus.FancyBlazor.UI must use the same version"
 
     Assert-VerifierRejects -Name "unexpected-package" `
         -Packages @(
             "SyntaxCircus.FancyBlazor.0.3.0.nupkg",
             "SyntaxCircus.FancyBlazor.WebGL.0.3.0.nupkg",
+            "SyntaxCircus.FancyBlazor.UI.0.3.0.nupkg",
             "Unexpected.Package.0.3.0.nupkg"
         ) `
         -ExpectedMessage "unexpected NuGet packages"

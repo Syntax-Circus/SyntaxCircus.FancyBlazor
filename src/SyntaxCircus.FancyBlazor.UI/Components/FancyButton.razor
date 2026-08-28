@@ -1,0 +1,37 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<button type="@Type" @attributes="RootAttributes" @onclick="OnClick">@ChildContent</button>
+
+@code {
+    [Inject] private IOptions<FancyUiOptions> UiOptions { get; set; } = default!;
+
+    /// <summary>Gets or sets the native button type: <c>"button"</c>, <c>"submit"</c>, or <c>"reset"</c>.</summary>
+    [Parameter] public string Type { get; set; } = "button";
+
+    /// <summary>Gets or sets whether the button is disabled.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Gets or sets the click handler.</summary>
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    /// <summary>Gets or sets the theme tokens. Falls back to the configured <see cref="FancyUiOptions.Theme"/>.</summary>
+    [Parameter] public FancyUiTheme? Theme { get; set; }
+
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private FancyUiTheme EffectiveTheme => Theme ?? UiOptions.Value.Theme;
+
+    private IReadOnlyDictionary<string, object> RootAttributes => UiAttributeComposer.Compose(
+        "syntax-circus-fancy-ui-button",
+        CssClass,
+        $"--sc-fancy-ui-surface:{EffectiveTheme.Surface};--sc-fancy-ui-text:{EffectiveTheme.Text};--sc-fancy-ui-border:{EffectiveTheme.Border};--sc-fancy-ui-accent:{EffectiveTheme.Accent};--sc-fancy-ui-radius:{EffectiveTheme.Radius};--sc-fancy-ui-spacing:{EffectiveTheme.Spacing};--sc-fancy-ui-focus-ring:{EffectiveTheme.FocusRing}",
+        Style,
+        AdditionalAttributes,
+        new Dictionary<string, object>
+        {
+            ["disabled"] = Disabled,
+        });
+}

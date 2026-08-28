@@ -1,0 +1,30 @@
+.syntax-circus-fancy-ui-link {
+    box-sizing: border-box;
+    color: var(--sc-fancy-ui-accent);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    transition: opacity 150ms ease;
+}
+
+.syntax-circus-fancy-ui-link:hover {
+    opacity: 0.82;
+}
+
+.syntax-circus-fancy-ui-link:focus-visible {
+    outline: 2px solid var(--sc-fancy-ui-focus-ring);
+    outline-offset: 2px;
+}
+
+.syntax-circus-fancy-ui-link[aria-disabled="true"] {
+    color: var(--sc-fancy-ui-border);
+    cursor: not-allowed;
+    pointer-events: none;
+    text-decoration: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .syntax-circus-fancy-ui-link {
+        transition: none;
+    }
+}

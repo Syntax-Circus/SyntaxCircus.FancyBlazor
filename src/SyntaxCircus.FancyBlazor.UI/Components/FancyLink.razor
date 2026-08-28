@@ -1,0 +1,61 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<a @attributes="RootAttributes">@ChildContent</a>
+
+@code {
+    [Inject] private IOptions<FancyUiOptions> UiOptions { get; set; } = default!;
+
+    /// <summary>Gets or sets the link destination. Omitted from the rendered markup while <see cref="Disabled"/>.</summary>
+    [Parameter, EditorRequired] public string Href { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the native <c>target</c> attribute.</summary>
+    [Parameter] public string? Target { get; set; }
+
+    /// <summary>Gets or sets whether the link is inert. Disabled links omit <c>href</c> (so they carry no default
+    /// navigation and drop out of the tab order) and set <c>aria-disabled</c>.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Gets or sets the theme tokens. Falls back to the configured <see cref="FancyUiOptions.Theme"/>.</summary>
+    [Parameter] public FancyUiTheme? Theme { get; set; }
+
+    [Parameter, EditorRequired] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private FancyUiTheme EffectiveTheme => Theme ?? UiOptions.Value.Theme;
+
+    private bool HasExplicitRel => AdditionalAttributes?.Keys.Any(key => key.Equals("rel", StringComparison.OrdinalIgnoreCase)) == true;
+
+    private IReadOnlyDictionary<string, object> RootAttributes
+    {
+        get
+        {
+            var fixedAttributes = new Dictionary<string, object>();
+            if (Disabled)
+            {
+                fixedAttributes["aria-disabled"] = "true";
+            }
+            else
+            {
+                fixedAttributes["href"] = Href;
+                if (!string.IsNullOrWhiteSpace(Target))
+                {
+                    fixedAttributes["target"] = Target;
+                    if (Target == "_blank" && !HasExplicitRel)
+                    {
+                        fixedAttributes["rel"] = "noopener noreferrer";
+                    }
+                }
+            }
+
+            return UiAttributeComposer.Compose(
+                "syntax-circus-fancy-ui-link",
+                CssClass,
+                $"--sc-fancy-ui-accent:{EffectiveTheme.Accent};--sc-fancy-ui-border:{EffectiveTheme.Border};--sc-fancy-ui-focus-ring:{EffectiveTheme.FocusRing}",
+                Style,
+                AdditionalAttributes,
+                fixedAttributes);
+        }
+    }
+}

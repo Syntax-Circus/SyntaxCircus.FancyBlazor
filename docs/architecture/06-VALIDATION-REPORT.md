@@ -85,3 +85,39 @@ explicitly. ADR-013 records the separate renderer boundary, and ADR-014 records
 same-version preview publication. Core-only consumers still request no WebGL
 companion assets; companion consumers need no Node, npm, CDN, manual script
 import, or project reference.
+
+## Phase 16 UI companion publication evidence
+
+Phase 16 adds `SyntaxCircus.FancyBlazor.UI` (`FancyButton`, `FancyLink`,
+`FancyBadge`, `FancyCard`, `FancyNavbar`) as a third same-version companion.
+All five controls are pure Razor plus scoped CSS and native HTML semantics:
+the package ships no JavaScript, so `AddFancyBlazorUi()` registers only typed
+theme options and chains `AddFancyBlazor()`.
+
+Locally, all three packages were packed to a clean `artifacts/release-preview`
+directory at a shared disposable version (`0.3.0-preview.1`) and verified:
+
+```text
+Verified SyntaxCircus.FancyBlazor.0.3.0-preview.1.nupkg: required assets present and clean Razor consumer builds.
+Verified SyntaxCircus.FancyBlazor.WebGL.0.3.0-preview.1.nupkg: local Three assets, provenance, size budget, and clean Razor consumer (raw 45300 bytes; Brotli 13597 bytes).
+Verified SyntaxCircus.FancyBlazor.UI.0.3.0-preview.1.nupkg: required assets present, no Bootstrap asset packed, core-only dependency graph, and clean Razor consumer builds.
+Verified release package set: core, WebGL preview, and UI companion are version 0.3.0-preview.1.
+```
+
+`eng/verify-ui-package.ps1` rejects Node artifacts, rejects any packed
+Bootstrap asset, requires the compiled assembly/README/notices/transitive
+props, and restores+builds a clean Razor consumer that references only
+`SyntaxCircus.FancyBlazor.UI` — inspecting its `project.assets.json` to
+confirm the resolved dependency graph contains core but never
+`SyntaxCircus.FancyBlazor.WebGL`. `eng/verify-release-packages.ps1` requires
+exactly one package per ID with all three versions matching.
+
+A dedicated Playwright suite (`UiCompanion_CoexistsCleanlyWithBootstrap5Reboot`)
+renders all five controls with and without a locally vendored, unmodified
+Bootstrap 5.3.3 stylesheet (`third-party/bootstrap/PROVENANCE.md`, test/demo
+only) and asserts identical computed background color, text color, text
+decoration, and border radius in both cases, proving ADR-016's coexistence
+contract.
+
+The full solution test run (.NET/bUnit plus Playwright) passed with all
+existing core and WebGL coverage unaffected by the new package.

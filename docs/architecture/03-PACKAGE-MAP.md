@@ -6,7 +6,7 @@
 | --- | --- | --- | --- | --- |
 | Reusable host utility UI | Excluded | `SyntaxCircus.Blazor.Components` | Separate error/not-found/reconnect concern; the planned UI companion does not absorb shared host utilities. | — |
 | Optional 3D rendering | Published preview | `SyntaxCircus.FancyBlazor.WebGL` | Separately installed companion RCL selected by ADR-013; owns its Three.js r184 assets and runtime without changing the core package payload. It publishes at the exact core package version. | 13 |
-| Styled site controls | Planned | `SyntaxCircus.FancyBlazor.UI` | Optional exact-version companion selected by ADR-015; owns accessible marketing/content widget semantics and scoped themes, depends only on core, and does not replace shared host-utility components. | 16–17 |
+| Styled site controls | Published preview | `SyntaxCircus.FancyBlazor.UI` | Optional exact-version companion selected by ADR-015; owns accessible marketing/content widget semantics and scoped themes, depends only on core, and does not replace shared host-utility components. | 16–17 |
 | Other catalog concerns | Not applicable | — | No auth, persistence, HTTP, storage, email, analytics, or business integration exists here. | — |
 
 ## NuGet dependencies

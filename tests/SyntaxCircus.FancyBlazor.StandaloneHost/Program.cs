@@ -8,4 +8,5 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 builder.Services.AddFancyBlazor(options => options.EnableDiagnostics = true);
 builder.Services.AddFancyBlazorWebGl();
+builder.Services.AddFancyBlazorUi();
 await builder.Build().RunAsync();

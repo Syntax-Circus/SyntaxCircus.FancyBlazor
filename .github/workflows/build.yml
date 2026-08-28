@@ -23,6 +23,7 @@ jobs:
         shell: pwsh
         run: |
           ./eng/tests/verify-webgl-package.tests.ps1
+          ./eng/tests/verify-ui-package.tests.ps1
           ./eng/tests/verify-core-package-selection.tests.ps1
           ./eng/tests/verify-release-packages.tests.ps1
           ./eng/tests/publish-nuget-packages.tests.ps1
@@ -44,6 +45,13 @@ jobs:
       - name: Verify WebGL preview companion
         shell: pwsh
         run: ./eng/verify-webgl-package.ps1 -PackageDirectory artifacts -CorePackageDirectory artifacts
+
+      - name: Pack UI companion
+        run: dotnet pack src/SyntaxCircus.FancyBlazor.UI/SyntaxCircus.FancyBlazor.UI.csproj --no-build --configuration Release --output artifacts
+      - name: Verify UI companion
+        shell: pwsh
+        run: ./eng/verify-ui-package.ps1 -PackageDirectory artifacts -CorePackageDirectory artifacts
+
       - name: Verify same-version release package set
         shell: pwsh
         run: ./eng/verify-release-packages.ps1 -PackageDirectory artifacts
@@ -100,7 +108,7 @@ jobs:
         run: ./eng/publish-nuget-packages.ps1 -PackageDirectory artifacts -ApiKey $env:NUGET_API_KEY
       - name: Tag published version
         run: |
-          package_path=$(find artifacts -maxdepth 1 -type f -name 'SyntaxCircus.FancyBlazor.*.nupkg' ! -name 'SyntaxCircus.FancyBlazor.WebGL.*.nupkg' ! -name '*.snupkg' | head -n 1)
+          package_path=$(find artifacts -maxdepth 1 -type f -name 'SyntaxCircus.FancyBlazor.*.nupkg' ! -name 'SyntaxCircus.FancyBlazor.WebGL.*.nupkg' ! -name 'SyntaxCircus.FancyBlazor.UI.*.nupkg' ! -name '*.snupkg' | head -n 1)
           if [ -z "$package_path" ]; then
             echo "No .nupkg found to derive the release tag."
             exit 1

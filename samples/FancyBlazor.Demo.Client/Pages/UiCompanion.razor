@@ -1,0 +1,91 @@
+@page "/ui-companion"
+
+<PageTitle>UI companion · FancyBlazor</PageTitle>
+
+<section class="demo-page ui-companion-page">
+    <p class="kicker">UI COMPANION / OPTIONAL PACKAGE</p>
+    <h1>Styled, accessible controls without a design system.</h1>
+    <p class="lede">
+        <code>SyntaxCircus.FancyBlazor.UI</code> is a separately installed, exact-version
+        companion. It adds five semantic widgets built from native HTML elements — no
+        JavaScript lifecycle, no Node, and no transitive dependency on the WebGL companion.
+    </p>
+
+    <section aria-labelledby="ui-button-heading">
+        <p class="specimen-label">NATIVE &lt;BUTTON&gt;</p>
+        <h2 id="ui-button-heading">FancyButton</h2>
+        <FancyButton data-testid="ui-companion-button">Save changes</FancyButton>
+    </section>
+
+    <section aria-labelledby="ui-link-heading">
+        <p class="specimen-label">NATIVE &lt;A&gt;</p>
+        <h2 id="ui-link-heading">FancyLink</h2>
+        <FancyLink Href="/border" data-testid="ui-companion-link">Open details</FancyLink>
+    </section>
+
+    <section aria-labelledby="ui-badge-heading">
+        <p class="specimen-label">STATUS LABEL</p>
+        <h2 id="ui-badge-heading">FancyBadge</h2>
+        <FancyBadge data-testid="ui-companion-badge">New</FancyBadge>
+    </section>
+
+    <section aria-labelledby="ui-card-heading">
+        <p class="specimen-label">CONTENT SURFACE</p>
+        <h2 id="ui-card-heading">FancyCard</h2>
+        <FancyCard data-testid="ui-companion-card">
+            <Header>Plan: Pro</Header>
+            <ChildContent><p>Everything in Free, plus priority support.</p></ChildContent>
+            <Footer><FancyButton>Choose plan</FancyButton></Footer>
+        </FancyCard>
+    </section>
+
+    <section aria-labelledby="ui-navbar-heading">
+        <p class="specimen-label">LANDMARK NAV</p>
+        <h2 id="ui-navbar-heading">FancyNavbar</h2>
+        <FancyNavbar AriaLabel="Example site" data-testid="ui-companion-navbar">
+            <Brand><FancyLink Href="/">Acme</FancyLink></Brand>
+            <Links>
+                <FancyLink Href="/ui-companion">Pricing</FancyLink>
+                <FancyLink Href="/ui-companion">Docs</FancyLink>
+            </Links>
+            <Actions><FancyButton>Sign in</FancyButton></Actions>
+        </FancyNavbar>
+    </section>
+
+    <section class="surface-recipe" aria-labelledby="ui-bootstrap-heading">
+        <div class="surface-recipe__copy">
+            <p class="specimen-label">FRAMEWORK COEXISTENCE</p>
+            <h2 id="ui-bootstrap-heading">Coexists with Bootstrap 5.</h2>
+            <p>
+                Every control self-declares its own presentational styling instead of relying on
+                inherited or framework-default styles, so it renders identically whether or not a
+                host page loads Bootstrap 5. This section loads an unmodified, vendored Bootstrap
+                5 stylesheet — for this demo only, never as a package dependency — and places
+                FancyBlazor controls next to plain Bootstrap markup for comparison.
+            </p>
+        </div>
+        <div class="ui-companion-bootstrap-demo">
+            <button type="button" @onclick="ToggleBootstrapDemo">@(_bootstrapLoaded ? "Hide" : "Show") the Bootstrap 5 side-by-side</button>
+            @if (_bootstrapLoaded)
+            {
+                <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css" />
+                <div class="ui-companion-bootstrap-demo__pair">
+                    <div>
+                        <p class="specimen-label">FANCYBUTTON</p>
+                        <FancyButton>Save changes</FancyButton>
+                    </div>
+                    <div>
+                        <p class="specimen-label">BOOTSTRAP BUTTON</p>
+                        <button type="button" class="btn btn-primary">Bootstrap button</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+</section>
+
+@code {
+    private bool _bootstrapLoaded;
+
+    private void ToggleBootstrapDemo() => _bootstrapLoaded = !_bootstrapLoaded;
+}

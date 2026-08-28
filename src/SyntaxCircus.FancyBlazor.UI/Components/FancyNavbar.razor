@@ -1,0 +1,48 @@
+@namespace SyntaxCircus.FancyBlazor
+
+<nav aria-label="@AriaLabel" @attributes="RootAttributes">
+    @if (Brand is not null)
+    {
+        <div class="syntax-circus-fancy-ui-navbar__brand">@Brand</div>
+    }
+    @if (Links is not null)
+    {
+        <div class="syntax-circus-fancy-ui-navbar__links">@Links</div>
+    }
+    @if (Actions is not null)
+    {
+        <div class="syntax-circus-fancy-ui-navbar__actions">@Actions</div>
+    }
+</nav>
+
+@code {
+    [Inject] private IOptions<FancyUiOptions> UiOptions { get; set; } = default!;
+
+    /// <summary>Gets or sets the accessible label for the landmark <c>nav</c> element.</summary>
+    [Parameter] public string AriaLabel { get; set; } = "Primary";
+
+    /// <summary>Gets or sets the optional brand/logo slot.</summary>
+    [Parameter] public RenderFragment? Brand { get; set; }
+
+    /// <summary>Gets or sets the optional navigation links slot.</summary>
+    [Parameter] public RenderFragment? Links { get; set; }
+
+    /// <summary>Gets or sets the optional trailing actions slot.</summary>
+    [Parameter] public RenderFragment? Actions { get; set; }
+
+    /// <summary>Gets or sets the theme tokens. Falls back to the configured <see cref="FancyUiOptions.Theme"/>.</summary>
+    [Parameter] public FancyUiTheme? Theme { get; set; }
+
+    [Parameter] public string? CssClass { get; set; }
+    [Parameter] public string? Style { get; set; }
+    [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private FancyUiTheme EffectiveTheme => Theme ?? UiOptions.Value.Theme;
+
+    private IReadOnlyDictionary<string, object> RootAttributes => UiAttributeComposer.Compose(
+        "syntax-circus-fancy-ui-navbar",
+        CssClass,
+        $"--sc-fancy-ui-surface:{EffectiveTheme.Surface};--sc-fancy-ui-text:{EffectiveTheme.Text};--sc-fancy-ui-border:{EffectiveTheme.Border};--sc-fancy-ui-spacing:{EffectiveTheme.Spacing}",
+        Style,
+        AdditionalAttributes);
+}
