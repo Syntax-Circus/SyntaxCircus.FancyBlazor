@@ -199,6 +199,7 @@ pre { background: #040a12; border: 1px solid var(--line); border-radius: 12px; o
 .ui-companion-bootstrap-demo { display: grid; gap: 1.5rem; padding: clamp(2rem, 5vw, 4rem); place-content: center; }
 .ui-companion-bootstrap-demo > button { appearance: none; background: transparent; border: 1px solid var(--line); border-radius: 999px; color: var(--paper); cursor: pointer; font: .72rem ui-monospace, monospace; justify-self: start; letter-spacing: .06em; padding: .7rem 1.1rem; text-transform: uppercase; white-space: nowrap; }
 .ui-companion-bootstrap-demo > button:hover { border-color: var(--cyan); color: var(--cyan); }
+.ui-companion-navbar-stage { overflow: hidden; }
 .ui-companion-bootstrap-demo__pair { align-items: center; display: grid; gap: 2rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .ui-companion-bootstrap-demo__pair > div { display: grid; gap: .75rem; justify-items: start; }
 footer { border-top: 1px solid var(--line); color: var(--muted); display: grid; font-size: .75rem; gap: 0; grid-template-columns: minmax(0, var(--content-width)); justify-content: center; max-width: none; padding: 0; }
