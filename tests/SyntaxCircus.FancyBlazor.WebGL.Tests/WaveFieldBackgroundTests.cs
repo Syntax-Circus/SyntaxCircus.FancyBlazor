@@ -104,7 +104,7 @@ public sealed class WaveFieldBackgroundTests
 
         module.Invocations.Count(call => call.Identifier == "createEffect").ShouldBe(1);
 
-        destroy.SetVoidResult();
+        await cut.InvokeAsync(() => destroy.SetVoidResult());
         await cut.WaitForStateAsync(
             () => module.Invocations.Count(call => call.Identifier == "createEffect") == 2,
             TimeSpan.FromSeconds(1));
