@@ -63,6 +63,63 @@ No script tag, npm package, CDN, or manual stylesheet import is required.
 Before interactivity—or when WebGL is unavailable—the component displays a
 palette-derived CSS background and leaves the content usable.
 
+## Kinetic text
+
+`WordRotate`, `MorphText`, and `Typewriter` cycle, crossfade, or progressively
+type decorative text while keeping the visible motion `aria-hidden` and
+exposing a complete accessible mirror to assistive technology. They all share
+the same lifecycle as the other JS-light effects and respect
+`prefers-reduced-motion`.
+
+```razor
+<WordRotate Words="@(new[] { "Compose", "Animate", "Ship" })" Interval="TimeSpan.FromSeconds(1.5)" />
+<MorphText Words="@(new[] { "Frosted", "Faceted", "Filament" })" Mode="MorphMode.CharSplit" />
+<Typewriter Text="@(new[] { "Hello, world.", "Compose with FancyBlazor." })" />
+```
+
+See [kinetic text overview](docs/components/kinetic-text-overview.md),
+[`WordRotate`](docs/components/word-rotate.md),
+[`MorphText`](docs/components/morph-text.md), and
+[`Typewriter`](docs/components/typewriter.md) for parameter references and
+composition examples.
+
+## Atmospheric fields
+
+`CausticsBackground`, `TopographicBackground`, and `RainBackground` draw
+bounded Canvas 2D atmospheric fields behind semantic child content, sharing
+the same lifecycle as the other Canvas 2D backgrounds: paused offscreen,
+disposed cleanly, and replaced by a palette-derived static gradient when
+JavaScript, Canvas 2D, or motion is unavailable.
+
+```razor
+<CausticsBackground Palette="FancyPalettes.Glacier">
+    <article>Semantic content</article>
+</CausticsBackground>
+```
+
+See [`CausticsBackground`](docs/components/caustics-background.md),
+[`TopographicBackground`](docs/components/topographic-background.md), and
+[`RainBackground`](docs/components/rain-background.md) for parameter
+references and composition examples.
+
+## Interaction and scroll
+
+`ScrollVelocity` reacts to scroll speed, `CompareReveal` reveals one piece of
+content against another by dragging a handle, and `Lens` shows a
+pointer-following magnified view of an image over semantic content.
+
+```razor
+<CompareReveal BeforeLabel="Muted" AfterLabel="Vivid">
+    <Before><img src="/images/before.jpg" alt="Before" /></Before>
+    <After><img src="/images/after.jpg" alt="After" /></After>
+</CompareReveal>
+```
+
+See [`ScrollVelocity`](docs/components/scroll-velocity.md),
+[`CompareReveal`](docs/components/compare-reveal.md), and
+[`Lens`](docs/components/lens.md) for parameter references and composition
+examples.
+
 ## Optional WebGL preview
 
 `SyntaxCircus.FancyBlazor.WebGL` is a separately installed preview companion.
@@ -156,6 +213,9 @@ may change before 1.0.
 | `ScrollScene` | CSS + scroll JavaScript | Continuous in-flow semantic section treatment |
 | `ScrollIndicator` | CSS + scroll JavaScript | Decorative local reading-progress line |
 | `ScrollBackdrop` | CSS + scroll JavaScript | Palette-derived local scroll backdrop |
+| `ScrollVelocity` | CSS + scroll JavaScript | Scroll-speed-reactive blur and tint |
+| `CompareReveal` | CSS + native range input | Before/after content reveal with a draggable handle |
+| `Lens` | CSS + pointer JavaScript | Pointer-following magnified image view |
 | `HoverLift` | CSS-first | Fine-pointer hover elevation around existing content |
 | `PressScale` | CSS + activation JavaScript | Pointer and keyboard press response around existing content |
 | `FocusHalo` | CSS-first | Additive focus halo around focused child content |
@@ -173,11 +233,17 @@ may change before 1.0.
 | `FlickerGrid` | Canvas 2D + JavaScript | Bounded flickering cell grid behind real DOM |
 | `MeteorBackground` | Canvas 2D + JavaScript | Bounded streaking-meteor field behind real DOM |
 | `LightRaysBackground` | Canvas 2D + JavaScript | Bounded sweeping light-ray field behind real DOM |
+| `CausticsBackground` | Canvas 2D + JavaScript | Bounded drifting caustic light-pool field behind real DOM |
+| `TopographicBackground` | Canvas 2D + JavaScript | Bounded slowly drifting contour-line field behind real DOM |
+| `RainBackground` | Canvas 2D + JavaScript | Bounded streaking-rain field behind real DOM |
 | `ScrambleText` | CSS + `IntersectionObserver` | Semantic character-scramble text reveal |
 | `Marquee` | CSS animation + JavaScript | Seamless looping content scroll with one accessible copy |
 | `NumberTicker` | JavaScript + `IntersectionObserver` | Animated numeric count-up with an always-correct accessible value |
 | `NeonText` | CSS-first | Semantic text glow and optional outline |
 | `TypeFlow` | CSS + `IntersectionObserver` | Semantic word or character entrance |
+| `WordRotate` | CSS + `IntersectionObserver` | Cycles a list of headline words with a fade/slide/blur transition while keeping the visible motion decorative |
+| `MorphText` | CSS + `IntersectionObserver` | Crossfades or character-splits between strings with a visible hold between each |
+| `Typewriter` | CSS + `IntersectionObserver` | Progressively types a list of lines with an optional caret and optional delete |
 | `StatusPulse` | CSS-first | Decorative pulse around consumer-owned content |
 | `LaunchHalo` | CSS-first | Decorative launch halo around consumer-owned content |
 | `AuroraHero`, `ReadingSurface`, `ActionCard`, `EditorialHero`, `FeaturePanel` | Composition presets | Named, typed decorative stacks around semantic child content |

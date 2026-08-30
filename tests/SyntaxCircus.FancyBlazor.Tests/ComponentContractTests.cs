@@ -10,6 +10,14 @@ public sealed class ComponentContractTests
 {
     private const string ModulePath = "./_content/SyntaxCircus.FancyBlazor/js/fancy-blazor.js";
 
+    private static readonly string[] DesignersWords = { "Designers", "Developers", "Dreamers" };
+    private static readonly string[] ComposeWords = { "Compose", "Animate", "Ship" };
+    private static readonly string[] HelloWorldText = { "Hello", "World" };
+    private static readonly string[] EmptyStringArray = [];
+    private static readonly string[] OnlyWord = { "only" };
+    private static readonly string[] ABWords = { "A", "B" };
+    private static readonly string[] OnlyLine = { "Only" };
+
     [Fact]
     public void ShaderBackground_Defaults_PreserveSemanticContentAndDecorativeCanvas()
     {
@@ -367,6 +375,51 @@ public sealed class ComponentContractTests
     }
 
     [Fact]
+    public void CausticsBackground_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var caustics = context.Render<CausticsBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 999).Add(x => x.Intensity, 2)).Markup;
+
+        caustics.ShouldContain("syntax-circus-fancy-caustics-background__canvas");
+        caustics.ShouldContain("aria-hidden=\"true\"");
+        caustics.ShouldContain("--sc-fancy-caustics-density:48");
+        caustics.ShouldContain("--sc-fancy-caustics-intensity:1");
+        caustics.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
+    [Fact]
+    public void TopographicBackground_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var topographic = context.Render<TopographicBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 1).Add(x => x.Intensity, -1)).Markup;
+
+        topographic.ShouldContain("syntax-circus-fancy-topographic-background__canvas");
+        topographic.ShouldContain("aria-hidden=\"true\"");
+        topographic.ShouldContain("--sc-fancy-topographic-density:2");
+        topographic.ShouldContain("--sc-fancy-topographic-intensity:0");
+        topographic.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
+    [Fact]
+    public void RainBackground_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var rain = context.Render<RainBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 999).Add(x => x.Intensity, 2)).Markup;
+
+        rain.ShouldContain("syntax-circus-fancy-rain-background__canvas");
+        rain.ShouldContain("aria-hidden=\"true\"");
+        rain.ShouldContain("--sc-fancy-rain-density:120");
+        rain.ShouldContain("--sc-fancy-rain-intensity:1");
+        rain.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
+    [Fact]
     public void ScrambleText_RendersSemanticElementWithAccessibleText()
     {
         using var context = CreateContext();
@@ -405,6 +458,173 @@ public sealed class ComponentContractTests
         markup.ShouldContain("data-fancy-effect=\"number-ticker\"");
         markup.ShouldContain("syntax-circus-fancy-number-ticker__sr-only");
         markup.ShouldContain("1,234.5");
+    }
+
+    [Fact]
+    public void WordRotate_RendersSemanticHostWithAccessibleText()
+    {
+        using var context = CreateContext();
+
+        var markup = context.Render<WordRotate>(p => p
+            .Add(x => x.Words, DesignersWords)
+            .Add(x => x.Interval, TimeSpan.FromMilliseconds(750))
+            .Add(x => x.Transition, WordRotateTransition.SlideUp)
+            .Add(x => x.CssClass, "hero-rotate")).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-word-rotate hero-rotate");
+        markup.ShouldContain("data-fancy-effect=\"word-rotate\"");
+        markup.ShouldContain("data-fancy-word-rotate-transition=\"slide-up\"");
+        markup.ShouldContain("Designers");
+        markup.ShouldContain("aria-live=\"polite\"");
+    }
+
+    [Fact]
+    public void WordRotate_RequiresAtLeastTwoWords()
+    {
+        using var context = CreateContext();
+
+        Should.Throw<InvalidOperationException>(() => context.Render<WordRotate>(p => p.Add(x => x.Words, OnlyWord)));
+    }
+
+    [Fact]
+    public void MorphText_RendersSemanticHostWithAccessibleText()
+    {
+        using var context = CreateContext();
+
+        var markup = context.Render<MorphText>(p => p
+            .Add(x => x.Words, ComposeWords)
+            .Add(x => x.Duration, TimeSpan.FromMilliseconds(400))
+            .Add(x => x.Hold, TimeSpan.FromMilliseconds(900))
+            .Add(x => x.Mode, MorphMode.CharSplit)).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-morph-text");
+        markup.ShouldContain("data-fancy-effect=\"morph-text\"");
+        markup.ShouldContain("data-fancy-morph-mode=\"char-split\"");
+        markup.ShouldContain("Compose");
+        markup.ShouldContain("aria-live=\"polite\"");
+    }
+
+    [Fact]
+    public void MorphText_RequiresAtLeastTwoWords()
+    {
+        using var context = CreateContext();
+
+        Should.Throw<InvalidOperationException>(() => context.Render<MorphText>(p => p.Add(x => x.Words, EmptyStringArray)));
+    }
+
+    [Fact]
+    public void Typewriter_RendersSemanticHostWithAccessibleText()
+    {
+        using var context = CreateContext();
+
+        var markup = context.Render<Typewriter>(p => p
+            .Add(x => x.Text, HelloWorldText)
+            .Add(x => x.Speed, TimeSpan.FromMilliseconds(30))
+            .Add(x => x.CaretCharacter, "_")
+            .Add(x => x.Direction, KineticTextDirection.Ltr)).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-typewriter");
+        markup.ShouldContain("data-fancy-effect=\"typewriter\"");
+        markup.ShouldContain("data-fancy-typewriter-caret=\"true\"");
+        markup.ShouldContain("data-fancy-typewriter-direction=\"ltr\"");
+        markup.ShouldContain("Hello");
+        markup.ShouldContain("aria-live=\"off\"");
+    }
+
+    [Fact]
+    public void Typewriter_RequiresAtLeastOneLine()
+    {
+        using var context = CreateContext();
+
+        Should.Throw<InvalidOperationException>(() => context.Render<Typewriter>(p => p.Add(x => x.Text, EmptyStringArray)));
+    }
+
+    [Fact]
+    public void KineticTextComponents_Disabled_AddStaticClassAndDoNotInvokeRuntime()
+    {
+        using var context = CreateContext();
+
+        var rotate = context.Render<WordRotate>(p => p.Add(x => x.Words, ABWords).Add(x => x.Disabled, true)).Markup;
+        var morph = context.Render<MorphText>(p => p.Add(x => x.Words, ABWords).Add(x => x.Disabled, true)).Markup;
+        var typewriter = context.Render<Typewriter>(p => p.Add(x => x.Text, OnlyLine).Add(x => x.Disabled, true)).Markup;
+
+        rotate.ShouldContain("syntax-circus-fancy-kinetic-text--static");
+        morph.ShouldContain("syntax-circus-fancy-kinetic-text--static");
+        typewriter.ShouldContain("syntax-circus-fancy-kinetic-text--static");
+        rotate.ShouldContain("data-fancy-disabled=\"true\"");
+        morph.ShouldContain("data-fancy-disabled=\"true\"");
+        typewriter.ShouldContain("data-fancy-disabled=\"true\"");
+        rotate.ShouldContain("syntax-circus-fancy-word-rotate__display\" aria-hidden=\"true\"");
+        rotate.ShouldContain(">A</span>");
+        morph.ShouldContain("data-fancy-layer=\"front\"");
+        morph.ShouldContain(">A</span>");
+        typewriter.ShouldContain("Only");
+    }
+
+    [Fact]
+    public void ScrollVelocity_RendersSemanticHost()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<h2>Fast content</h2>");
+
+        var markup = context.Render<ScrollVelocity>(p => p
+            .Add(x => x.ChildContent, content)
+            .Add(x => x.Sensitivity, 999)).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-scroll-velocity");
+        markup.ShouldContain("data-fancy-effect=\"scroll-velocity\"");
+        markup.ShouldContain("<h2>Fast content</h2>");
+    }
+
+    [Fact]
+    public void Lens_RendersSemanticHostAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<img src=\"/photo.jpg\" alt=\"Photo\" />");
+
+        var markup = context.Render<Lens>(p => p
+            .Add(x => x.ImageUrl, "/photo.jpg")
+            .Add(x => x.ChildContent, content)
+            .Add(x => x.Zoom, 99)
+            .Add(x => x.LensSize, 9999)).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-lens__glass");
+        markup.ShouldContain("--sc-fancy-lens-image:url(&quot;/photo.jpg&quot;)");
+        markup.ShouldContain("--sc-fancy-lens-size:480px");
+        markup.ShouldContain("<img src=\"/photo.jpg\" alt=\"Photo\" />");
+    }
+
+    [Fact]
+    public void CompareReveal_RendersBothSidesAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment before = builder => builder.AddMarkupContent(0, "<img src=\"/before.jpg\" alt=\"Before\" />");
+        RenderFragment after = builder => builder.AddMarkupContent(0, "<img src=\"/after.jpg\" alt=\"After\" />");
+
+        var markup = context.Render<CompareReveal>(p => p
+            .Add(x => x.Before, before)
+            .Add(x => x.After, after)
+            .Add(x => x.Orientation, CompareRevealOrientation.Vertical)
+            .Add(x => x.InitialPosition, 999)
+            .Add(x => x.BeforeLabel, "Before")
+            .Add(x => x.AfterLabel, "After")).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-compare-reveal__control");
+        markup.ShouldContain("data-fancy-compare-reveal-orientation=\"vertical\"");
+        markup.ShouldContain("--sc-fancy-compare-reveal-position:100%");
+        markup.ShouldContain("<img src=\"/before.jpg\" alt=\"Before\" />");
+        markup.ShouldContain("<img src=\"/after.jpg\" alt=\"After\" />");
+        markup.ShouldContain(">Before</span>");
+        markup.ShouldContain(">After</span>");
+    }
+
+    [Fact]
+    public void CompareReveal_RequiresBeforeAndAfterContent()
+    {
+        using var context = CreateContext();
+        RenderFragment after = builder => builder.AddMarkupContent(0, "<img src=\"/after.jpg\" alt=\"After\" />");
+
+        Should.Throw<InvalidOperationException>(() => context.Render<CompareReveal>(p => p.Add(x => x.After, after)));
     }
 
     private static BunitContext CreateContext()

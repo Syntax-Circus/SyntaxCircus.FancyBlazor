@@ -10,11 +10,12 @@ public sealed class DemoCatalogTests
 {
     private static readonly string[] DemoDestinations =
     [
-        "/background", "/expanded-effects", "/threeui-inspiration", "/core-kinetic-catalog",
+        "/background", "/expanded-effects", "/threeui-inspiration", "/core-kinetic-catalog", "/atmospheric-backgrounds",
         "/border", "/spatial-surfaces", "/webgl",
         "/reveal", "/tilt", "/narrative-motion",
-        "/expressive-effects", "/css-first-catalog",
-        "/interaction-feedback", "/composition-authoring",
+        "/expressive-effects", "/css-first-catalog", "/kinetic-text",
+        "/interaction-feedback", "/interaction-scroll",
+        "/composition-authoring",
         "/ui-companion", "/marketing",
     ];
 

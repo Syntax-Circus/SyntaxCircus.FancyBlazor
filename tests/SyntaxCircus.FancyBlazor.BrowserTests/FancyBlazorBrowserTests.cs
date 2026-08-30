@@ -1497,6 +1497,140 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         (await action.GetAttributeAsync("tabindex")).ShouldBeNull();
         await action.Locator("button").PressAsync("Enter");
         (await page.Locator("[data-testid='feature-panel-example'] a").GetAttributeAsync("href")).ShouldBe("/border");
+        (await page.Locator("[data-testid='editorial-hero-example'] strong").InnerTextAsync()).ShouldBe("Editorial headline");
+    }
+
+    [Fact]
+    public async Task KineticTextShowcase_RendersCyclesAndIsLinkedFromFourPlaces()
+    {
+        using var client = new HttpClient();
+        var html = await client.GetStringAsync($"{fixture.TestHostUrl}/kinetic-text", TestContext.Current.CancellationToken);
+        html.ShouldContain("syntax-circus-fancy-word-rotate");
+        html.ShouldContain("syntax-circus-fancy-morph-text");
+        html.ShouldContain("syntax-circus-fancy-typewriter");
+        html.ShouldNotContain("data-fancy-state=\"out\"");
+
+        var home = await client.GetStringAsync($"{fixture.TestHostUrl}/", TestContext.Current.CancellationToken);
+        var occurrences = System.Text.RegularExpressions.Regex.Count(home, "href=\"/kinetic-text\"");
+        occurrences.ShouldBeGreaterThanOrEqualTo(3);
+
+        await using var browser = await NewWebGlBrowserAsync();
+        await using var context = await browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/kinetic-text");
+        await page.WaitForTimeoutAsync(200);
+
+        (await page.Locator(".syntax-circus-fancy-word-rotate").Nth(0).GetAttributeAsync("data-fancy-disabled")).ShouldBe("false");
+        (await page.Locator(".syntax-circus-fancy-morph-text").Nth(0).GetAttributeAsync("data-fancy-disabled")).ShouldBe("false");
+        (await page.Locator(".syntax-circus-fancy-typewriter").Nth(0).GetAttributeAsync("data-fancy-disabled")).ShouldBe("false");
+
+        await page.Locator("[data-testid='kinetic-lifecycle-toggle']").ClickAsync();
+        await page.WaitForTimeoutAsync(150);
+        var hostHtml = await page.Locator("[data-testid='kinetic-lifecycle-host']").InnerHTMLAsync();
+        hostHtml.ShouldNotContain("syntax-circus-fancy-word-rotate");
+        hostHtml.ShouldNotContain("syntax-circus-fancy-typewriter");
+        (await page.Locator("[data-testid='kinetic-lifecycle-state']").InnerTextAsync()).ShouldBe("removed");
+
+        var diagnostics = await page.EvaluateAsync<object>("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics()");
+        diagnostics.ShouldNotBeNull();
+    }
+
+    [Fact]
+    public async Task AtmosphericBackgrounds_RendersFieldsAndIsLinkedFromFourPlaces()
+    {
+        using var client = new HttpClient();
+        var html = await client.GetStringAsync($"{fixture.TestHostUrl}/atmospheric-backgrounds", TestContext.Current.CancellationToken);
+        html.ShouldContain("syntax-circus-fancy-caustics-background");
+        html.ShouldContain("syntax-circus-fancy-topographic-background");
+        html.ShouldContain("syntax-circus-fancy-rain-background");
+
+        var home = await client.GetStringAsync($"{fixture.TestHostUrl}/", TestContext.Current.CancellationToken);
+        var occurrences = System.Text.RegularExpressions.Regex.Count(home, "href=\"/atmospheric-backgrounds\"");
+        occurrences.ShouldBeGreaterThanOrEqualTo(3);
+
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/atmospheric-backgrounds");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+
+        var caustics = page.Locator("[data-testid='caustics-example']");
+        var topographic = page.Locator("[data-testid='topographic-example']");
+        var rain = page.Locator("[data-testid='rain-example']");
+        (await caustics.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await topographic.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await rain.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await caustics.GetAttributeAsync("data-fancy-disabled")).ShouldBe("false");
+        (await topographic.GetAttributeAsync("data-fancy-disabled")).ShouldBe("false");
+        (await rain.GetAttributeAsync("data-fancy-disabled")).ShouldBe("false");
+
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount >= 3");
+    }
+
+    [Fact]
+    public async Task AtmosphericBackgrounds_WithReducedMotion_UsesStaticFallbacks()
+    {
+        await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/atmospheric-backgrounds");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+
+        (await page.Locator("[data-testid='caustics-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.Locator("[data-testid='topographic-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.Locator("[data-testid='rain-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount")).ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task InteractionScrollShowcase_RendersAndRespondsToInteraction()
+    {
+        using var client = new HttpClient();
+        var html = await client.GetStringAsync($"{fixture.TestHostUrl}/interaction-scroll", TestContext.Current.CancellationToken);
+        html.ShouldContain("syntax-circus-fancy-scroll-velocity");
+        html.ShouldContain("syntax-circus-fancy-compare-reveal");
+        html.ShouldContain("syntax-circus-fancy-lens");
+
+        var home = await client.GetStringAsync($"{fixture.TestHostUrl}/", TestContext.Current.CancellationToken);
+        var occurrences = System.Text.RegularExpressions.Regex.Count(home, "href=\"/interaction-scroll\"");
+        occurrences.ShouldBeGreaterThanOrEqualTo(3);
+
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/interaction-scroll");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 4");
+
+        var control = page.Locator("[data-testid='compare-reveal-example'] .syntax-circus-fancy-compare-reveal__control");
+        await control.FocusAsync();
+        await control.PressAsync("ArrowRight");
+        await control.PressAsync("ArrowRight");
+        var position = await page.Locator("[data-testid='compare-reveal-example']").EvaluateAsync<string>("element => getComputedStyle(element).getPropertyValue('--sc-fancy-compare-reveal-position')");
+        position.ShouldNotBe(" 50%");
+
+        // Regression coverage: dragging down (or pressing ArrowDown) on a Vertical CompareReveal
+        // must increase the revealed position, matching the direction the pointer/key actually moved.
+        var verticalHost = page.Locator("[data-testid='compare-reveal-vertical-example']");
+        var verticalControl = verticalHost.Locator(".syntax-circus-fancy-compare-reveal__control");
+        await verticalControl.FocusAsync();
+        await verticalControl.PressAsync("ArrowDown");
+        var afterArrowDown = await verticalHost.EvaluateAsync<double>("element => parseFloat(getComputedStyle(element).getPropertyValue('--sc-fancy-compare-reveal-position'))");
+        afterArrowDown.ShouldBeGreaterThan(50);
+
+        var verticalBox = await verticalHost.BoundingBoxAsync();
+        verticalBox.ShouldNotBeNull();
+        var centerX = (float)(verticalBox!.X + verticalBox.Width / 2);
+        var topY = (float)(verticalBox.Y + verticalBox.Height * .1);
+        var bottomY = (float)(verticalBox.Y + verticalBox.Height * .9);
+        await page.Mouse.MoveAsync(centerX, topY);
+        await page.Mouse.DownAsync();
+        await page.Mouse.MoveAsync(centerX, bottomY);
+        await page.Mouse.UpAsync();
+        var afterDragDown = await verticalHost.EvaluateAsync<double>("element => parseFloat(getComputedStyle(element).getPropertyValue('--sc-fancy-compare-reveal-position'))");
+        afterDragDown.ShouldBeGreaterThan(afterArrowDown);
+
+        var lens = page.Locator("[data-testid='lens-example']");
+        var lensBox = await lens.BoundingBoxAsync();
+        lensBox.ShouldNotBeNull();
+        await page.Mouse.MoveAsync((float)(lensBox!.X + lensBox.Width / 2), (float)(lensBox.Y + lensBox.Height / 2));
+        await page.WaitForFunctionAsync("() => parseFloat(getComputedStyle(document.querySelector(\"[data-testid='lens-example'] .syntax-circus-fancy-lens__glass\")).opacity) >= 0.99");
     }
 
     [Fact]

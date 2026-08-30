@@ -26,6 +26,7 @@
   the duplicate is `aria-hidden` and `inert`. NumberTicker keeps its animated
   digits `aria-hidden` and exposes the exact final value through a visually
   hidden sibling at all times, so no `aria-live` announcement is needed.
+- `WordRotate` and `MorphText` keep the visible motion `aria-hidden` and expose the current word as the host's accessible name. The host uses `aria-live="polite"` so screen readers receive the new word on each cycle without flooding the announcement queue. `Typewriter` keeps the visible typing `aria-hidden` and updates the host's accessible text only when a complete line has finished typing; the host uses `aria-live="off"` to prevent per-character screen-reader spam. All three settle to the first word or line and add the `syntax-circus-fancy-kinetic-text--static` class on the host when `Disabled` is `true` or when the system requests reduced motion.
 - The optional-preview `HolographicSurface`, `WaveFieldBackground`,
   `RefractiveOrbBackground`, `PrismFieldBackground`, and
   `ParticleFieldBackground` canvases are decorative, `aria-hidden`,

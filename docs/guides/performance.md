@@ -31,6 +31,8 @@ ConstellationBackground and ArcFlowBackground use bounded Canvas 2D particle or 
 
 FlickerGrid, MeteorBackground, and LightRaysBackground share the same bounded Canvas 2D, quality-capped DPR, `ResizeObserver`, and intersection/document-visibility gating as ConstellationBackground and ArcFlowBackground. ScrambleText uses viewport observation only, staggering its character animation across at most one `requestAnimationFrame` chain. Marquee is a CSS animation whose `animation-play-state` is toggled by an `IntersectionObserver`, document visibility, and pointer hover, so it runs no JavaScript animation frame of its own. NumberTicker runs one `requestAnimationFrame` chain only while its target value is counting and stops once the final value is reached. Every one of the six releases its observers, listeners, and frames on disposal.
 
+`WordRotate`, `MorphText`, and `Typewriter` share a single JS dispatcher lifecycle. Each instance owns one `IntersectionObserver` and at most one active `requestAnimationFrame` chain; both are released while the host is offscreen, while the document is hidden, and on disposal. There is no continuous frame loop. The visible motion uses scoped CSS transitions, and the typewriter caret blink is a CSS-only animation. As a soft guidance, treat ~12 simultaneous kinetic text instances per page as the upper bound; beyond that, prefer fewer visible effects over additional cadence.
+
 ## WebGL preview companion
 
 `HolographicSurface`, `WaveFieldBackground`, `RefractiveOrbBackground`,

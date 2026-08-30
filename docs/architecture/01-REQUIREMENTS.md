@@ -40,8 +40,10 @@ UI companion for visually expressive, accessible marketing and content controls.
 
 ## Approved pre-1.0 roadmap direction
 
-- Expand core with typed kinetic text/content accents and bounded CSS/Canvas
-  atmospheric fields while preserving semantic DOM and static fallbacks.
+- Expand core with typed kinetic text and content accents, bounded CSS/Canvas
+  atmospheric fields, and the `WordRotate`, `MorphText`, and `Typewriter`
+  kinetic-text batch (added 2026-08-30) while preserving semantic DOM and
+  static fallbacks.
 - Expand WebGL with the four approved typed fields and materials without adding
   another rendering engine or exposing Three.js internals.
 - Add `SyntaxCircus.FancyBlazor.UI` as an optional exact-version companion. Its

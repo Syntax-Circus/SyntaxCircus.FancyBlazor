@@ -16,8 +16,9 @@ glow and shimmer surfaces, reveal and stagger entrances, and pointer/scroll
 motion effects, including semantic text entrances, ambient overlays, bounded
 pointer particles, CSS-first spatial surfaces, in-flow narrative motion,
 additive interaction feedback, and core kinetic and atmospheric accents
-(looping content, animated counters, character-scramble text, and bounded
-Canvas 2D fields). FancyBlazor owns effect markup, scoped styles, coarse
+(looping content, animated counters, character-scramble text, bounded
+Canvas 2D fields, and the `WordRotate`, `MorphText`, and `Typewriter`
+kinetic-text batch). FancyBlazor owns effect markup, scoped styles, coarse
 Blazor-to-JavaScript lifecycle calls, and the JavaScript rendering loop.
 
 The core and WebGL packages are not general UI frameworks. Do not add buttons,
@@ -136,6 +137,10 @@ custom property, and setup step is consumer API.
 - Prefer typed C# parameters; do not expose renderer names, raw uniforms,
   shader-gallery slugs, runtime handles, or provider internals.
 - Use `TimeSpan` for durations and clamp unsafe numeric inputs.
+- CSS custom properties must be the override surface. The shared kinetic-text
+  effects use the `--sc-fancy-kinetic-text-*` prefix; per-component overrides
+  are `--sc-fancy-word-rotate-*`, `--sc-fancy-morph-text-*`, and
+  `--sc-fancy-typewriter-*`.
 - Merge `CssClass`, `Style`, and unmatched `class`/`style` attributes without
   dropping the stable `syntax-circus-fancy-*` hook.
 - Preserve child semantics. Decorative elements are `aria-hidden`, unfocusable,

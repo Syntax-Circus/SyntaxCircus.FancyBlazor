@@ -58,6 +58,8 @@ const factories = {
     reveal: createReveal,
     tilt: createTilt,
     spotlight: createSpotlight,
+    lens: createLens,
+    'compare-reveal': createCompareReveal,
     magnetic: createMagnetic,
     parallax: createParallax,
     stagger: createStagger,
@@ -69,6 +71,9 @@ const factories = {
     'flicker-grid': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'flicker-grid'),
     'meteor-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'meteor'),
     'light-rays-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'light-rays'),
+    'caustics-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'caustics'),
+    'topographic-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'topographic'),
+    'rain-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'rain'),
     'type-flow': createTextReveal,
     'scramble-text': createScrambleText,
     marquee: createMarquee,
@@ -76,7 +81,11 @@ const factories = {
     'scroll-scene': createScrollProgressEffect,
     'scroll-indicator': createScrollProgressEffect,
     'scroll-backdrop': createScrollProgressEffect,
+    'scroll-velocity': createScrollVelocity,
     'press-scale': createPressScale,
+    'word-rotate': createWordRotate,
+    'morph-text': createMorphText,
+    typewriter: createTypewriter,
 };
 
 async function createShaderBackground(element, initialOptions, defaults) {
@@ -292,6 +301,119 @@ function createSpotlight(element, initialOptions, defaults) {
     return { update() {}, setDocumentVisible() {}, hasActiveAnimationFrame() { return frame !== null; }, destroy() { if (frame !== null) cancelAnimationFrame(frame); element.removeEventListener('pointermove', move); element.removeEventListener('pointerleave', reset); reset(); } };
 }
 
+function createCompareReveal(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let dragging = false;
+    const input = element.querySelector('.syntax-circus-fancy-compare-reveal__control');
+    const isVertical = () => options.orientation === 'vertical';
+    const nearestSnap = value => {
+        const points = Array.isArray(options.snapPoints) ? options.snapPoints : null;
+        if (!points || points.length === 0) return value;
+        return points.reduce((closest, point) => Math.abs(point - value) < Math.abs(closest - value) ? point : closest, points[0]);
+    };
+    const apply = value => { element.style.setProperty('--sc-fancy-compare-reveal-position', `${value}%`); };
+    const setValue = (value, snap) => {
+        const clamped = clamp(Math.round(value), 0, 100);
+        const finalValue = snap ? nearestSnap(clamped) : clamped;
+        if (input) input.value = `${finalValue}`;
+        apply(finalValue);
+    };
+    const valueFromPoint = (clientX, clientY) => {
+        const rect = element.getBoundingClientRect();
+        const ratio = isVertical()
+            ? (clientY - rect.top) / Math.max(rect.height, 1)
+            : (clientX - rect.left) / Math.max(rect.width, 1);
+        return clamp(ratio, 0, 1) * 100;
+    };
+    const onPointerDown = event => {
+        if (!input || input.disabled) return;
+        dragging = true;
+        input.focus();
+        input.setPointerCapture?.(event.pointerId);
+        setValue(valueFromPoint(event.clientX, event.clientY), false);
+        event.preventDefault();
+    };
+    const onPointerMove = event => { if (dragging) setValue(valueFromPoint(event.clientX, event.clientY), false); };
+    const onPointerUp = event => {
+        if (!dragging) return;
+        dragging = false;
+        setValue(Number(input?.value) || 0, true);
+        input?.releasePointerCapture?.(event.pointerId);
+    };
+    const onKeyDown = event => {
+        if (!isVertical() || !input) return;
+        const current = Number(input.value) || 0;
+        if (event.key === 'ArrowDown') { event.preventDefault(); setValue(current + 1, false); }
+        else if (event.key === 'ArrowUp') { event.preventDefault(); setValue(current - 1, false); }
+        else if (event.key === 'PageDown') { event.preventDefault(); setValue(current + 10, false); }
+        else if (event.key === 'PageUp') { event.preventDefault(); setValue(current - 10, false); }
+    };
+    const onInput = () => { if (input && !dragging) apply(clamp(Number(input.value) || 0, 0, 100)); };
+    const onChange = () => { if (input && !dragging) setValue(Number(input.value) || 0, true); };
+    input?.addEventListener('pointerdown', onPointerDown);
+    input?.addEventListener('pointermove', onPointerMove);
+    input?.addEventListener('pointerup', onPointerUp);
+    input?.addEventListener('pointercancel', onPointerUp);
+    input?.addEventListener('keydown', onKeyDown);
+    input?.addEventListener('input', onInput);
+    input?.addEventListener('change', onChange);
+    if (input) apply(clamp(Number(input.value) || 0, 0, 100));
+    return {
+        update(next) { options = next; },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return false; },
+        destroy() {
+            input?.removeEventListener('pointerdown', onPointerDown);
+            input?.removeEventListener('pointermove', onPointerMove);
+            input?.removeEventListener('pointerup', onPointerUp);
+            input?.removeEventListener('pointercancel', onPointerUp);
+            input?.removeEventListener('keydown', onKeyDown);
+            input?.removeEventListener('input', onInput);
+            input?.removeEventListener('change', onChange);
+        },
+    };
+}
+
+function createLens(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let frame = null;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const glass = element.querySelector('.syntax-circus-fancy-lens__glass');
+    const reset = () => { if (glass) glass.style.opacity = '0'; };
+    const move = event => {
+        if (motionReduced(defaults.motionPreference, media) || !glass) return;
+        if (frame !== null) cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+            frame = null;
+            const rect = element.getBoundingClientRect();
+            const x = clamp((event.clientX - rect.left) / Math.max(rect.width, 1), 0, 1);
+            const y = clamp((event.clientY - rect.top) / Math.max(rect.height, 1), 0, 1);
+            const zoom = Math.max(1, Number(options.zoom) || 1);
+            element.style.setProperty('--sc-fancy-lens-x', `${x * 100}%`);
+            element.style.setProperty('--sc-fancy-lens-y', `${y * 100}%`);
+            glass.style.backgroundSize = `${zoom * 100}% ${zoom * 100}%`;
+            glass.style.backgroundPositionX = `${x * 100}%`;
+            glass.style.backgroundPositionY = `${y * 100}%`;
+            glass.style.opacity = '1';
+        });
+    };
+    element.addEventListener('pointermove', move, { passive: true });
+    element.addEventListener('pointerleave', reset, { passive: true });
+    return {
+        update(next) { options = next; },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            if (frame !== null) cancelAnimationFrame(frame);
+            element.removeEventListener('pointermove', move);
+            element.removeEventListener('pointerleave', reset);
+            reset();
+            element.style.removeProperty('--sc-fancy-lens-x');
+            element.style.removeProperty('--sc-fancy-lens-y');
+        },
+    };
+}
+
 function createMagnetic(element, initialOptions, defaults) {
     let options = initialOptions; let frame = null; let active = true;
     const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
@@ -363,6 +485,73 @@ function createScrollProgressEffect(element, initialOptions, defaults) {
             removeEventListener('resize', update);
             media?.removeEventListener('change', mediaHandler);
             if (frame !== null) cancelAnimationFrame(frame);
+            setStatic();
+        },
+    };
+}
+
+function createScrollVelocity(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let frame = null;
+    let idleTimer = null;
+    let intersecting = false;
+    let documentVisible = !document.hidden;
+    let destroyed = false;
+    let lastScrollY = window.scrollY;
+    let lastTime = performance.now();
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+    const setStatic = () => {
+        element.style.removeProperty('--sc-fancy-scroll-velocity');
+        element.style.removeProperty('--sc-fancy-scroll-direction');
+        delete element.dataset.fancyReady;
+    };
+    const settle = () => { idleTimer = null; element.style.setProperty('--sc-fancy-scroll-velocity', '0'); };
+    const update = () => {
+        if (destroyed || !intersecting || !documentVisible || reduced() || frame !== null) return;
+        frame = requestAnimationFrame(() => {
+            frame = null;
+            if (destroyed || !intersecting || !documentVisible || reduced()) return;
+            const now = performance.now();
+            const currentY = window.scrollY;
+            const dt = Math.max(1, now - lastTime);
+            const dy = currentY - lastScrollY;
+            const sensitivity = Math.max(.01, Number(options.sensitivity) || 1);
+            const normalized = clamp(Math.abs(dy) / dt / sensitivity, 0, 1);
+            const direction = dy > 0 ? 1 : dy < 0 ? -1 : 0;
+            lastScrollY = currentY; lastTime = now;
+            element.style.setProperty('--sc-fancy-scroll-velocity', `${normalized}`);
+            element.style.setProperty('--sc-fancy-scroll-direction', `${direction}`);
+            element.dataset.fancyReady = 'true';
+            if (idleTimer !== null) clearTimeout(idleTimer);
+            idleTimer = setTimeout(settle, 150);
+        });
+    };
+    const observer = new IntersectionObserver(entries => {
+        intersecting = entries.some(entry => entry.isIntersecting);
+        if (intersecting) update();
+        else if (frame !== null) { cancelAnimationFrame(frame); frame = null; }
+    }, { threshold: 0 });
+    const mediaHandler = () => { if (reduced()) setStatic(); else update(); };
+    observer.observe(element);
+    addEventListener('scroll', update, { passive: true });
+    media?.addEventListener('change', mediaHandler);
+    update();
+    return {
+        update(next) { options = next; },
+        setDocumentVisible(visible) {
+            documentVisible = visible;
+            if (!visible) { if (frame !== null) cancelAnimationFrame(frame); frame = null; }
+            else update();
+        },
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            destroyed = true;
+            observer.disconnect();
+            removeEventListener('scroll', update);
+            media?.removeEventListener('change', mediaHandler);
+            if (frame !== null) cancelAnimationFrame(frame);
+            if (idleTimer !== null) clearTimeout(idleTimer);
             setStatic();
         },
     };
@@ -561,6 +750,339 @@ function createMarquee(element, initialOptions, defaults) {
     };
 }
 
+function createWordRotate(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let observer = null;
+    let frame = null;
+    let timer = null;
+    let destroyed = false;
+    let index = Math.max(0, Math.floor(Number(options.startIndex) || 0));
+    let lastSwapAt = 0;
+    const display = element.querySelector('.syntax-circus-fancy-word-rotate__display');
+    const srOnly = element.querySelector('.syntax-circus-fancy-word-rotate__sr-only');
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const words = () => Array.isArray(options.words) ? options.words : [];
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+    const announce = (text) => { if (srOnly) srOnly.textContent = text; };
+
+    const settle = () => {
+        const list = words();
+        if (list.length === 0 || !display) return;
+        display.textContent = list[index % list.length] ?? '';
+        display.dataset.fancyState = 'idle';
+        announce(display.textContent);
+    };
+
+    const applyTransition = (next) => {
+        if (!display) return;
+        const transition = String(options.transition || 'fade');
+        display.dataset.fancyTransition = transition;
+        display.dataset.fancyState = 'out';
+        if (timer !== null) clearTimeout(timer);
+        const finish = () => {
+            if (timer !== null) { clearTimeout(timer); timer = null; }
+            display.textContent = next;
+            display.dataset.fancyState = 'in';
+            announce(next);
+            display.removeEventListener('transitionend', finish);
+        };
+        display.addEventListener('transitionend', finish, { once: true });
+        timer = setTimeout(finish, 400);
+    };
+
+    const tick = (now) => {
+        if (destroyed) return;
+        const list = words();
+        if (list.length < 2) { frame = null; return; }
+        const interval = Math.max(1, Number(options.interval) || 1);
+        if (lastSwapAt === 0) lastSwapAt = now;
+        if (now - lastSwapAt >= interval) {
+            lastSwapAt = now;
+            index = (index + 1) % list.length;
+            applyTransition(list[index]);
+        }
+        frame = requestAnimationFrame(tick);
+    };
+
+    const configure = () => {
+        observer?.disconnect(); observer = null;
+        if (frame !== null) cancelAnimationFrame(frame);
+        if (timer !== null) { clearTimeout(timer); timer = null; }
+        if (!display) return;
+        const list = words();
+        if (list.length === 0) return;
+        if (reduced() || list.length < 2) { settle(); return; }
+        index = Math.min(index, list.length - 1);
+        const initial = list[index];
+        display.textContent = initial;
+        display.dataset.fancyTransition = String(options.transition || 'fade');
+        display.dataset.fancyState = 'in';
+        announce(initial);
+        observer = new IntersectionObserver(entries => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) { if (frame !== null) { cancelAnimationFrame(frame); frame = null; } }
+                else if (frame === null) { lastSwapAt = 0; frame = requestAnimationFrame(tick); }
+            }
+        }, { threshold: 0.1 });
+        observer.observe(element);
+    };
+
+    const mediaHandler = () => { if (!destroyed) configure(); };
+    media?.addEventListener('change', mediaHandler);
+    configure();
+
+    return {
+        update(next) { options = next; configure(); },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            destroyed = true;
+            if (frame !== null) cancelAnimationFrame(frame);
+            if (timer !== null) clearTimeout(timer);
+            observer?.disconnect();
+            media?.removeEventListener('change', mediaHandler);
+            const list = words();
+            const first = list.length > 0 ? (list[0] ?? '') : '';
+            if (display) { display.textContent = first; delete display.dataset.fancyState; delete display.dataset.fancyTransition; }
+            announce(first);
+        },
+    };
+}
+
+function createMorphText(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let observer = null;
+    let frame = null;
+    let timer = null;
+    let destroyed = false;
+    let index = Math.max(0, Math.floor(Number(options.startIndex) || 0));
+    let phase = 'hold';
+    let phaseStart = 0;
+    const front = element.querySelector('[data-fancy-layer="front"]');
+    const back = element.querySelector('[data-fancy-layer="back"]');
+    const srOnly = element.querySelector('.syntax-circus-fancy-morph-text__sr-only');
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const words = () => Array.isArray(options.words) ? options.words : [];
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+    const announce = (text) => { if (srOnly) srOnly.textContent = text; };
+
+    const settle = () => {
+        const list = words();
+        if (list.length === 0 || !front || !back) return;
+        front.textContent = list[index % list.length] ?? '';
+        front.dataset.fancyState = 'in';
+        back.textContent = '';
+        back.dataset.fancyState = 'idle';
+        announce(front.textContent);
+    };
+
+    const tick = (now) => {
+        if (destroyed) return;
+        const list = words();
+        if (list.length < 2) { frame = null; return; }
+        const duration = Math.max(1, Number(options.duration) || 1);
+        const hold = Math.max(0, Number(options.hold) || 0);
+        if (phase === 'hold' && now - phaseStart >= hold) {
+            const nextIndex = (index + 1) % list.length;
+            const next = list[nextIndex];
+            back.textContent = next;
+            back.dataset.fancyState = 'in';
+            front.dataset.fancyState = 'out';
+            if (timer !== null) clearTimeout(timer);
+            const onEnd = () => {
+                if (timer !== null) { clearTimeout(timer); timer = null; }
+                front.textContent = next;
+                front.dataset.fancyState = 'in';
+                back.dataset.fancyState = 'idle';
+                announce(next);
+                index = nextIndex;
+                phase = 'hold';
+                phaseStart = performance.now();
+                front.removeEventListener('transitionend', onEnd);
+            };
+            front.addEventListener('transitionend', onEnd, { once: true });
+            timer = setTimeout(onEnd, 400);
+            phase = 'morph';
+            phaseStart = now;
+        } else if (phase === 'morph' && now - phaseStart >= duration) {
+            phase = 'hold';
+            phaseStart = now;
+        }
+        frame = requestAnimationFrame(tick);
+    };
+
+    const configure = () => {
+        observer?.disconnect(); observer = null;
+        if (frame !== null) cancelAnimationFrame(frame);
+        if (timer !== null) { clearTimeout(timer); timer = null; }
+        if (!front || !back) return;
+        const list = words();
+        if (list.length === 0) return;
+        if (reduced() || list.length < 2) { settle(); return; }
+        index = Math.min(index, list.length - 1);
+        const initial = list[index];
+        front.textContent = initial; front.dataset.fancyState = 'in';
+        back.textContent = initial; back.dataset.fancyState = 'idle';
+        announce(initial);
+        observer = new IntersectionObserver(entries => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) { if (frame !== null) { cancelAnimationFrame(frame); frame = null; } }
+                else if (frame === null) { phase = 'hold'; phaseStart = performance.now(); frame = requestAnimationFrame(tick); }
+            }
+        }, { threshold: 0.1 });
+        observer.observe(element);
+    };
+
+    const mediaHandler = () => { if (!destroyed) configure(); };
+    media?.addEventListener('change', mediaHandler);
+    configure();
+
+    return {
+        update(next) { options = next; configure(); },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            destroyed = true;
+            if (frame !== null) cancelAnimationFrame(frame);
+            if (timer !== null) clearTimeout(timer);
+            observer?.disconnect();
+            media?.removeEventListener('change', mediaHandler);
+            const list = words();
+            const first = list.length > 0 ? (list[0] ?? '') : '';
+            if (front) { front.textContent = first; front.dataset.fancyState = 'in'; }
+            if (back) { back.textContent = ''; back.dataset.fancyState = 'idle'; }
+            announce(first);
+        },
+    };
+}
+
+function createTypewriter(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let observer = null;
+    let frame = null;
+    let destroyed = false;
+    let index = Math.max(0, Math.floor(Number(options.startIndex) || 0));
+    let phase = 'typing';
+    let phaseStart = 0;
+    let charIndex = 0;
+    const textEl = element.querySelector('.syntax-circus-fancy-typewriter__text');
+    const srOnly = element.querySelector('.syntax-circus-fancy-typewriter__sr-only');
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const lines = () => Array.isArray(options.text) ? options.text : [];
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+
+    const syncAccessible = () => {
+        const list = lines();
+        if (list.length === 0 || !srOnly) return;
+        srOnly.textContent = list[index % list.length] ?? '';
+    };
+
+    const settle = () => {
+        const list = lines();
+        if (list.length === 0 || !textEl) return;
+        textEl.textContent = list[index % list.length] ?? '';
+        syncAccessible();
+    };
+
+    const advanceLine = (list) => {
+        if (index + 1 >= list.length) {
+            if (options.loop === false) {
+                const finalText = list[index % list.length] ?? '';
+                textEl.textContent = finalText;
+                syncAccessible();
+                return false;
+            }
+            index = 0;
+        } else {
+            index++;
+        }
+        syncAccessible();
+        phase = 'typing';
+        charIndex = 0;
+        phaseStart = performance.now();
+        return true;
+    };
+
+    const tick = (now) => {
+        if (destroyed || !textEl) return;
+        const list = lines();
+        if (list.length === 0) { frame = null; return; }
+        const speed = Math.max(1, Number(options.speed) || 1);
+        const deleteSpeed = options.deleteSpeed == null ? speed : Math.max(1, Number(options.deleteSpeed) || speed);
+        const holdAfter = Math.max(0, Number(options.holdAfter) || 0);
+        const current = list[index % list.length] ?? '';
+        const chars = Array.from(current);
+        if (phase === 'typing') {
+            if (charIndex < chars.length) {
+                if (now - phaseStart >= speed) {
+                    charIndex++;
+                    textEl.textContent = chars.slice(0, charIndex).join('');
+                    phaseStart = now;
+                }
+            } else {
+                phase = 'holdAfter';
+                phaseStart = now;
+            }
+        } else if (phase === 'holdAfter') {
+            if (now - phaseStart >= holdAfter) {
+                if (charIndex > 0 && options.deleteSpeed !== null) { phase = 'deleting'; phaseStart = now; }
+                else if (!advanceLine(list)) { frame = null; return; }
+            }
+        } else if (phase === 'deleting') {
+            if (charIndex > 0) {
+                if (now - phaseStart >= deleteSpeed) {
+                    charIndex--;
+                    textEl.textContent = chars.slice(0, charIndex).join('');
+                    phaseStart = now;
+                }
+            } else if (!advanceLine(list)) { frame = null; return; }
+        }
+        frame = requestAnimationFrame(tick);
+    };
+
+    const configure = () => {
+        observer?.disconnect(); observer = null;
+        if (frame !== null) cancelAnimationFrame(frame);
+        if (!textEl) return;
+        const list = lines();
+        if (list.length === 0) return;
+        if (reduced()) { settle(); return; }
+        index = Math.min(index, list.length - 1);
+        textEl.textContent = '';
+        charIndex = 0;
+        phase = 'typing';
+        phaseStart = performance.now();
+        syncAccessible();
+        observer = new IntersectionObserver(entries => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) { if (frame !== null) { cancelAnimationFrame(frame); frame = null; } }
+                else if (frame === null) { phaseStart = performance.now(); frame = requestAnimationFrame(tick); }
+            }
+        }, { threshold: 0.1 });
+        observer.observe(element);
+    };
+
+    const mediaHandler = () => { if (!destroyed) configure(); };
+    media?.addEventListener('change', mediaHandler);
+    configure();
+
+    return {
+        update(next) { options = next; configure(); },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            destroyed = true;
+            if (frame !== null) cancelAnimationFrame(frame);
+            observer?.disconnect();
+            media?.removeEventListener('change', mediaHandler);
+            const list = lines();
+            const first = list.length > 0 ? (list[0] ?? '') : '';
+            if (textEl) textEl.textContent = first;
+            if (srOnly) srOnly.textContent = first;
+        },
+    };
+}
+
 function createNumberTicker(element, initialOptions, defaults) {
     let options = initialOptions;
     let frame = null;
@@ -714,7 +1236,10 @@ function createCanvasAtmosphere(element, initialOptions, defaults, kind) {
         else if (kind === 'arc-flow') drawArcFlow(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
         else if (kind === 'flicker-grid') drawFlickerGrid(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
         else if (kind === 'meteor') drawMeteors(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
-        else drawLightRays(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else if (kind === 'light-rays') drawLightRays(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else if (kind === 'caustics') drawCaustics(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else if (kind === 'topographic') drawTopographic(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else drawRain(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
         frame = requestAnimationFrame(draw);
     };
     const start = () => {
@@ -742,9 +1267,67 @@ function createCanvasAtmosphere(element, initialOptions, defaults, kind) {
 function createAtmosphereParticles(rect, count, kind) {
     return Array.from({ length: count }, (_, index) => ({
         x: Math.random() * Math.max(rect.width, 1), y: Math.random() * Math.max(rect.height, 1),
-        radius: kind === 'constellation' ? 1 + Math.random() * 1.5 : 24 + Math.random() * 80,
+        radius: kind === 'constellation' ? 1 + Math.random() * 1.5 : kind === 'rain' ? 1 + Math.random() * 2 : 24 + Math.random() * 80,
         phase: Math.random() * Math.PI * 2, drift: .3 + Math.random() * .7, color: index % 3,
     }));
+}
+
+function drawCaustics(context, particles, rect, now, speed, colors, intensity) {
+    const time = now * .001 * speed;
+    for (const pool of particles) {
+        const x = pool.x + Math.sin(time * pool.drift + pool.phase) * 40;
+        const y = pool.y + Math.cos(time * pool.drift * .7 + pool.phase) * 32;
+        const radius = pool.radius * (0.85 + 0.15 * Math.sin(time * pool.drift * 1.3 + pool.phase));
+        const rgb = colors[pool.color].map(value => Math.round(value * 255)).join(',');
+        const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
+        gradient.addColorStop(0, `rgba(${rgb},${.08 + intensity * .3})`);
+        gradient.addColorStop(1, `rgba(${rgb},0)`);
+        context.fillStyle = gradient;
+        context.beginPath(); context.arc(x, y, radius, 0, Math.PI * 2); context.fill();
+    }
+}
+
+function drawTopographic(context, particles, rect, now, speed, colors, opacity) {
+    const time = now * .0006 * speed;
+    const ringCount = 5;
+    const steps = 48;
+    context.lineWidth = 1;
+    for (const peak of particles) {
+        const rgb = colors[peak.color].map(value => Math.round(value * 255)).join(',');
+        for (let ring = 1; ring <= ringCount; ring++) {
+            const baseRadius = ring * (peak.radius / ringCount);
+            context.strokeStyle = `rgba(${rgb},${opacity * (1 - ring / (ringCount + 1)) * .6})`;
+            context.beginPath();
+            for (let step = 0; step <= steps; step++) {
+                const angle = (step / steps) * Math.PI * 2;
+                const wobble = Math.sin(angle * 3 + peak.phase + time * peak.drift) * (baseRadius * .08);
+                const radius = baseRadius + wobble;
+                const x = peak.x + Math.cos(angle) * radius;
+                const y = peak.y + Math.sin(angle) * radius * .6;
+                if (step === 0) context.moveTo(x, y); else context.lineTo(x, y);
+            }
+            context.closePath();
+            context.stroke();
+        }
+    }
+}
+
+function drawRain(context, particles, rect, now, speed, colors, intensity) {
+    const time = now * .001 * speed;
+    context.lineCap = 'round';
+    for (const drop of particles) {
+        const fall = (time * 280 * (.6 + drop.drift) + drop.phase * 60) % (rect.height + 60) - 30;
+        const x = drop.x + Math.sin(drop.phase) * 6;
+        const y = fall;
+        const length = 12 + drop.radius * 4;
+        const rgb = colors[drop.color].map(value => Math.round(value * 255)).join(',');
+        const gradient = context.createLinearGradient(x, y, x - length * .12, y - length);
+        gradient.addColorStop(0, `rgba(${rgb},${.12 + intensity * .5})`);
+        gradient.addColorStop(1, `rgba(${rgb},0)`);
+        context.strokeStyle = gradient;
+        context.lineWidth = 1.25;
+        context.beginPath(); context.moveTo(x, y); context.lineTo(x - length * .12, y - length); context.stroke();
+    }
 }
 
 function drawConstellation(context, particles, rect, now, speed, colors, opacity) {

@@ -1,0 +1,6 @@
+.syntax-circus-fancy-topographic-background { background: var(--sc-fancy-background); isolation: isolate; overflow: hidden; position: relative; }
+@supports (color: color-mix(in srgb, black, white)) { .syntax-circus-fancy-topographic-background { background: radial-gradient(circle at 70% 80%, color-mix(in srgb, var(--sc-fancy-primary) 22%, transparent), transparent 52%), var(--sc-fancy-background); } }
+.syntax-circus-fancy-topographic-background__content { position: relative; z-index: 1; }
+.syntax-circus-fancy-topographic-background__canvas { inset: 0; opacity: .8; pointer-events: none; position: absolute; z-index: 0; }
+.syntax-circus-fancy-topographic-background[data-fancy-disabled="true"] .syntax-circus-fancy-topographic-background__canvas { display: none; }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-topographic-background__canvas { display: none; } }

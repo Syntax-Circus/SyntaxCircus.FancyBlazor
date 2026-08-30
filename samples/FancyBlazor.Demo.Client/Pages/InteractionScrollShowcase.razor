@@ -1,0 +1,75 @@
+@page "/interaction-scroll"
+@using SyntaxCircus.FancyBlazor
+
+<PageTitle>Interaction and scroll · FancyBlazor</PageTitle>
+
+<section class="demo-page kinetic-page">
+    <p class="kicker">CORE EFFECTS / INTERACTION + SCROLL</p>
+    <h1>ScrollVelocity, CompareReveal, Lens.</h1>
+    <p class="lede">A scroll-speed-reactive wrapper, a before/after comparison slider, and a pointer-following image magnifier. Each keeps its real semantic content in the document.</p>
+</section>
+
+<section class="demo-page">
+    <h2>ScrollVelocity</h2>
+    <p>Blurs and tints its content in proportion to how fast the page is scrolling right now. Scroll this page to see it react.</p>
+    <ScrollVelocity Palette="FancyPalettes.Witchlight" Sensitivity="1.2" data-testid="scroll-velocity-example">
+        <h3 class="kinetic-headline">Faster scrolling, more motion.</h3>
+    </ScrollVelocity>
+    <p>The scroll listener is bounded to when this element is on screen, and it settles back to a resting state a moment after you stop scrolling.</p>
+</section>
+
+<section class="demo-page">
+    <h2>CompareReveal</h2>
+    <p>Drag the handle, or focus it and use the arrow keys, to reveal one side against the other.</p>
+    <CompareReveal Orientation="CompareRevealOrientation.Horizontal" BeforeLabel="Muted" AfterLabel="Vivid" SnapPoints="@(new[] { 0d, 50d, 100d })" CssClass="compare-reveal-demo" data-testid="compare-reveal-example">
+        <Before>
+            <div class="compare-panel compare-panel--before">
+                <h3>Muted surface</h3>
+                <p>A calm, decorative treatment.</p>
+            </div>
+        </Before>
+        <After>
+            <div class="compare-panel compare-panel--after">
+                <h3>Vivid surface</h3>
+                <p>A saturated, decorative treatment.</p>
+            </div>
+        </After>
+    </CompareReveal>
+    <p class="kinetic-paragraph">
+        <CompareReveal Orientation="CompareRevealOrientation.Vertical" InitialPosition="35" CssClass="compare-reveal-demo" data-testid="compare-reveal-vertical-example">
+            <Before>
+                <div class="compare-panel compare-panel--before">
+                    <p>Vertical before</p>
+                </div>
+            </Before>
+            <After>
+                <div class="compare-panel compare-panel--after">
+                    <p>Vertical after</p>
+                </div>
+            </After>
+        </CompareReveal>
+    </p>
+</section>
+
+<section class="demo-page">
+    <h2>Lens</h2>
+    <p>Move your pointer over the image to magnify the region underneath it.</p>
+    <Lens ImageUrl="/images/brand/fancyblazor-marketing-640.png" Zoom="3" LensSize="180" CssClass="lens-demo" data-testid="lens-example">
+        <img src="/images/brand/fancyblazor-marketing-640.png" alt="FancyBlazor optical mark" width="640" height="640" style="display:block;height:auto;max-width:100%;" />
+    </Lens>
+</section>
+
+<section class="demo-page">
+    <h2>Reduced motion</h2>
+    <p>ScrollVelocity stops reacting and Lens stops following the pointer. CompareReveal keeps working since it is a direct manipulation, not an animation.</p>
+    <ScrollVelocity Palette="FancyPalettes.Witchlight" Disabled="@_disabled" data-testid="scroll-velocity-disabled-example">
+        <h3 class="kinetic-headline">Static when motion is unavailable.</h3>
+    </ScrollVelocity>
+    <label class="kinetic-toggle">
+        <input type="checkbox" @bind="_disabled" /> <span>Disable interaction motion (simulates prefers-reduced-motion)</span>
+    </label>
+</section>
+
+@code {
+    private bool _disabled;
+}

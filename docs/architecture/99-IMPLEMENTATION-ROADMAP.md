@@ -30,9 +30,15 @@ See [06-VALIDATION-REPORT.md](06-VALIDATION-REPORT.md) for the current evidence.
 These are candidates for later selection, not release commitments or frozen
 public APIs.
 
-- **Core:** `WordRotate`, `MorphText`, `ScrollVelocity`,
-  `CausticsBackground`, `TopographicBackground`, `RainBackground`,
-  `CompareReveal`, `Lens`, and additional composition presets.
+- **Core:** additional composition presets. `WordRotate`, `MorphText`, and
+  `Typewriter` were promoted out of the bank and shipped as a kinetic-text
+  batch. `CausticsBackground`, `TopographicBackground`, and `RainBackground`
+  were promoted out of the bank and shipped as an atmospheric Canvas batch.
+  `ScrollVelocity`, `CompareReveal`, and `Lens` were promoted out of the bank
+  and shipped as an interaction/scroll batch. A cross-component scroll
+  velocity contract — other effects consuming a shared scroll-speed signal,
+  rather than each computing their own like `ScrollVelocity` does today — was
+  considered during that batch and deferred as a distinct future candidate.
 - **WebGL:** `LiquidMetalSurface`, `IridescentBlobBackground`,
   `NebulaFieldBackground`, `PortalBackground`, `DepthGridBackground`, and
   `CrystalFieldBackground`.

@@ -1,0 +1,106 @@
+@page "/kinetic-text"
+@using SyntaxCircus.FancyBlazor
+
+<PageTitle>Kinetic text · FancyBlazor</PageTitle>
+
+<section class="demo-page kinetic-page">
+    <p class="kicker">CORE EFFECTS / KINETIC TEXT</p>
+    <h1>WordRotate, MorphText, Typewriter.</h1>
+    <p class="lede">Three decorative text effects that share a lifecycle but solve distinct problems. Each keeps the visible motion aria-hidden and exposes a visually-hidden accessible mirror.</p>
+</section>
+
+<section class="demo-page">
+    <h2>WordRotate</h2>
+    <p>Cycles through a list of headline words with a transition between each.</p>
+    <p class="kinetic-paragraph">
+        Built for
+        <WordRotate Words="@(new[] { "designers", "developers", "dreamers", "deployers" })" Interval="TimeSpan.FromSeconds(2)" Transition="WordRotateTransition.Fade" />
+        who care about the in-between.
+    </p>
+    <p class="kinetic-paragraph">
+        <WordRotate Words="@(new[] { "Compose", "Animate", "Ship" })" Interval="TimeSpan.FromSeconds(1.5)" Transition="WordRotateTransition.SlideUp" CssClass="kinetic-rotate--uppercase" />
+    </p>
+    <p class="kinetic-paragraph">
+        <WordRotate Words="@(new[] { "Focus", "Flow", "Finish" })" Interval="TimeSpan.FromSeconds(1.5)" Transition="WordRotateTransition.Blur" />
+    </p>
+</section>
+
+<section class="demo-page">
+    <h2>MorphText</h2>
+    <p>Crossfades or character-splits between strings with a visible hold between each.</p>
+    <p class="kinetic-paragraph">
+        <MorphText Words="@(new[] { "Compose", "Animate", "Ship" })" Duration="TimeSpan.FromMilliseconds(450)" Hold="TimeSpan.FromSeconds(1.1)" />
+    </p>
+    <p class="kinetic-paragraph">
+        <MorphText Words="@(new[] { "Frosted", "Faceted", "Filament" })" Mode="MorphMode.CharSplit" Hold="TimeSpan.FromSeconds(1.4)" />
+    </p>
+</section>
+
+<section class="demo-page">
+    <h2>Typewriter</h2>
+    <p>Progressively types a list of lines with an optional caret and optional delete.</p>
+    <h3 class="kinetic-headline">
+        <Typewriter Text="@(new[] { "Hello, world.", "Compose with FancyBlazor.", "Ship something fancy." })" Speed="TimeSpan.FromMilliseconds(55)" HoldAfter="TimeSpan.FromSeconds(1.2)" />
+    </h3>
+    <p class="kinetic-paragraph">
+        <Typewriter Text="@(new[] { "Type.", "Delete.", "Retype." })" Speed="TimeSpan.FromMilliseconds(60)" DeleteSpeed="TimeSpan.FromMilliseconds(30)" HoldAfter="TimeSpan.FromMilliseconds(900)" CaretCharacter="_" />
+    </p>
+    <p class="kinetic-paragraph">
+        <Typewriter Text="@(new[] { "One line, no caret." })" Caret="false" />
+    </p>
+</section>
+
+<section class="demo-page">
+    <h2>Reduced motion</h2>
+    <p>All three settle to the first word or line and stop animating.</p>
+    <p class="kinetic-paragraph">
+        <WordRotate Words="@(new[] { "Static", "Settled", "Still" })" Interval="TimeSpan.FromSeconds(2)" Disabled="@_disabled" />
+        <MorphText Words="@(new[] { "Static", "Settled", "Still" })" Hold="TimeSpan.FromSeconds(1)" Disabled="@_disabled" />
+        <Typewriter Text="@(new[] { "Static line." })" Disabled="@_disabled" />
+    </p>
+    <label class="kinetic-toggle">
+        <input type="checkbox" @bind="_disabled" /> <span>Disable kinetic motion (simulates prefers-reduced-motion)</span>
+    </label>
+</section>
+
+<section class="demo-page">
+    <h2>Composition</h2>
+    <p>WordRotate inside a Hero and a Typewriter inside a CallToAction.</p>
+    <Hero Alignment="HeroAlignment.Center" CssClass="kinetic-hero">
+        <Heading>
+            <h2>
+                <WordRotate Words="@(new[] { "Compose", "Animate", "Ship" })" Interval="TimeSpan.FromSeconds(1.8)" />
+            </h2>
+        </Heading>
+        <Subheading><p>One of three verbs, cycling on a timer.</p></Subheading>
+    </Hero>
+    <CallToAction Layout="CallToActionLayout.Inline">
+        <Heading>
+            <h3>
+                <Typewriter Text="@(new[] { "Ready when you are." })" Speed="TimeSpan.FromMilliseconds(45)" />
+            </h3>
+        </Heading>
+        <ChildContent>
+            <p>Both components compose cleanly with semantic widgets.</p>
+        </ChildContent>
+    </CallToAction>
+</section>
+
+<section class="demo-page">
+    <h2>Lifecycle</h2>
+    <p>Remove the components to verify observers and timers are released.</p>
+    <p class="kinetic-paragraph" data-testid="kinetic-lifecycle-host">
+        @if (_showLifecycle)
+        {
+            <WordRotate Words="@(new[] { "Removing", "Soon" })" Interval="TimeSpan.FromMilliseconds(500)" />
+            <Typewriter Text="@(new[] { "Type me" })" Speed="TimeSpan.FromMilliseconds(20)" />
+        }
+    </p>
+    <button type="button" data-testid="kinetic-lifecycle-toggle" @onclick="() => _showLifecycle = !_showLifecycle">@(_showLifecycle ? "Remove" : "Restore")</button>
+    <span data-testid="kinetic-lifecycle-state">@(_showLifecycle ? "mounted" : "removed")</span>
+</section>
+
+@code {
+    private bool _disabled;
+    private bool _showLifecycle = true;
+}

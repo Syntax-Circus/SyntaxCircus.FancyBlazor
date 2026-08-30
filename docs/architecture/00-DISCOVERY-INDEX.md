@@ -1,6 +1,6 @@
 # FancyBlazor Discovery Index
 
-- **Status:** Sixteen implementation phases complete; Phases 17–18 are approved pre-1.0 roadmap work
+- **Status:** Seventeen implementation phases complete; Phase 18 (1.0 Stabilization) remains the only approved pre-1.0 work
 - **Project brief:** [../PROJECT-PLAN.md](../PROJECT-PLAN.md)
 - **Requirements:** [01-REQUIREMENTS.md](01-REQUIREMENTS.md)
 - **Architecture:** [02-ARCHITECTURE.md](02-ARCHITECTURE.md)
@@ -31,6 +31,18 @@
 16. [UI Companion Foundation](PHASE-16-ui-companion-foundation.md)
 17. [Marketing and Content UI](PHASE-17-marketing-and-content-ui.md)
 18. [1.0 Stabilization](PHASE-18-1.0-stabilization.md)
+
+## Kinetic text batch (2026-08-30)
+
+A post-Phase-17 batch added `WordRotate`, `MorphText`, and `Typewriter` to the
+core catalog. All three share the existing `IFancyEffectRuntime` +
+`fancy-blazor.js` dispatcher and follow the `ScrambleText` and `NumberTicker`
+component pattern. The visible motion is `aria-hidden`; the host exposes a
+complete accessible text mirror. Each component settles to the first word or
+line and adds the `syntax-circus-fancy-kinetic-text--static` class on the host
+when `Disabled` is `true` or when the system requests reduced motion. See
+[the design spec](../superpowers/specs/2026-08-30-core-effects-kinetic-text-batch-design.md)
+and [the implementation plan](../superpowers/plans/2026-08-30-core-kinetic-text-batch.md).
 
 ## Approval record
 
