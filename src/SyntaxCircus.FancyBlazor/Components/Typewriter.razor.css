@@ -3,4 +3,5 @@
 .syntax-circus-fancy-typewriter__caret { display: inline-block; width: 0.06em; margin-left: 0.05em; color: var(--sc-fancy-typewriter-caret-color, var(--sc-fancy-palette-accent, currentColor)); animation: syntax-circus-fancy-typewriter-caret-blink var(--sc-fancy-typewriter-caret-blink-duration, 1s) steps(2, end) infinite; vertical-align: baseline; }
 .syntax-circus-fancy-typewriter[data-fancy-typewriter-caret="false"] .syntax-circus-fancy-typewriter__caret { display: none; }
 @keyframes syntax-circus-fancy-typewriter-caret-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.syntax-circus-fancy-typewriter__sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-typewriter__caret { animation: none; opacity: 1; } }

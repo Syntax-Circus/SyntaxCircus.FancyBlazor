@@ -572,42 +572,36 @@ function createWordRotate(element, initialOptions, defaults) {
     let destroyed = false;
     let index = Math.max(0, Math.floor(Number(options.startIndex) || 0));
     let lastSwapAt = 0;
-    let display = null;
+    const display = element.querySelector('.syntax-circus-fancy-word-rotate__display');
+    const srOnly = element.querySelector('.syntax-circus-fancy-word-rotate__sr-only');
     const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
     const words = () => Array.isArray(options.words) ? options.words : [];
     const reduced = () => motionReduced(defaults.motionPreference, media);
-
-    const ensureDisplay = () => {
-        if (display) return display;
-        const d = document.createElement('span');
-        d.className = 'syntax-circus-fancy-word-rotate__display';
-        d.setAttribute('aria-hidden', 'true');
-        element.append(d);
-        display = d;
-        return d;
-    };
+    const announce = (text) => { if (srOnly) srOnly.textContent = text; };
 
     const settle = () => {
         const list = words();
-        if (list.length === 0) return;
-        const d = ensureDisplay();
-        d.textContent = list[index % list.length] ?? '';
-        d.dataset.fancyState = 'idle';
-        element.setAttribute('aria-label', d.textContent);
+        if (list.length === 0 || !display) return;
+        display.textContent = list[index % list.length] ?? '';
+        display.dataset.fancyState = 'idle';
+        announce(display.textContent);
     };
 
     const applyTransition = (next) => {
-        const d = ensureDisplay();
+        if (!display) return;
         const transition = String(options.transition || 'fade');
-        d.dataset.fancyTransition = transition;
-        d.dataset.fancyState = 'out';
-        const cleanup = () => {
-            d.textContent = next;
-            d.dataset.fancyState = 'in';
-            element.setAttribute('aria-label', next);
-            d.removeEventListener('transitionend', cleanup);
+        display.dataset.fancyTransition = transition;
+        display.dataset.fancyState = 'out';
+        if (timer !== null) clearTimeout(timer);
+        const finish = () => {
+            if (timer !== null) { clearTimeout(timer); timer = null; }
+            display.textContent = next;
+            display.dataset.fancyState = 'in';
+            announce(next);
+            display.removeEventListener('transitionend', finish);
         };
-        d.addEventListener('transitionend', cleanup, { once: true });
+        display.addEventListener('transitionend', finish, { once: true });
+        timer = setTimeout(finish, 400);
     };
 
     const tick = (now) => {
@@ -627,19 +621,17 @@ function createWordRotate(element, initialOptions, defaults) {
     const configure = () => {
         observer?.disconnect(); observer = null;
         if (frame !== null) cancelAnimationFrame(frame);
-        if (timer !== null) clearTimeout(timer);
-        display?.remove();
-        display = null;
+        if (timer !== null) { clearTimeout(timer); timer = null; }
+        if (!display) return;
         const list = words();
         if (list.length === 0) return;
         if (reduced() || list.length < 2) { settle(); return; }
         index = Math.min(index, list.length - 1);
         const initial = list[index];
-        const d = ensureDisplay();
-        d.textContent = initial;
-        d.dataset.fancyTransition = String(options.transition || 'fade');
-        d.dataset.fancyState = 'in';
-        element.setAttribute('aria-label', initial);
+        display.textContent = initial;
+        display.dataset.fancyTransition = String(options.transition || 'fade');
+        display.dataset.fancyState = 'in';
+        announce(initial);
         observer = new IntersectionObserver(entries => {
             for (const entry of entries) {
                 if (!entry.isIntersecting) { if (frame !== null) { cancelAnimationFrame(frame); frame = null; } }
@@ -663,11 +655,10 @@ function createWordRotate(element, initialOptions, defaults) {
             if (timer !== null) clearTimeout(timer);
             observer?.disconnect();
             media?.removeEventListener('change', mediaHandler);
-            display?.remove();
-            display = null;
             const list = words();
-            element.textContent = list.length > 0 ? (list[0] ?? '') : '';
-            element.removeAttribute('aria-label');
+            const first = list.length > 0 ? (list[0] ?? '') : '';
+            if (display) { display.textContent = first; delete display.dataset.fancyState; delete display.dataset.fancyTransition; }
+            announce(first);
         },
     };
 }
@@ -681,28 +672,22 @@ function createMorphText(element, initialOptions, defaults) {
     let index = Math.max(0, Math.floor(Number(options.startIndex) || 0));
     let phase = 'hold';
     let phaseStart = 0;
-    let front = null;
-    let back = null;
+    const front = element.querySelector('[data-fancy-layer="front"]');
+    const back = element.querySelector('[data-fancy-layer="back"]');
+    const srOnly = element.querySelector('.syntax-circus-fancy-morph-text__sr-only');
     const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
     const words = () => Array.isArray(options.words) ? options.words : [];
     const reduced = () => motionReduced(defaults.motionPreference, media);
-
-    const ensureLayer = () => {
-        const layer = document.createElement('span');
-        layer.className = 'syntax-circus-fancy-morph-text__layer';
-        layer.setAttribute('aria-hidden', 'true');
-        element.append(layer);
-        return layer;
-    };
+    const announce = (text) => { if (srOnly) srOnly.textContent = text; };
 
     const settle = () => {
         const list = words();
-        if (list.length === 0) return;
-        front?.remove(); back?.remove();
-        front = ensureLayer();
+        if (list.length === 0 || !front || !back) return;
         front.textContent = list[index % list.length] ?? '';
-        element.setAttribute('aria-label', front.textContent);
         front.dataset.fancyState = 'in';
+        back.textContent = '';
+        back.dataset.fancyState = 'idle';
+        announce(front.textContent);
     };
 
     const tick = (now) => {
@@ -717,17 +702,20 @@ function createMorphText(element, initialOptions, defaults) {
             back.textContent = next;
             back.dataset.fancyState = 'in';
             front.dataset.fancyState = 'out';
+            if (timer !== null) clearTimeout(timer);
             const onEnd = () => {
+                if (timer !== null) { clearTimeout(timer); timer = null; }
                 front.textContent = next;
                 front.dataset.fancyState = 'in';
                 back.dataset.fancyState = 'idle';
-                element.setAttribute('aria-label', next);
+                announce(next);
                 index = nextIndex;
                 phase = 'hold';
                 phaseStart = performance.now();
                 front.removeEventListener('transitionend', onEnd);
             };
             front.addEventListener('transitionend', onEnd, { once: true });
+            timer = setTimeout(onEnd, 400);
             phase = 'morph';
             phaseStart = now;
         } else if (phase === 'morph' && now - phaseStart >= duration) {
@@ -740,19 +728,16 @@ function createMorphText(element, initialOptions, defaults) {
     const configure = () => {
         observer?.disconnect(); observer = null;
         if (frame !== null) cancelAnimationFrame(frame);
-        if (timer !== null) clearTimeout(timer);
-        front?.remove(); back?.remove();
-        front = null; back = null;
+        if (timer !== null) { clearTimeout(timer); timer = null; }
+        if (!front || !back) return;
         const list = words();
         if (list.length === 0) return;
         if (reduced() || list.length < 2) { settle(); return; }
         index = Math.min(index, list.length - 1);
         const initial = list[index];
-        front = ensureLayer();
-        back = ensureLayer();
         front.textContent = initial; front.dataset.fancyState = 'in';
         back.textContent = initial; back.dataset.fancyState = 'idle';
-        element.setAttribute('aria-label', initial);
+        announce(initial);
         observer = new IntersectionObserver(entries => {
             for (const entry of entries) {
                 if (!entry.isIntersecting) { if (frame !== null) { cancelAnimationFrame(frame); frame = null; } }
@@ -776,11 +761,11 @@ function createMorphText(element, initialOptions, defaults) {
             if (timer !== null) clearTimeout(timer);
             observer?.disconnect();
             media?.removeEventListener('change', mediaHandler);
-            front?.remove(); back?.remove();
-            front = null; back = null;
             const list = words();
-            element.textContent = list.length > 0 ? (list[0] ?? '') : '';
-            element.removeAttribute('aria-label');
+            const first = list.length > 0 ? (list[0] ?? '') : '';
+            if (front) { front.textContent = first; front.dataset.fancyState = 'in'; }
+            if (back) { back.textContent = ''; back.dataset.fancyState = 'idle'; }
+            announce(first);
         },
     };
 }
@@ -789,55 +774,37 @@ function createTypewriter(element, initialOptions, defaults) {
     let options = initialOptions;
     let observer = null;
     let frame = null;
-    let timer = null;
     let destroyed = false;
     let index = Math.max(0, Math.floor(Number(options.startIndex) || 0));
     let phase = 'typing';
     let phaseStart = 0;
     let charIndex = 0;
-    let textEl = null;
-    let caretEl = null;
+    const textEl = element.querySelector('.syntax-circus-fancy-typewriter__text');
+    const srOnly = element.querySelector('.syntax-circus-fancy-typewriter__sr-only');
     const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
     const lines = () => Array.isArray(options.text) ? options.text : [];
     const reduced = () => motionReduced(defaults.motionPreference, media);
 
-    const ensureElements = () => {
-        if (textEl) return;
-        textEl = document.createElement('span');
-        textEl.className = 'syntax-circus-fancy-typewriter__text';
-        textEl.setAttribute('aria-hidden', 'true');
-        element.append(textEl);
-        if (options.caret !== false) {
-            caretEl = document.createElement('span');
-            caretEl.className = 'syntax-circus-fancy-typewriter__caret';
-            caretEl.setAttribute('aria-hidden', 'true');
-            element.append(caretEl);
-        }
-    };
-
     const syncAccessible = () => {
         const list = lines();
-        if (list.length === 0) return;
-        element.setAttribute('aria-label', list[index % list.length] ?? '');
+        if (list.length === 0 || !srOnly) return;
+        srOnly.textContent = list[index % list.length] ?? '';
     };
 
     const settle = () => {
         const list = lines();
-        if (list.length === 0) return;
-        ensureElements();
-        const initial = list[index % list.length] ?? '';
-        textEl.textContent = initial;
+        if (list.length === 0 || !textEl) return;
+        textEl.textContent = list[index % list.length] ?? '';
         syncAccessible();
     };
 
     const advanceLine = (list) => {
         if (index + 1 >= list.length) {
             if (options.loop === false) {
-                frame = null;
                 const finalText = list[index % list.length] ?? '';
                 textEl.textContent = finalText;
                 syncAccessible();
-                return;
+                return false;
             }
             index = 0;
         } else {
@@ -847,10 +814,11 @@ function createTypewriter(element, initialOptions, defaults) {
         phase = 'typing';
         charIndex = 0;
         phaseStart = performance.now();
+        return true;
     };
 
     const tick = (now) => {
-        if (destroyed) return;
+        if (destroyed || !textEl) return;
         const list = lines();
         if (list.length === 0) { frame = null; return; }
         const speed = Math.max(1, Number(options.speed) || 1);
@@ -872,7 +840,7 @@ function createTypewriter(element, initialOptions, defaults) {
         } else if (phase === 'holdAfter') {
             if (now - phaseStart >= holdAfter) {
                 if (charIndex > 0 && options.deleteSpeed !== null) { phase = 'deleting'; phaseStart = now; }
-                else { advanceLine(list); }
+                else if (!advanceLine(list)) { frame = null; return; }
             }
         } else if (phase === 'deleting') {
             if (charIndex > 0) {
@@ -881,9 +849,7 @@ function createTypewriter(element, initialOptions, defaults) {
                     textEl.textContent = chars.slice(0, charIndex).join('');
                     phaseStart = now;
                 }
-            } else {
-                advanceLine(list);
-            }
+            } else if (!advanceLine(list)) { frame = null; return; }
         }
         frame = requestAnimationFrame(tick);
     };
@@ -891,14 +857,11 @@ function createTypewriter(element, initialOptions, defaults) {
     const configure = () => {
         observer?.disconnect(); observer = null;
         if (frame !== null) cancelAnimationFrame(frame);
-        if (timer !== null) clearTimeout(timer);
-        textEl?.remove(); caretEl?.remove();
-        textEl = null; caretEl = null;
+        if (!textEl) return;
         const list = lines();
         if (list.length === 0) return;
         if (reduced()) { settle(); return; }
         index = Math.min(index, list.length - 1);
-        ensureElements();
         textEl.textContent = '';
         charIndex = 0;
         phase = 'typing';
@@ -924,14 +887,12 @@ function createTypewriter(element, initialOptions, defaults) {
         destroy() {
             destroyed = true;
             if (frame !== null) cancelAnimationFrame(frame);
-            if (timer !== null) clearTimeout(timer);
             observer?.disconnect();
             media?.removeEventListener('change', mediaHandler);
-            textEl?.remove(); caretEl?.remove();
-            textEl = null; caretEl = null;
             const list = lines();
-            element.textContent = list.length > 0 ? (list[0] ?? '') : '';
-            element.removeAttribute('aria-label');
+            const first = list.length > 0 ? (list[0] ?? '') : '';
+            if (textEl) textEl.textContent = first;
+            if (srOnly) srOnly.textContent = first;
         },
     };
 }

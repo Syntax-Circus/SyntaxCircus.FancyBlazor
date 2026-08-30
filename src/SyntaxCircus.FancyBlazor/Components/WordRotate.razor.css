@@ -5,4 +5,5 @@
 .syntax-circus-fancy-word-rotate[data-fancy-word-rotate-transition="slide-up"] .syntax-circus-fancy-word-rotate__display[data-fancy-state="out"] { transform: translateY(0.5em); }
 .syntax-circus-fancy-word-rotate[data-fancy-word-rotate-transition="slide-down"] .syntax-circus-fancy-word-rotate__display[data-fancy-state="out"] { transform: translateY(-0.5em); }
 .syntax-circus-fancy-word-rotate[data-fancy-word-rotate-transition="blur"] .syntax-circus-fancy-word-rotate__display[data-fancy-state="out"] { filter: blur(6px); }
+.syntax-circus-fancy-word-rotate__sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-word-rotate__display { transition: none; } }

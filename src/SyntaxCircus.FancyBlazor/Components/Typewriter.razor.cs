@@ -26,8 +26,9 @@ public partial class Typewriter : ComponentBase, IAsyncDisposable
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public string? CssClass { get; set; }
     [Parameter] public string? Style { get; set; }
-    [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CurrentLine => Text.Count == 0 ? string.Empty : Text[Math.Clamp(StartIndex, 0, Text.Count - 1)];
 
     private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose(
         Disabled ? "syntax-circus-fancy-typewriter syntax-circus-fancy-kinetic-text--static" : "syntax-circus-fancy-typewriter",

@@ -1,2 +1,5 @@
 @namespace SyntaxCircus.FancyBlazor
-<span @ref="_element" @attributes="RootAttributes"></span>
+<span @ref="_element" @attributes="RootAttributes"><span class="syntax-circus-fancy-typewriter__text" aria-hidden="true"></span>@if (Caret)
+    {
+        <span class="syntax-circus-fancy-typewriter__caret" aria-hidden="true"></span>
+    }<span class="syntax-circus-fancy-typewriter__sr-only" aria-live="off">@CurrentLine</span></span>

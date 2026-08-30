@@ -4,4 +4,5 @@
 .syntax-circus-fancy-morph-text__layer[data-fancy-state="out"] { opacity: 0; transform: translateY(-0.25em); }
 .syntax-circus-fancy-morph-text__layer[data-fancy-state="idle"] { opacity: 0; transform: translateY(0.25em); }
 .syntax-circus-fancy-morph-text[data-fancy-morph-mode="char-split"] .syntax-circus-fancy-morph-text__layer[data-fancy-state="in"] { color: var(--sc-fancy-palette-accent, currentColor); }
+.syntax-circus-fancy-morph-text__sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 @media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-morph-text__layer { transition: none; } }

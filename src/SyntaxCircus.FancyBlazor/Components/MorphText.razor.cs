@@ -24,8 +24,9 @@ public partial class MorphText : ComponentBase, IAsyncDisposable
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public string? CssClass { get; set; }
     [Parameter] public string? Style { get; set; }
-    [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
+
+    private string CurrentWord => Words.Count == 0 ? string.Empty : Words[Math.Clamp(StartIndex, 0, Words.Count - 1)];
 
     private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose(
         Disabled ? "syntax-circus-fancy-morph-text syntax-circus-fancy-kinetic-text--static" : "syntax-circus-fancy-morph-text",
