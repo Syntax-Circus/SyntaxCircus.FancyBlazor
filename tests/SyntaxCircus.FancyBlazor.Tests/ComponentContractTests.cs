@@ -429,6 +429,8 @@ public sealed class ComponentContractTests
         markup.ShouldContain("syntax-circus-fancy-word-rotate hero-rotate");
         markup.ShouldContain("data-fancy-effect=\"word-rotate\"");
         markup.ShouldContain("data-fancy-word-rotate-transition=\"slide-up\"");
+        markup.ShouldContain("Designers");
+        markup.ShouldContain("aria-live=\"polite\"");
     }
 
     [Fact]
@@ -453,6 +455,8 @@ public sealed class ComponentContractTests
         markup.ShouldContain("syntax-circus-fancy-morph-text");
         markup.ShouldContain("data-fancy-effect=\"morph-text\"");
         markup.ShouldContain("data-fancy-morph-mode=\"char-split\"");
+        markup.ShouldContain("Compose");
+        markup.ShouldContain("aria-live=\"polite\"");
     }
 
     [Fact]
@@ -478,6 +482,8 @@ public sealed class ComponentContractTests
         markup.ShouldContain("data-fancy-effect=\"typewriter\"");
         markup.ShouldContain("data-fancy-typewriter-caret=\"true\"");
         markup.ShouldContain("data-fancy-typewriter-direction=\"ltr\"");
+        markup.ShouldContain("Hello");
+        markup.ShouldContain("aria-live=\"off\"");
     }
 
     [Fact]
@@ -503,6 +509,11 @@ public sealed class ComponentContractTests
         rotate.ShouldContain("data-fancy-disabled=\"true\"");
         morph.ShouldContain("data-fancy-disabled=\"true\"");
         typewriter.ShouldContain("data-fancy-disabled=\"true\"");
+        rotate.ShouldContain("syntax-circus-fancy-word-rotate__display\" aria-hidden=\"true\"");
+        rotate.ShouldContain(">A</span>");
+        morph.ShouldContain("data-fancy-layer=\"front\"");
+        morph.ShouldContain(">A</span>");
+        typewriter.ShouldContain("Only");
     }
 
     private static BunitContext CreateContext()
