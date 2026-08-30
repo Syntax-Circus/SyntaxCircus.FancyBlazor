@@ -77,6 +77,9 @@ const factories = {
     'scroll-indicator': createScrollProgressEffect,
     'scroll-backdrop': createScrollProgressEffect,
     'press-scale': createPressScale,
+    'word-rotate': createWordRotate,
+    'morph-text': createMorphText,
+    typewriter: createTypewriter,
 };
 
 async function createShaderBackground(element, initialOptions, defaults) {
@@ -558,6 +561,378 @@ function createMarquee(element, initialOptions, defaults) {
         setDocumentVisible(visible) { documentVisible = visible; apply(); },
         hasActiveAnimationFrame() { return track?.style.animationPlayState === 'running'; },
         destroy() { destroyed = true; observer.disconnect(); element.removeEventListener('pointerenter', pointerEnter); element.removeEventListener('pointerleave', pointerLeave); media?.removeEventListener('change', mediaHandler); if (track) track.style.animationPlayState = 'paused'; },
+    };
+}
+
+function createWordRotate(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let observer = null;
+    let frame = null;
+    let timer = null;
+    let destroyed = false;
+    let index = Math.max(0, Math.floor(Number(options.startIndex) || 0));
+    let lastSwapAt = 0;
+    let display = null;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const words = () => Array.isArray(options.words) ? options.words : [];
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+
+    const ensureDisplay = () => {
+        if (display) return display;
+        const d = document.createElement('span');
+        d.className = 'syntax-circus-fancy-word-rotate__display';
+        d.setAttribute('aria-hidden', 'true');
+        element.append(d);
+        display = d;
+        return d;
+    };
+
+    const settle = () => {
+        const list = words();
+        if (list.length === 0) return;
+        const d = ensureDisplay();
+        d.textContent = list[index % list.length] ?? '';
+        d.dataset.fancyState = 'idle';
+        element.setAttribute('aria-label', d.textContent);
+    };
+
+    const applyTransition = (next) => {
+        const d = ensureDisplay();
+        const transition = String(options.transition || 'fade');
+        d.dataset.fancyTransition = transition;
+        d.dataset.fancyState = 'out';
+        const cleanup = () => {
+            d.textContent = next;
+            d.dataset.fancyState = 'in';
+            element.setAttribute('aria-label', next);
+            d.removeEventListener('transitionend', cleanup);
+        };
+        d.addEventListener('transitionend', cleanup, { once: true });
+    };
+
+    const tick = (now) => {
+        if (destroyed) return;
+        const list = words();
+        if (list.length < 2) { frame = null; return; }
+        const interval = Math.max(1, Number(options.interval) || 1);
+        if (lastSwapAt === 0) lastSwapAt = now;
+        if (now - lastSwapAt >= interval) {
+            lastSwapAt = now;
+            index = (index + 1) % list.length;
+            applyTransition(list[index]);
+        }
+        frame = requestAnimationFrame(tick);
+    };
+
+    const configure = () => {
+        observer?.disconnect(); observer = null;
+        if (frame !== null) cancelAnimationFrame(frame);
+        if (timer !== null) clearTimeout(timer);
+        display?.remove();
+        display = null;
+        const list = words();
+        if (list.length === 0) return;
+        if (reduced() || list.length < 2) { settle(); return; }
+        index = Math.min(index, list.length - 1);
+        const initial = list[index];
+        const d = ensureDisplay();
+        d.textContent = initial;
+        d.dataset.fancyTransition = String(options.transition || 'fade');
+        d.dataset.fancyState = 'in';
+        element.setAttribute('aria-label', initial);
+        observer = new IntersectionObserver(entries => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) { if (frame !== null) { cancelAnimationFrame(frame); frame = null; } }
+                else if (frame === null) { lastSwapAt = 0; frame = requestAnimationFrame(tick); }
+            }
+        }, { threshold: 0.1 });
+        observer.observe(element);
+    };
+
+    const mediaHandler = () => { if (!destroyed) configure(); };
+    media?.addEventListener('change', mediaHandler);
+    configure();
+
+    return {
+        update(next) { options = next; configure(); },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            destroyed = true;
+            if (frame !== null) cancelAnimationFrame(frame);
+            if (timer !== null) clearTimeout(timer);
+            observer?.disconnect();
+            media?.removeEventListener('change', mediaHandler);
+            display?.remove();
+            display = null;
+            const list = words();
+            element.textContent = list.length > 0 ? (list[0] ?? '') : '';
+            element.removeAttribute('aria-label');
+        },
+    };
+}
+
+function createMorphText(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let observer = null;
+    let frame = null;
+    let timer = null;
+    let destroyed = false;
+    let index = Math.max(0, Math.floor(Number(options.startIndex) || 0));
+    let phase = 'hold';
+    let phaseStart = 0;
+    let front = null;
+    let back = null;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const words = () => Array.isArray(options.words) ? options.words : [];
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+
+    const ensureLayer = () => {
+        const layer = document.createElement('span');
+        layer.className = 'syntax-circus-fancy-morph-text__layer';
+        layer.setAttribute('aria-hidden', 'true');
+        element.append(layer);
+        return layer;
+    };
+
+    const settle = () => {
+        const list = words();
+        if (list.length === 0) return;
+        front?.remove(); back?.remove();
+        front = ensureLayer();
+        front.textContent = list[index % list.length] ?? '';
+        element.setAttribute('aria-label', front.textContent);
+        front.dataset.fancyState = 'in';
+    };
+
+    const tick = (now) => {
+        if (destroyed) return;
+        const list = words();
+        if (list.length < 2) { frame = null; return; }
+        const duration = Math.max(1, Number(options.duration) || 1);
+        const hold = Math.max(0, Number(options.hold) || 0);
+        if (phase === 'hold' && now - phaseStart >= hold) {
+            const nextIndex = (index + 1) % list.length;
+            const next = list[nextIndex];
+            back.textContent = next;
+            back.dataset.fancyState = 'in';
+            front.dataset.fancyState = 'out';
+            const onEnd = () => {
+                front.textContent = next;
+                front.dataset.fancyState = 'in';
+                back.dataset.fancyState = 'idle';
+                element.setAttribute('aria-label', next);
+                index = nextIndex;
+                phase = 'hold';
+                phaseStart = performance.now();
+                front.removeEventListener('transitionend', onEnd);
+            };
+            front.addEventListener('transitionend', onEnd, { once: true });
+            phase = 'morph';
+            phaseStart = now;
+        } else if (phase === 'morph' && now - phaseStart >= duration) {
+            phase = 'hold';
+            phaseStart = now;
+        }
+        frame = requestAnimationFrame(tick);
+    };
+
+    const configure = () => {
+        observer?.disconnect(); observer = null;
+        if (frame !== null) cancelAnimationFrame(frame);
+        if (timer !== null) clearTimeout(timer);
+        front?.remove(); back?.remove();
+        front = null; back = null;
+        const list = words();
+        if (list.length === 0) return;
+        if (reduced() || list.length < 2) { settle(); return; }
+        index = Math.min(index, list.length - 1);
+        const initial = list[index];
+        front = ensureLayer();
+        back = ensureLayer();
+        front.textContent = initial; front.dataset.fancyState = 'in';
+        back.textContent = initial; back.dataset.fancyState = 'idle';
+        element.setAttribute('aria-label', initial);
+        observer = new IntersectionObserver(entries => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) { if (frame !== null) { cancelAnimationFrame(frame); frame = null; } }
+                else if (frame === null) { phase = 'hold'; phaseStart = performance.now(); frame = requestAnimationFrame(tick); }
+            }
+        }, { threshold: 0.1 });
+        observer.observe(element);
+    };
+
+    const mediaHandler = () => { if (!destroyed) configure(); };
+    media?.addEventListener('change', mediaHandler);
+    configure();
+
+    return {
+        update(next) { options = next; configure(); },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            destroyed = true;
+            if (frame !== null) cancelAnimationFrame(frame);
+            if (timer !== null) clearTimeout(timer);
+            observer?.disconnect();
+            media?.removeEventListener('change', mediaHandler);
+            front?.remove(); back?.remove();
+            front = null; back = null;
+            const list = words();
+            element.textContent = list.length > 0 ? (list[0] ?? '') : '';
+            element.removeAttribute('aria-label');
+        },
+    };
+}
+
+function createTypewriter(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let observer = null;
+    let frame = null;
+    let timer = null;
+    let destroyed = false;
+    let index = Math.max(0, Math.floor(Number(options.startIndex) || 0));
+    let phase = 'typing';
+    let phaseStart = 0;
+    let charIndex = 0;
+    let textEl = null;
+    let caretEl = null;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const lines = () => Array.isArray(options.text) ? options.text : [];
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+
+    const ensureElements = () => {
+        if (textEl) return;
+        textEl = document.createElement('span');
+        textEl.className = 'syntax-circus-fancy-typewriter__text';
+        textEl.setAttribute('aria-hidden', 'true');
+        element.append(textEl);
+        if (options.caret !== false) {
+            caretEl = document.createElement('span');
+            caretEl.className = 'syntax-circus-fancy-typewriter__caret';
+            caretEl.setAttribute('aria-hidden', 'true');
+            element.append(caretEl);
+        }
+    };
+
+    const syncAccessible = () => {
+        const list = lines();
+        if (list.length === 0) return;
+        element.setAttribute('aria-label', list[index % list.length] ?? '');
+    };
+
+    const settle = () => {
+        const list = lines();
+        if (list.length === 0) return;
+        ensureElements();
+        const initial = list[index % list.length] ?? '';
+        textEl.textContent = initial;
+        syncAccessible();
+    };
+
+    const advanceLine = (list) => {
+        if (index + 1 >= list.length) {
+            if (options.loop === false) {
+                frame = null;
+                const finalText = list[index % list.length] ?? '';
+                textEl.textContent = finalText;
+                syncAccessible();
+                return;
+            }
+            index = 0;
+        } else {
+            index++;
+        }
+        syncAccessible();
+        phase = 'typing';
+        charIndex = 0;
+        phaseStart = performance.now();
+    };
+
+    const tick = (now) => {
+        if (destroyed) return;
+        const list = lines();
+        if (list.length === 0) { frame = null; return; }
+        const speed = Math.max(1, Number(options.speed) || 1);
+        const deleteSpeed = options.deleteSpeed == null ? speed : Math.max(1, Number(options.deleteSpeed) || speed);
+        const holdAfter = Math.max(0, Number(options.holdAfter) || 0);
+        const current = list[index % list.length] ?? '';
+        const chars = Array.from(current);
+        if (phase === 'typing') {
+            if (charIndex < chars.length) {
+                if (now - phaseStart >= speed) {
+                    charIndex++;
+                    textEl.textContent = chars.slice(0, charIndex).join('');
+                    phaseStart = now;
+                }
+            } else {
+                phase = 'holdAfter';
+                phaseStart = now;
+            }
+        } else if (phase === 'holdAfter') {
+            if (now - phaseStart >= holdAfter) {
+                if (charIndex > 0 && options.deleteSpeed !== null) { phase = 'deleting'; phaseStart = now; }
+                else { advanceLine(list); }
+            }
+        } else if (phase === 'deleting') {
+            if (charIndex > 0) {
+                if (now - phaseStart >= deleteSpeed) {
+                    charIndex--;
+                    textEl.textContent = chars.slice(0, charIndex).join('');
+                    phaseStart = now;
+                }
+            } else {
+                advanceLine(list);
+            }
+        }
+        frame = requestAnimationFrame(tick);
+    };
+
+    const configure = () => {
+        observer?.disconnect(); observer = null;
+        if (frame !== null) cancelAnimationFrame(frame);
+        if (timer !== null) clearTimeout(timer);
+        textEl?.remove(); caretEl?.remove();
+        textEl = null; caretEl = null;
+        const list = lines();
+        if (list.length === 0) return;
+        if (reduced()) { settle(); return; }
+        index = Math.min(index, list.length - 1);
+        ensureElements();
+        textEl.textContent = '';
+        charIndex = 0;
+        phase = 'typing';
+        phaseStart = performance.now();
+        syncAccessible();
+        observer = new IntersectionObserver(entries => {
+            for (const entry of entries) {
+                if (!entry.isIntersecting) { if (frame !== null) { cancelAnimationFrame(frame); frame = null; } }
+                else if (frame === null) { phaseStart = performance.now(); frame = requestAnimationFrame(tick); }
+            }
+        }, { threshold: 0.1 });
+        observer.observe(element);
+    };
+
+    const mediaHandler = () => { if (!destroyed) configure(); };
+    media?.addEventListener('change', mediaHandler);
+    configure();
+
+    return {
+        update(next) { options = next; configure(); },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            destroyed = true;
+            if (frame !== null) cancelAnimationFrame(frame);
+            if (timer !== null) clearTimeout(timer);
+            observer?.disconnect();
+            media?.removeEventListener('change', mediaHandler);
+            textEl?.remove(); caretEl?.remove();
+            textEl = null; caretEl = null;
+            const list = lines();
+            element.textContent = list.length > 0 ? (list[0] ?? '') : '';
+            element.removeAttribute('aria-label');
+        },
     };
 }
 
