@@ -27,13 +27,14 @@ public partial class WordRotate : ComponentBase, IAsyncDisposable
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose(
-        "syntax-circus-fancy-word-rotate", CssClass,
+        Disabled ? "syntax-circus-fancy-word-rotate syntax-circus-fancy-kinetic-text--static" : "syntax-circus-fancy-word-rotate",
+        CssClass,
         null, Style, AdditionalAttributes,
         BuildFixedAttributes());
 
     private Dictionary<string, object> BuildFixedAttributes()
     {
-        var attrs = new Dictionary<string, object>
+        return new Dictionary<string, object>
         {
             ["data-fancy-effect"] = "word-rotate",
             ["data-fancy-disabled"] = Disabled ? "true" : "false",
@@ -46,11 +47,6 @@ public partial class WordRotate : ComponentBase, IAsyncDisposable
                 _ => "fade",
             },
         };
-        if (Disabled)
-        {
-            attrs["class"] = "syntax-circus-fancy-kinetic-text--static";
-        }
-        return attrs;
     }
 
     protected override void OnInitialized()

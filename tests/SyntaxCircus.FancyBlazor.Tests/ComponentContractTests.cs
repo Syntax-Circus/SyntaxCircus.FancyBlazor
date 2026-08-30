@@ -10,6 +10,14 @@ public sealed class ComponentContractTests
 {
     private const string ModulePath = "./_content/SyntaxCircus.FancyBlazor/js/fancy-blazor.js";
 
+    private static readonly string[] DesignersWords = { "Designers", "Developers", "Dreamers" };
+    private static readonly string[] ComposeWords = { "Compose", "Animate", "Ship" };
+    private static readonly string[] HelloWorldText = { "Hello", "World" };
+    private static readonly string[] EmptyStringArray = [];
+    private static readonly string[] OnlyWord = { "only" };
+    private static readonly string[] ABWords = { "A", "B" };
+    private static readonly string[] OnlyLine = { "Only" };
+
     [Fact]
     public void ShaderBackground_Defaults_PreserveSemanticContentAndDecorativeCanvas()
     {
@@ -405,6 +413,96 @@ public sealed class ComponentContractTests
         markup.ShouldContain("data-fancy-effect=\"number-ticker\"");
         markup.ShouldContain("syntax-circus-fancy-number-ticker__sr-only");
         markup.ShouldContain("1,234.5");
+    }
+
+    [Fact]
+    public void WordRotate_RendersSemanticHostWithAccessibleText()
+    {
+        using var context = CreateContext();
+
+        var markup = context.Render<WordRotate>(p => p
+            .Add(x => x.Words, DesignersWords)
+            .Add(x => x.Interval, TimeSpan.FromMilliseconds(750))
+            .Add(x => x.Transition, WordRotateTransition.SlideUp)
+            .Add(x => x.CssClass, "hero-rotate")).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-word-rotate hero-rotate");
+        markup.ShouldContain("data-fancy-effect=\"word-rotate\"");
+        markup.ShouldContain("data-fancy-word-rotate-transition=\"slide-up\"");
+    }
+
+    [Fact]
+    public void WordRotate_RequiresAtLeastTwoWords()
+    {
+        using var context = CreateContext();
+
+        Should.Throw<InvalidOperationException>(() => context.Render<WordRotate>(p => p.Add(x => x.Words, OnlyWord)));
+    }
+
+    [Fact]
+    public void MorphText_RendersSemanticHostWithAccessibleText()
+    {
+        using var context = CreateContext();
+
+        var markup = context.Render<MorphText>(p => p
+            .Add(x => x.Words, ComposeWords)
+            .Add(x => x.Duration, TimeSpan.FromMilliseconds(400))
+            .Add(x => x.Hold, TimeSpan.FromMilliseconds(900))
+            .Add(x => x.Mode, MorphMode.CharSplit)).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-morph-text");
+        markup.ShouldContain("data-fancy-effect=\"morph-text\"");
+        markup.ShouldContain("data-fancy-morph-mode=\"char-split\"");
+    }
+
+    [Fact]
+    public void MorphText_RequiresAtLeastTwoWords()
+    {
+        using var context = CreateContext();
+
+        Should.Throw<InvalidOperationException>(() => context.Render<MorphText>(p => p.Add(x => x.Words, EmptyStringArray)));
+    }
+
+    [Fact]
+    public void Typewriter_RendersSemanticHostWithAccessibleText()
+    {
+        using var context = CreateContext();
+
+        var markup = context.Render<Typewriter>(p => p
+            .Add(x => x.Text, HelloWorldText)
+            .Add(x => x.Speed, TimeSpan.FromMilliseconds(30))
+            .Add(x => x.CaretCharacter, "_")
+            .Add(x => x.Direction, KineticTextDirection.Ltr)).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-typewriter");
+        markup.ShouldContain("data-fancy-effect=\"typewriter\"");
+        markup.ShouldContain("data-fancy-typewriter-caret=\"true\"");
+        markup.ShouldContain("data-fancy-typewriter-direction=\"ltr\"");
+    }
+
+    [Fact]
+    public void Typewriter_RequiresAtLeastOneLine()
+    {
+        using var context = CreateContext();
+
+        Should.Throw<InvalidOperationException>(() => context.Render<Typewriter>(p => p.Add(x => x.Text, EmptyStringArray)));
+    }
+
+    [Fact]
+    public void KineticTextComponents_Disabled_AddStaticClassAndDoNotInvokeRuntime()
+    {
+        using var context = CreateContext();
+
+        var rotate = context.Render<WordRotate>(p => p.Add(x => x.Words, ABWords).Add(x => x.Disabled, true)).Markup;
+        var morph = context.Render<MorphText>(p => p.Add(x => x.Words, ABWords).Add(x => x.Disabled, true)).Markup;
+        var typewriter = context.Render<Typewriter>(p => p.Add(x => x.Text, OnlyLine).Add(x => x.Disabled, true)).Markup;
+
+        rotate.ShouldContain("syntax-circus-fancy-kinetic-text--static");
+        morph.ShouldContain("syntax-circus-fancy-kinetic-text--static");
+        typewriter.ShouldContain("syntax-circus-fancy-kinetic-text--static");
+        rotate.ShouldContain("data-fancy-disabled=\"true\"");
+        morph.ShouldContain("data-fancy-disabled=\"true\"");
+        typewriter.ShouldContain("data-fancy-disabled=\"true\"");
     }
 
     private static BunitContext CreateContext()

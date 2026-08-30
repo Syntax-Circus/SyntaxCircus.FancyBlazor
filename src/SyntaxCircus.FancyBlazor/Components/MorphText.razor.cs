@@ -28,23 +28,19 @@ public partial class MorphText : ComponentBase, IAsyncDisposable
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose(
-        "syntax-circus-fancy-morph-text", CssClass,
+        Disabled ? "syntax-circus-fancy-morph-text syntax-circus-fancy-kinetic-text--static" : "syntax-circus-fancy-morph-text",
+        CssClass,
         null, Style, AdditionalAttributes,
         BuildFixedAttributes());
 
     private Dictionary<string, object> BuildFixedAttributes()
     {
-        var attrs = new Dictionary<string, object>
+        return new Dictionary<string, object>
         {
             ["data-fancy-effect"] = "morph-text",
             ["data-fancy-disabled"] = Disabled ? "true" : "false",
             ["data-fancy-morph-mode"] = Mode == MorphMode.CharSplit ? "char-split" : "crossfade",
         };
-        if (Disabled)
-        {
-            attrs["class"] = "syntax-circus-fancy-kinetic-text--static";
-        }
-        return attrs;
     }
 
     protected override void OnInitialized()

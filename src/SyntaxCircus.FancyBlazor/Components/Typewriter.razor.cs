@@ -30,24 +30,20 @@ public partial class Typewriter : ComponentBase, IAsyncDisposable
     [Parameter(CaptureUnmatchedValues = true)] public IReadOnlyDictionary<string, object>? AdditionalAttributes { get; set; }
 
     private IReadOnlyDictionary<string, object> RootAttributes => AttributeComposer.Compose(
-        "syntax-circus-fancy-typewriter", CssClass,
+        Disabled ? "syntax-circus-fancy-typewriter syntax-circus-fancy-kinetic-text--static" : "syntax-circus-fancy-typewriter",
+        CssClass,
         null, Style, AdditionalAttributes,
         BuildFixedAttributes());
 
     private Dictionary<string, object> BuildFixedAttributes()
     {
-        var attrs = new Dictionary<string, object>
+        return new Dictionary<string, object>
         {
             ["data-fancy-effect"] = "typewriter",
             ["data-fancy-disabled"] = Disabled ? "true" : "false",
             ["data-fancy-typewriter-caret"] = Caret ? "true" : "false",
             ["data-fancy-typewriter-direction"] = Direction.ToString().ToLowerInvariant(),
         };
-        if (Disabled)
-        {
-            attrs["class"] = "syntax-circus-fancy-kinetic-text--static";
-        }
-        return attrs;
     }
 
     protected override void OnInitialized()
