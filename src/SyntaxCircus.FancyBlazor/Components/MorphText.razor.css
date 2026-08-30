@@ -1,0 +1,7 @@
+.syntax-circus-fancy-morph-text { display: inline-block; position: relative; color: var(--sc-fancy-kinetic-text-color, currentColor); min-height: 1em; }
+.syntax-circus-fancy-morph-text__layer { position: absolute; inset: 0; transition: opacity var(--sc-fancy-morph-text-duration, 320ms) var(--sc-fancy-kinetic-text-easing, cubic-bezier(0.22, 1, 0.36, 1)), transform var(--sc-fancy-morph-text-duration, 320ms) var(--sc-fancy-kinetic-text-easing, cubic-bezier(0.22, 1, 0.36, 1)); white-space: nowrap; }
+.syntax-circus-fancy-morph-text__layer[data-fancy-state="in"] { opacity: 1; transform: translateY(0); }
+.syntax-circus-fancy-morph-text__layer[data-fancy-state="out"] { opacity: 0; transform: translateY(-0.25em); }
+.syntax-circus-fancy-morph-text__layer[data-fancy-state="idle"] { opacity: 0; transform: translateY(0.25em); }
+.syntax-circus-fancy-morph-text[data-fancy-morph-mode="char-split"] .syntax-circus-fancy-morph-text__layer[data-fancy-state="in"] { color: var(--sc-fancy-palette-accent, currentColor); }
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-morph-text__layer { transition: none; } }
