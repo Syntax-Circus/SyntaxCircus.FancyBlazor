@@ -1,0 +1,18 @@
+@page "/kinetic-text"
+
+<main>
+    <p data-testid="kinetic-lifecycle-host">
+        @if (_showLifecycle)
+        {
+            <WordRotate Words="@(new[] { "Removing", "Soon" })" Interval="TimeSpan.FromMilliseconds(500)" />
+            <MorphText Words="@(new[] { "One", "Two" })" Hold="TimeSpan.FromSeconds(1)" />
+            <Typewriter Text="@(new[] { "Type me" })" Speed="TimeSpan.FromMilliseconds(20)" />
+        }
+    </p>
+    <button type="button" data-testid="kinetic-lifecycle-toggle" @onclick="() => _showLifecycle = !_showLifecycle">@(_showLifecycle ? "Remove" : "Restore")</button>
+    <span data-testid="kinetic-lifecycle-state">@(_showLifecycle ? "mounted" : "removed")</span>
+</main>
+
+@code {
+    private bool _showLifecycle = true;
+}
