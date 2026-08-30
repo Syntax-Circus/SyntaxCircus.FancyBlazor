@@ -13,8 +13,9 @@ public sealed class DemoCatalogTests
         "/background", "/expanded-effects", "/threeui-inspiration", "/core-kinetic-catalog",
         "/border", "/spatial-surfaces", "/webgl",
         "/reveal", "/tilt", "/narrative-motion",
-        "/expressive-effects", "/css-first-catalog",
-        "/interaction-feedback", "/composition-authoring",
+        "/expressive-effects", "/css-first-catalog", "/kinetic-text",
+        "/interaction-feedback",
+        "/composition-authoring",
         "/ui-companion", "/marketing",
     ];
 
