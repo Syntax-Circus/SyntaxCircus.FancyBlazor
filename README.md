@@ -63,6 +63,26 @@ No script tag, npm package, CDN, or manual stylesheet import is required.
 Before interactivity—or when WebGL is unavailable—the component displays a
 palette-derived CSS background and leaves the content usable.
 
+## Kinetic text
+
+`WordRotate`, `MorphText`, and `Typewriter` cycle, crossfade, or progressively
+type decorative text while keeping the visible motion `aria-hidden` and
+exposing a complete accessible mirror to assistive technology. They all share
+the same lifecycle as the other JS-light effects and respect
+`prefers-reduced-motion`.
+
+```razor
+<WordRotate Words="@(new[] { "Compose", "Animate", "Ship" })" Interval="TimeSpan.FromSeconds(1.5)" />
+<MorphText Words="@(new[] { "Frosted", "Faceted", "Filament" })" Mode="MorphMode.CharSplit" />
+<Typewriter Text="@(new[] { "Hello, world.", "Compose with FancyBlazor." })" />
+```
+
+See [kinetic text overview](docs/components/kinetic-text-overview.md),
+[`WordRotate`](docs/components/word-rotate.md),
+[`MorphText`](docs/components/morph-text.md), and
+[`Typewriter`](docs/components/typewriter.md) for parameter references and
+composition examples.
+
 ## Optional WebGL preview
 
 `SyntaxCircus.FancyBlazor.WebGL` is a separately installed preview companion.
@@ -178,6 +198,9 @@ may change before 1.0.
 | `NumberTicker` | JavaScript + `IntersectionObserver` | Animated numeric count-up with an always-correct accessible value |
 | `NeonText` | CSS-first | Semantic text glow and optional outline |
 | `TypeFlow` | CSS + `IntersectionObserver` | Semantic word or character entrance |
+| `WordRotate` | CSS + `IntersectionObserver` | Cycles a list of headline words with a fade/slide/blur transition while keeping the visible motion decorative |
+| `MorphText` | CSS + `IntersectionObserver` | Crossfades or character-splits between strings with a visible hold between each |
+| `Typewriter` | CSS + `IntersectionObserver` | Progressively types a list of lines with an optional caret and optional delete |
 | `StatusPulse` | CSS-first | Decorative pulse around consumer-owned content |
 | `LaunchHalo` | CSS-first | Decorative launch halo around consumer-owned content |
 | `AuroraHero`, `ReadingSurface`, `ActionCard`, `EditorialHero`, `FeaturePanel` | Composition presets | Named, typed decorative stacks around semantic child content |

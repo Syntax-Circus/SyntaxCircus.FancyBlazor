@@ -11,6 +11,18 @@ called out clearly as potentially breaking.
 
 ### Added
 
+- Add `WordRotate` to the core package: cycles a list of headline words with a
+  `Fade`/`SlideUp`/`SlideDown`/`Blur` transition while keeping the visible
+  motion decorative and exposing a complete accessible text mirror.
+- Add `MorphText` to the core package: crossfades or character-splits between
+  strings with a typed `Mode` (`Crossfade`/`CharSplit`) and a visible hold
+  between each.
+- Add `Typewriter` to the core package: progressively types a list of lines
+  with a typed `Speed`, optional `DeleteSpeed`, optional blinking caret, and
+  optional `Direction` override.
+- Add a new `KineticTextShowcase` route to the demo, linked from the primary
+  nav bar, the footer nav, the home effect-grid, and the home catalog
+  directory.
 - Add the optional `SyntaxCircus.FancyBlazor.UI` companion package with typed
   `FancyUiTheme`/`FancyUiThemes` tokens and `AddFancyBlazorUi()` registration,
   depending only on core and never pulling in WebGL.
