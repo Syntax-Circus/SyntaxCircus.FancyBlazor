@@ -303,20 +303,58 @@ function createSpotlight(element, initialOptions, defaults) {
 
 function createCompareReveal(element, initialOptions, defaults) {
     let options = initialOptions;
+    let dragging = false;
     const input = element.querySelector('.syntax-circus-fancy-compare-reveal__control');
+    const isVertical = () => options.orientation === 'vertical';
     const nearestSnap = value => {
         const points = Array.isArray(options.snapPoints) ? options.snapPoints : null;
         if (!points || points.length === 0) return value;
         return points.reduce((closest, point) => Math.abs(point - value) < Math.abs(closest - value) ? point : closest, points[0]);
     };
     const apply = value => { element.style.setProperty('--sc-fancy-compare-reveal-position', `${value}%`); };
-    const onInput = () => { if (input) apply(clamp(Number(input.value) || 0, 0, 100)); };
-    const onChange = () => {
-        if (!input) return;
-        const snapped = nearestSnap(clamp(Number(input.value) || 0, 0, 100));
-        input.value = `${snapped}`;
-        apply(snapped);
+    const setValue = (value, snap) => {
+        const clamped = clamp(Math.round(value), 0, 100);
+        const finalValue = snap ? nearestSnap(clamped) : clamped;
+        if (input) input.value = `${finalValue}`;
+        apply(finalValue);
     };
+    const valueFromPoint = (clientX, clientY) => {
+        const rect = element.getBoundingClientRect();
+        const ratio = isVertical()
+            ? (clientY - rect.top) / Math.max(rect.height, 1)
+            : (clientX - rect.left) / Math.max(rect.width, 1);
+        return clamp(ratio, 0, 1) * 100;
+    };
+    const onPointerDown = event => {
+        if (!input || input.disabled) return;
+        dragging = true;
+        input.focus();
+        input.setPointerCapture?.(event.pointerId);
+        setValue(valueFromPoint(event.clientX, event.clientY), false);
+        event.preventDefault();
+    };
+    const onPointerMove = event => { if (dragging) setValue(valueFromPoint(event.clientX, event.clientY), false); };
+    const onPointerUp = event => {
+        if (!dragging) return;
+        dragging = false;
+        setValue(Number(input?.value) || 0, true);
+        input?.releasePointerCapture?.(event.pointerId);
+    };
+    const onKeyDown = event => {
+        if (!isVertical() || !input) return;
+        const current = Number(input.value) || 0;
+        if (event.key === 'ArrowDown') { event.preventDefault(); setValue(current + 1, false); }
+        else if (event.key === 'ArrowUp') { event.preventDefault(); setValue(current - 1, false); }
+        else if (event.key === 'PageDown') { event.preventDefault(); setValue(current + 10, false); }
+        else if (event.key === 'PageUp') { event.preventDefault(); setValue(current - 10, false); }
+    };
+    const onInput = () => { if (input && !dragging) apply(clamp(Number(input.value) || 0, 0, 100)); };
+    const onChange = () => { if (input && !dragging) setValue(Number(input.value) || 0, true); };
+    input?.addEventListener('pointerdown', onPointerDown);
+    input?.addEventListener('pointermove', onPointerMove);
+    input?.addEventListener('pointerup', onPointerUp);
+    input?.addEventListener('pointercancel', onPointerUp);
+    input?.addEventListener('keydown', onKeyDown);
     input?.addEventListener('input', onInput);
     input?.addEventListener('change', onChange);
     if (input) apply(clamp(Number(input.value) || 0, 0, 100));
@@ -324,7 +362,15 @@ function createCompareReveal(element, initialOptions, defaults) {
         update(next) { options = next; },
         setDocumentVisible() {},
         hasActiveAnimationFrame() { return false; },
-        destroy() { input?.removeEventListener('input', onInput); input?.removeEventListener('change', onChange); },
+        destroy() {
+            input?.removeEventListener('pointerdown', onPointerDown);
+            input?.removeEventListener('pointermove', onPointerMove);
+            input?.removeEventListener('pointerup', onPointerUp);
+            input?.removeEventListener('pointercancel', onPointerUp);
+            input?.removeEventListener('keydown', onKeyDown);
+            input?.removeEventListener('input', onInput);
+            input?.removeEventListener('change', onChange);
+        },
     };
 }
 

@@ -12,6 +12,6 @@
 .syntax-circus-fancy-compare-reveal__label--before { left: .6rem; }
 .syntax-circus-fancy-compare-reveal__label--after { right: .6rem; }
 .syntax-circus-fancy-compare-reveal__control { appearance: none; -webkit-appearance: none; background: transparent; cursor: ew-resize; height: 100%; inset: 0; margin: 0; opacity: 0; position: absolute; width: 100%; z-index: 4; }
-.syntax-circus-fancy-compare-reveal[data-fancy-compare-reveal-orientation="vertical"] .syntax-circus-fancy-compare-reveal__control { cursor: ns-resize; direction: rtl; writing-mode: vertical-lr; }
+.syntax-circus-fancy-compare-reveal[data-fancy-compare-reveal-orientation="vertical"] .syntax-circus-fancy-compare-reveal__control { cursor: ns-resize; }
 .syntax-circus-fancy-compare-reveal[data-fancy-disabled="true"] .syntax-circus-fancy-compare-reveal__control { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-compare-reveal__handle, .syntax-circus-fancy-compare-reveal__before { transition: none !important; } }

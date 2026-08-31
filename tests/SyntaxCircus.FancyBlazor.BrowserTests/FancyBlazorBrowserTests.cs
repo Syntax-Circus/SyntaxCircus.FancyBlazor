@@ -1596,7 +1596,7 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await using var context = await fixture.Browser.NewContextAsync();
         var page = await context.NewPageAsync();
         await page.GotoAsync($"{fixture.TestHostUrl}/interaction-scroll");
-        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 4");
 
         var control = page.Locator("[data-testid='compare-reveal-example'] .syntax-circus-fancy-compare-reveal__control");
         await control.FocusAsync();
@@ -1604,6 +1604,27 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         await control.PressAsync("ArrowRight");
         var position = await page.Locator("[data-testid='compare-reveal-example']").EvaluateAsync<string>("element => getComputedStyle(element).getPropertyValue('--sc-fancy-compare-reveal-position')");
         position.ShouldNotBe(" 50%");
+
+        // Regression coverage: dragging down (or pressing ArrowDown) on a Vertical CompareReveal
+        // must increase the revealed position, matching the direction the pointer/key actually moved.
+        var verticalHost = page.Locator("[data-testid='compare-reveal-vertical-example']");
+        var verticalControl = verticalHost.Locator(".syntax-circus-fancy-compare-reveal__control");
+        await verticalControl.FocusAsync();
+        await verticalControl.PressAsync("ArrowDown");
+        var afterArrowDown = await verticalHost.EvaluateAsync<double>("element => parseFloat(getComputedStyle(element).getPropertyValue('--sc-fancy-compare-reveal-position'))");
+        afterArrowDown.ShouldBeGreaterThan(50);
+
+        var verticalBox = await verticalHost.BoundingBoxAsync();
+        verticalBox.ShouldNotBeNull();
+        var centerX = (float)(verticalBox!.X + verticalBox.Width / 2);
+        var topY = (float)(verticalBox.Y + verticalBox.Height * .1);
+        var bottomY = (float)(verticalBox.Y + verticalBox.Height * .9);
+        await page.Mouse.MoveAsync(centerX, topY);
+        await page.Mouse.DownAsync();
+        await page.Mouse.MoveAsync(centerX, bottomY);
+        await page.Mouse.UpAsync();
+        var afterDragDown = await verticalHost.EvaluateAsync<double>("element => parseFloat(getComputedStyle(element).getPropertyValue('--sc-fancy-compare-reveal-position'))");
+        afterDragDown.ShouldBeGreaterThan(afterArrowDown);
 
         var lens = page.Locator("[data-testid='lens-example']");
         var lensBox = await lens.BoundingBoxAsync();

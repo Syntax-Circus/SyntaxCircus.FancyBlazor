@@ -2,9 +2,13 @@
 
 <main>
     <ScrollVelocity data-testid="scroll-velocity-example"><h2>Fast content</h2></ScrollVelocity>
-    <CompareReveal SnapPoints="@(new[] { 0d, 50d, 100d })" data-testid="compare-reveal-example">
+    <CompareReveal SnapPoints="@(new[] { 0d, 50d, 100d })" Style="height:200px" data-testid="compare-reveal-example">
         <Before><article>Before content</article></Before>
         <After><article>After content</article></After>
+    </CompareReveal>
+    <CompareReveal Orientation="CompareRevealOrientation.Vertical" Style="height:200px" data-testid="compare-reveal-vertical-example">
+        <Before><article>Vertical before content</article></Before>
+        <After><article>Vertical after content</article></After>
     </CompareReveal>
     <Lens ImageUrl="/images/lens-example.png" data-testid="lens-example"><img src="/images/lens-example.png" alt="Lens example" /></Lens>
 </main>
