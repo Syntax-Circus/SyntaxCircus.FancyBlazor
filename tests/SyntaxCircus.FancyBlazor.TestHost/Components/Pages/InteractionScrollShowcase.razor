@@ -1,0 +1,10 @@
+@page "/interaction-scroll"
+
+<main>
+    <ScrollVelocity data-testid="scroll-velocity-example"><h2>Fast content</h2></ScrollVelocity>
+    <CompareReveal SnapPoints="@(new[] { 0d, 50d, 100d })" data-testid="compare-reveal-example">
+        <Before><article>Before content</article></Before>
+        <After><article>After content</article></After>
+    </CompareReveal>
+    <Lens ImageUrl="/images/lens-example.png" data-testid="lens-example"><img src="/images/lens-example.png" alt="Lens example" /></Lens>
+</main>

@@ -14,7 +14,7 @@ public sealed class DemoCatalogTests
         "/border", "/spatial-surfaces", "/webgl",
         "/reveal", "/tilt", "/narrative-motion",
         "/expressive-effects", "/css-first-catalog", "/kinetic-text",
-        "/interaction-feedback",
+        "/interaction-feedback", "/interaction-scroll",
         "/composition-authoring",
         "/ui-companion", "/marketing",
     ];

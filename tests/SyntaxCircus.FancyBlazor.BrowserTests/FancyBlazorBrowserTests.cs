@@ -1581,6 +1581,38 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task InteractionScrollShowcase_RendersAndRespondsToInteraction()
+    {
+        using var client = new HttpClient();
+        var html = await client.GetStringAsync($"{fixture.TestHostUrl}/interaction-scroll", TestContext.Current.CancellationToken);
+        html.ShouldContain("syntax-circus-fancy-scroll-velocity");
+        html.ShouldContain("syntax-circus-fancy-compare-reveal");
+        html.ShouldContain("syntax-circus-fancy-lens");
+
+        var home = await client.GetStringAsync($"{fixture.TestHostUrl}/", TestContext.Current.CancellationToken);
+        var occurrences = System.Text.RegularExpressions.Regex.Count(home, "href=\"/interaction-scroll\"");
+        occurrences.ShouldBeGreaterThanOrEqualTo(3);
+
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/interaction-scroll");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+
+        var control = page.Locator("[data-testid='compare-reveal-example'] .syntax-circus-fancy-compare-reveal__control");
+        await control.FocusAsync();
+        await control.PressAsync("ArrowRight");
+        await control.PressAsync("ArrowRight");
+        var position = await page.Locator("[data-testid='compare-reveal-example']").EvaluateAsync<string>("element => getComputedStyle(element).getPropertyValue('--sc-fancy-compare-reveal-position')");
+        position.ShouldNotBe(" 50%");
+
+        var lens = page.Locator("[data-testid='lens-example']");
+        var lensBox = await lens.BoundingBoxAsync();
+        lensBox.ShouldNotBeNull();
+        await page.Mouse.MoveAsync((float)(lensBox!.X + lensBox.Width / 2), (float)(lensBox.Y + lensBox.Height / 2));
+        await page.WaitForFunctionAsync("() => parseFloat(getComputedStyle(document.querySelector(\"[data-testid='lens-example'] .syntax-circus-fancy-lens__glass\")).opacity) >= 0.99");
+    }
+
+    [Fact]
     public async Task ReducedMotionPages_ProduceNonEmptyDeterministicVisualArtifacts()
     {
         await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions

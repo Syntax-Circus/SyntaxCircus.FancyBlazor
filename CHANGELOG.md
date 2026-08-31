@@ -32,6 +32,16 @@ called out clearly as potentially breaking.
 - Add a new `AtmosphericBackgrounds` route to the demo, linked from the
   primary nav bar, the footer nav, the home effect-grid, and the home catalog
   directory.
+- Add `ScrollVelocity` to the core package: blurs and tints semantic content
+  in proportion to how fast the page is currently scrolling.
+- Add `CompareReveal` to the core package: reveals one of two pieces of
+  content against the other via a native range input, with an `Orientation`,
+  optional caption labels, and optional snap points.
+- Add `Lens` to the core package: a decorative pointer-following magnified
+  view of a background image over semantic content.
+- Add a new `InteractionScrollShowcase` route to the demo, linked from the
+  primary nav bar, the footer nav, the home effect-grid, and the home catalog
+  directory.
 - Add the optional `SyntaxCircus.FancyBlazor.UI` companion package with typed
   `FancyUiTheme`/`FancyUiThemes` tokens and `AddFancyBlazorUi()` registration,
   depending only on core and never pulling in WebGL.

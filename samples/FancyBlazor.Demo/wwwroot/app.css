@@ -172,6 +172,12 @@ code { color: #c8d4e2; font: .78rem/1.5 ui-monospace, "SFMono-Regular", Consolas
 .narrative-copy .primary-action { justify-self: start; margin-top: .5rem; }
 .narrative-reading { background: #0b1727; border: 1px solid var(--line); border-radius: 24px; padding: clamp(2rem, 6vw, 4rem); }
 .narrative-reading article { display: grid; gap: 1rem; }
+.compare-reveal-demo { border: 1px solid var(--line); border-radius: 20px; margin-bottom: 1.5rem; min-height: 320px; }
+.compare-reveal-demo[data-fancy-compare-reveal-orientation="vertical"] { min-height: 420px; }
+.compare-panel { align-items: center; display: flex; flex-direction: column; height: 100%; justify-content: center; text-align: center; }
+.compare-panel--before { background: #1b2436; color: #c9d3e0; }
+.compare-panel--after { background: linear-gradient(135deg, #7c3aed, #22d3ee); color: #0b1120; }
+.lens-demo { max-width: 480px; }
 .feedback-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .feedback-card { background: #0b1727; border: 1px solid var(--line); border-radius: 20px; min-height: 280px; }
 .feedback-card a, .feedback-card button, .feedback-card label { align-content: center; appearance: none; background: transparent; border: 0; box-sizing: border-box; color: inherit; cursor: pointer; display: grid; gap: .9rem; min-height: 280px; padding: 2rem; text-align: left; text-decoration: none; width: 100%; }

@@ -102,6 +102,24 @@ See [`CausticsBackground`](docs/components/caustics-background.md),
 [`RainBackground`](docs/components/rain-background.md) for parameter
 references and composition examples.
 
+## Interaction and scroll
+
+`ScrollVelocity` reacts to scroll speed, `CompareReveal` reveals one piece of
+content against another by dragging a handle, and `Lens` shows a
+pointer-following magnified view of an image over semantic content.
+
+```razor
+<CompareReveal BeforeLabel="Muted" AfterLabel="Vivid">
+    <Before><img src="/images/before.jpg" alt="Before" /></Before>
+    <After><img src="/images/after.jpg" alt="After" /></After>
+</CompareReveal>
+```
+
+See [`ScrollVelocity`](docs/components/scroll-velocity.md),
+[`CompareReveal`](docs/components/compare-reveal.md), and
+[`Lens`](docs/components/lens.md) for parameter references and composition
+examples.
+
 ## Optional WebGL preview
 
 `SyntaxCircus.FancyBlazor.WebGL` is a separately installed preview companion.
@@ -195,6 +213,9 @@ may change before 1.0.
 | `ScrollScene` | CSS + scroll JavaScript | Continuous in-flow semantic section treatment |
 | `ScrollIndicator` | CSS + scroll JavaScript | Decorative local reading-progress line |
 | `ScrollBackdrop` | CSS + scroll JavaScript | Palette-derived local scroll backdrop |
+| `ScrollVelocity` | CSS + scroll JavaScript | Scroll-speed-reactive blur and tint |
+| `CompareReveal` | CSS + native range input | Before/after content reveal with a draggable handle |
+| `Lens` | CSS + pointer JavaScript | Pointer-following magnified image view |
 | `HoverLift` | CSS-first | Fine-pointer hover elevation around existing content |
 | `PressScale` | CSS + activation JavaScript | Pointer and keyboard press response around existing content |
 | `FocusHalo` | CSS-first | Additive focus halo around focused child content |
