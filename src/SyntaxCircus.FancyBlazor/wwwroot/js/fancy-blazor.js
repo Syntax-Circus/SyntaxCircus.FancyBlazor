@@ -69,6 +69,9 @@ const factories = {
     'flicker-grid': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'flicker-grid'),
     'meteor-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'meteor'),
     'light-rays-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'light-rays'),
+    'caustics-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'caustics'),
+    'topographic-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'topographic'),
+    'rain-background': (element, options, defaults) => createCanvasAtmosphere(element, options, defaults, 'rain'),
     'type-flow': createTextReveal,
     'scramble-text': createScrambleText,
     marquee: createMarquee,
@@ -1050,7 +1053,10 @@ function createCanvasAtmosphere(element, initialOptions, defaults, kind) {
         else if (kind === 'arc-flow') drawArcFlow(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
         else if (kind === 'flicker-grid') drawFlickerGrid(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
         else if (kind === 'meteor') drawMeteors(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
-        else drawLightRays(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else if (kind === 'light-rays') drawLightRays(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else if (kind === 'caustics') drawCaustics(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else if (kind === 'topographic') drawTopographic(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
+        else drawRain(context, particles, rect, now, speed, colors, clamp(options.intensity, 0, 1));
         frame = requestAnimationFrame(draw);
     };
     const start = () => {
@@ -1078,9 +1084,67 @@ function createCanvasAtmosphere(element, initialOptions, defaults, kind) {
 function createAtmosphereParticles(rect, count, kind) {
     return Array.from({ length: count }, (_, index) => ({
         x: Math.random() * Math.max(rect.width, 1), y: Math.random() * Math.max(rect.height, 1),
-        radius: kind === 'constellation' ? 1 + Math.random() * 1.5 : 24 + Math.random() * 80,
+        radius: kind === 'constellation' ? 1 + Math.random() * 1.5 : kind === 'rain' ? 1 + Math.random() * 2 : 24 + Math.random() * 80,
         phase: Math.random() * Math.PI * 2, drift: .3 + Math.random() * .7, color: index % 3,
     }));
+}
+
+function drawCaustics(context, particles, rect, now, speed, colors, intensity) {
+    const time = now * .001 * speed;
+    for (const pool of particles) {
+        const x = pool.x + Math.sin(time * pool.drift + pool.phase) * 40;
+        const y = pool.y + Math.cos(time * pool.drift * .7 + pool.phase) * 32;
+        const radius = pool.radius * (0.85 + 0.15 * Math.sin(time * pool.drift * 1.3 + pool.phase));
+        const rgb = colors[pool.color].map(value => Math.round(value * 255)).join(',');
+        const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
+        gradient.addColorStop(0, `rgba(${rgb},${.08 + intensity * .3})`);
+        gradient.addColorStop(1, `rgba(${rgb},0)`);
+        context.fillStyle = gradient;
+        context.beginPath(); context.arc(x, y, radius, 0, Math.PI * 2); context.fill();
+    }
+}
+
+function drawTopographic(context, particles, rect, now, speed, colors, opacity) {
+    const time = now * .0006 * speed;
+    const ringCount = 5;
+    const steps = 48;
+    context.lineWidth = 1;
+    for (const peak of particles) {
+        const rgb = colors[peak.color].map(value => Math.round(value * 255)).join(',');
+        for (let ring = 1; ring <= ringCount; ring++) {
+            const baseRadius = ring * (peak.radius / ringCount);
+            context.strokeStyle = `rgba(${rgb},${opacity * (1 - ring / (ringCount + 1)) * .6})`;
+            context.beginPath();
+            for (let step = 0; step <= steps; step++) {
+                const angle = (step / steps) * Math.PI * 2;
+                const wobble = Math.sin(angle * 3 + peak.phase + time * peak.drift) * (baseRadius * .08);
+                const radius = baseRadius + wobble;
+                const x = peak.x + Math.cos(angle) * radius;
+                const y = peak.y + Math.sin(angle) * radius * .6;
+                if (step === 0) context.moveTo(x, y); else context.lineTo(x, y);
+            }
+            context.closePath();
+            context.stroke();
+        }
+    }
+}
+
+function drawRain(context, particles, rect, now, speed, colors, intensity) {
+    const time = now * .001 * speed;
+    context.lineCap = 'round';
+    for (const drop of particles) {
+        const fall = (time * 280 * (.6 + drop.drift) + drop.phase * 60) % (rect.height + 60) - 30;
+        const x = drop.x + Math.sin(drop.phase) * 6;
+        const y = fall;
+        const length = 12 + drop.radius * 4;
+        const rgb = colors[drop.color].map(value => Math.round(value * 255)).join(',');
+        const gradient = context.createLinearGradient(x, y, x - length * .12, y - length);
+        gradient.addColorStop(0, `rgba(${rgb},${.12 + intensity * .5})`);
+        gradient.addColorStop(1, `rgba(${rgb},0)`);
+        context.strokeStyle = gradient;
+        context.lineWidth = 1.25;
+        context.beginPath(); context.moveTo(x, y); context.lineTo(x - length * .12, y - length); context.stroke();
+    }
 }
 
 function drawConstellation(context, particles, rect, now, speed, colors, opacity) {

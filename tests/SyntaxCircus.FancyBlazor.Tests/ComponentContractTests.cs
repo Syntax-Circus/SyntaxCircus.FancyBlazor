@@ -375,6 +375,51 @@ public sealed class ComponentContractTests
     }
 
     [Fact]
+    public void CausticsBackground_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var caustics = context.Render<CausticsBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 999).Add(x => x.Intensity, 2)).Markup;
+
+        caustics.ShouldContain("syntax-circus-fancy-caustics-background__canvas");
+        caustics.ShouldContain("aria-hidden=\"true\"");
+        caustics.ShouldContain("--sc-fancy-caustics-density:48");
+        caustics.ShouldContain("--sc-fancy-caustics-intensity:1");
+        caustics.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
+    [Fact]
+    public void TopographicBackground_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var topographic = context.Render<TopographicBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 1).Add(x => x.Intensity, -1)).Markup;
+
+        topographic.ShouldContain("syntax-circus-fancy-topographic-background__canvas");
+        topographic.ShouldContain("aria-hidden=\"true\"");
+        topographic.ShouldContain("--sc-fancy-topographic-density:2");
+        topographic.ShouldContain("--sc-fancy-topographic-intensity:0");
+        topographic.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
+    [Fact]
+    public void RainBackground_PreservesSemanticsAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<a href=\"/next\">Continue</a>");
+
+        var rain = context.Render<RainBackground>(p => p.Add(x => x.ChildContent, content).Add(x => x.Density, 999).Add(x => x.Intensity, 2)).Markup;
+
+        rain.ShouldContain("syntax-circus-fancy-rain-background__canvas");
+        rain.ShouldContain("aria-hidden=\"true\"");
+        rain.ShouldContain("--sc-fancy-rain-density:120");
+        rain.ShouldContain("--sc-fancy-rain-intensity:1");
+        rain.ShouldContain("<a href=\"/next\">Continue</a>");
+    }
+
+    [Fact]
     public void ScrambleText_RendersSemanticElementWithAccessibleText()
     {
         using var context = CreateContext();
