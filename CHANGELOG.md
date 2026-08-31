@@ -23,6 +23,15 @@ called out clearly as potentially breaking.
 - Add a new `KineticTextShowcase` route to the demo, linked from the primary
   nav bar, the footer nav, the home effect-grid, and the home catalog
   directory.
+- Add `CausticsBackground` to the core package: a bounded Canvas 2D field of
+  drifting caustic light pools behind semantic child content.
+- Add `TopographicBackground` to the core package: a bounded Canvas 2D field
+  of slowly drifting topographic contour lines behind semantic child content.
+- Add `RainBackground` to the core package: a bounded Canvas 2D field of
+  streaking rain behind semantic child content.
+- Add a new `AtmosphericBackgrounds` route to the demo, linked from the
+  primary nav bar, the footer nav, the home effect-grid, and the home catalog
+  directory.
 - Add the optional `SyntaxCircus.FancyBlazor.UI` companion package with typed
   `FancyUiTheme`/`FancyUiThemes` tokens and `AddFancyBlazorUi()` registration,
   depending only on core and never pulling in WebGL.

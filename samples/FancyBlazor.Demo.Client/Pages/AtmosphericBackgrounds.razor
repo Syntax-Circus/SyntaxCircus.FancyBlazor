@@ -1,0 +1,39 @@
+@page "/atmospheric-backgrounds"
+@using SyntaxCircus.FancyBlazor
+
+<PageTitle>Atmospheric backgrounds · FancyBlazor</PageTitle>
+
+<section class="demo-page expressive-effects-page">
+    <p class="kicker">CORE EFFECTS / ATMOSPHERIC FIELDS</p>
+    <h1>CausticsBackground, TopographicBackground, RainBackground.</h1>
+    <p class="lede">Three bounded Canvas 2D fields that share the same lifecycle as the existing atmosphere backgrounds. Every example remains ordinary markup when motion is unavailable.</p>
+
+    <section class="gesture-grid" aria-label="Atmospheric background demonstrations">
+        <CausticsBackground CssClass="gesture-card atmosphere-card constellation-card" Palette="FancyPalettes.Glacier" Density="14" data-testid="caustics-example">
+            <article><span class="specimen-label">CANVAS / CAUSTICS</span><h2>CausticsBackground</h2><p>Drifting light pools ripple behind this semantic article.</p></article>
+        </CausticsBackground>
+        <TopographicBackground CssClass="gesture-card atmosphere-card trail-card" Palette="FancyPalettes.Viridian" Density="5" data-testid="topographic-example">
+            <article><span class="specimen-label">CANVAS / TOPOGRAPHIC</span><h2>TopographicBackground</h2><p>Slow contour lines drift behind this semantic article.</p></article>
+        </TopographicBackground>
+        <RainBackground CssClass="gesture-card atmosphere-card constellation-card" Palette="FancyPalettes.Midnight" Density="60" data-testid="rain-example">
+            <article><span class="specimen-label">CANVAS / RAIN</span><h2>RainBackground</h2><p>Streaking rain falls behind this semantic article.</p></article>
+        </RainBackground>
+    </section>
+
+    <section class="demo-page">
+        <h2>Reduced motion</h2>
+        <p>All three settle to a static palette gradient and stop drawing.</p>
+        <section class="gesture-grid" aria-label="Disabled atmospheric background demonstrations">
+            <CausticsBackground CssClass="gesture-card atmosphere-card constellation-card" Palette="FancyPalettes.Glacier" Disabled="@_disabled" data-testid="caustics-disabled-example">
+                <article><span class="specimen-label">CAUSTICS / STATIC</span><p>Static when motion is unavailable.</p></article>
+            </CausticsBackground>
+        </section>
+        <label class="kinetic-toggle">
+            <input type="checkbox" @bind="_disabled" /> <span>Disable atmospheric motion (simulates prefers-reduced-motion)</span>
+        </label>
+    </section>
+</section>
+
+@code {
+    private bool _disabled;
+}

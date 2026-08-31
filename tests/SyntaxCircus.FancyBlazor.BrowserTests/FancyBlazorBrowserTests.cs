@@ -1536,6 +1536,51 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
     }
 
     [Fact]
+    public async Task AtmosphericBackgrounds_RendersFieldsAndIsLinkedFromFourPlaces()
+    {
+        using var client = new HttpClient();
+        var html = await client.GetStringAsync($"{fixture.TestHostUrl}/atmospheric-backgrounds", TestContext.Current.CancellationToken);
+        html.ShouldContain("syntax-circus-fancy-caustics-background");
+        html.ShouldContain("syntax-circus-fancy-topographic-background");
+        html.ShouldContain("syntax-circus-fancy-rain-background");
+
+        var home = await client.GetStringAsync($"{fixture.TestHostUrl}/", TestContext.Current.CancellationToken);
+        var occurrences = System.Text.RegularExpressions.Regex.Count(home, "href=\"/atmospheric-backgrounds\"");
+        occurrences.ShouldBeGreaterThanOrEqualTo(3);
+
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/atmospheric-backgrounds");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+
+        var caustics = page.Locator("[data-testid='caustics-example']");
+        var topographic = page.Locator("[data-testid='topographic-example']");
+        var rain = page.Locator("[data-testid='rain-example']");
+        (await caustics.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await topographic.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await rain.Locator("canvas").GetAttributeAsync("aria-hidden")).ShouldBe("true");
+        (await caustics.GetAttributeAsync("data-fancy-disabled")).ShouldBe("false");
+        (await topographic.GetAttributeAsync("data-fancy-disabled")).ShouldBe("false");
+        (await rain.GetAttributeAsync("data-fancy-disabled")).ShouldBe("false");
+
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount >= 3");
+    }
+
+    [Fact]
+    public async Task AtmosphericBackgrounds_WithReducedMotion_UsesStaticFallbacks()
+    {
+        await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/atmospheric-backgrounds");
+        await page.WaitForFunctionAsync("() => globalThis.__syntaxCircusFancyBlazor?.instanceCount === 3");
+
+        (await page.Locator("[data-testid='caustics-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.Locator("[data-testid='topographic-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.Locator("[data-testid='rain-example'] canvas").EvaluateAsync<string>("element => getComputedStyle(element).display")).ShouldBe("none");
+        (await page.EvaluateAsync<int>("() => globalThis.__syntaxCircusFancyBlazor.getDiagnostics().animationFrameCount")).ShouldBe(0);
+    }
+
+    [Fact]
     public async Task ReducedMotionPages_ProduceNonEmptyDeterministicVisualArtifacts()
     {
         await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions

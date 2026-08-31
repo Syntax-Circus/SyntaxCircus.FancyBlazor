@@ -83,6 +83,25 @@ See [kinetic text overview](docs/components/kinetic-text-overview.md),
 [`Typewriter`](docs/components/typewriter.md) for parameter references and
 composition examples.
 
+## Atmospheric fields
+
+`CausticsBackground`, `TopographicBackground`, and `RainBackground` draw
+bounded Canvas 2D atmospheric fields behind semantic child content, sharing
+the same lifecycle as the other Canvas 2D backgrounds: paused offscreen,
+disposed cleanly, and replaced by a palette-derived static gradient when
+JavaScript, Canvas 2D, or motion is unavailable.
+
+```razor
+<CausticsBackground Palette="FancyPalettes.Glacier">
+    <article>Semantic content</article>
+</CausticsBackground>
+```
+
+See [`CausticsBackground`](docs/components/caustics-background.md),
+[`TopographicBackground`](docs/components/topographic-background.md), and
+[`RainBackground`](docs/components/rain-background.md) for parameter
+references and composition examples.
+
 ## Optional WebGL preview
 
 `SyntaxCircus.FancyBlazor.WebGL` is a separately installed preview companion.
@@ -193,6 +212,9 @@ may change before 1.0.
 | `FlickerGrid` | Canvas 2D + JavaScript | Bounded flickering cell grid behind real DOM |
 | `MeteorBackground` | Canvas 2D + JavaScript | Bounded streaking-meteor field behind real DOM |
 | `LightRaysBackground` | Canvas 2D + JavaScript | Bounded sweeping light-ray field behind real DOM |
+| `CausticsBackground` | Canvas 2D + JavaScript | Bounded drifting caustic light-pool field behind real DOM |
+| `TopographicBackground` | Canvas 2D + JavaScript | Bounded slowly drifting contour-line field behind real DOM |
+| `RainBackground` | Canvas 2D + JavaScript | Bounded streaking-rain field behind real DOM |
 | `ScrambleText` | CSS + `IntersectionObserver` | Semantic character-scramble text reveal |
 | `Marquee` | CSS animation + JavaScript | Seamless looping content scroll with one accessible copy |
 | `NumberTicker` | JavaScript + `IntersectionObserver` | Animated numeric count-up with an always-correct accessible value |
