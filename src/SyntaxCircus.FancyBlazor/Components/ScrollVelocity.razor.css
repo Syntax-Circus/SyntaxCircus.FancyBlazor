@@ -1,0 +1,10 @@
+.syntax-circus-fancy-scroll-velocity { position: relative; }
+.syntax-circus-fancy-scroll-velocity__content { transition: filter 120ms linear, transform 120ms linear; }
+@supports (color: color-mix(in srgb, black, white)) {
+    .syntax-circus-fancy-scroll-velocity[data-fancy-ready="true"] .syntax-circus-fancy-scroll-velocity__content {
+        filter: blur(calc(var(--sc-fancy-scroll-velocity, 0) * 3px)) saturate(calc(1 + var(--sc-fancy-scroll-velocity, 0) * .6));
+        transform: skewX(calc(var(--sc-fancy-scroll-velocity, 0) * var(--sc-fancy-scroll-direction, 0) * -4deg));
+        text-shadow: 0 0 calc(var(--sc-fancy-scroll-velocity, 0) * 6px) color-mix(in srgb, var(--sc-fancy-accent, currentColor) 60%, transparent);
+    }
+}
+@media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-scroll-velocity__content { filter: none !important; transform: none !important; text-shadow: none !important; transition: none !important; } }

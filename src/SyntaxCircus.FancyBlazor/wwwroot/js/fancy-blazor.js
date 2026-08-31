@@ -58,6 +58,8 @@ const factories = {
     reveal: createReveal,
     tilt: createTilt,
     spotlight: createSpotlight,
+    lens: createLens,
+    'compare-reveal': createCompareReveal,
     magnetic: createMagnetic,
     parallax: createParallax,
     stagger: createStagger,
@@ -79,6 +81,7 @@ const factories = {
     'scroll-scene': createScrollProgressEffect,
     'scroll-indicator': createScrollProgressEffect,
     'scroll-backdrop': createScrollProgressEffect,
+    'scroll-velocity': createScrollVelocity,
     'press-scale': createPressScale,
     'word-rotate': createWordRotate,
     'morph-text': createMorphText,
@@ -298,6 +301,73 @@ function createSpotlight(element, initialOptions, defaults) {
     return { update() {}, setDocumentVisible() {}, hasActiveAnimationFrame() { return frame !== null; }, destroy() { if (frame !== null) cancelAnimationFrame(frame); element.removeEventListener('pointermove', move); element.removeEventListener('pointerleave', reset); reset(); } };
 }
 
+function createCompareReveal(element, initialOptions, defaults) {
+    let options = initialOptions;
+    const input = element.querySelector('.syntax-circus-fancy-compare-reveal__control');
+    const nearestSnap = value => {
+        const points = Array.isArray(options.snapPoints) ? options.snapPoints : null;
+        if (!points || points.length === 0) return value;
+        return points.reduce((closest, point) => Math.abs(point - value) < Math.abs(closest - value) ? point : closest, points[0]);
+    };
+    const apply = value => { element.style.setProperty('--sc-fancy-compare-reveal-position', `${value}%`); };
+    const onInput = () => { if (input) apply(clamp(Number(input.value) || 0, 0, 100)); };
+    const onChange = () => {
+        if (!input) return;
+        const snapped = nearestSnap(clamp(Number(input.value) || 0, 0, 100));
+        input.value = `${snapped}`;
+        apply(snapped);
+    };
+    input?.addEventListener('input', onInput);
+    input?.addEventListener('change', onChange);
+    if (input) apply(clamp(Number(input.value) || 0, 0, 100));
+    return {
+        update(next) { options = next; },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return false; },
+        destroy() { input?.removeEventListener('input', onInput); input?.removeEventListener('change', onChange); },
+    };
+}
+
+function createLens(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let frame = null;
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const glass = element.querySelector('.syntax-circus-fancy-lens__glass');
+    const reset = () => { if (glass) glass.style.opacity = '0'; };
+    const move = event => {
+        if (motionReduced(defaults.motionPreference, media) || !glass) return;
+        if (frame !== null) cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+            frame = null;
+            const rect = element.getBoundingClientRect();
+            const x = clamp((event.clientX - rect.left) / Math.max(rect.width, 1), 0, 1);
+            const y = clamp((event.clientY - rect.top) / Math.max(rect.height, 1), 0, 1);
+            const zoom = Math.max(1, Number(options.zoom) || 1);
+            element.style.setProperty('--sc-fancy-lens-x', `${x * 100}%`);
+            element.style.setProperty('--sc-fancy-lens-y', `${y * 100}%`);
+            glass.style.backgroundSize = `${zoom * 100}% ${zoom * 100}%`;
+            glass.style.backgroundPositionX = `${x * 100}%`;
+            glass.style.backgroundPositionY = `${y * 100}%`;
+            glass.style.opacity = '1';
+        });
+    };
+    element.addEventListener('pointermove', move, { passive: true });
+    element.addEventListener('pointerleave', reset, { passive: true });
+    return {
+        update(next) { options = next; },
+        setDocumentVisible() {},
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            if (frame !== null) cancelAnimationFrame(frame);
+            element.removeEventListener('pointermove', move);
+            element.removeEventListener('pointerleave', reset);
+            reset();
+            element.style.removeProperty('--sc-fancy-lens-x');
+            element.style.removeProperty('--sc-fancy-lens-y');
+        },
+    };
+}
+
 function createMagnetic(element, initialOptions, defaults) {
     let options = initialOptions; let frame = null; let active = true;
     const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
@@ -369,6 +439,73 @@ function createScrollProgressEffect(element, initialOptions, defaults) {
             removeEventListener('resize', update);
             media?.removeEventListener('change', mediaHandler);
             if (frame !== null) cancelAnimationFrame(frame);
+            setStatic();
+        },
+    };
+}
+
+function createScrollVelocity(element, initialOptions, defaults) {
+    let options = initialOptions;
+    let frame = null;
+    let idleTimer = null;
+    let intersecting = false;
+    let documentVisible = !document.hidden;
+    let destroyed = false;
+    let lastScrollY = window.scrollY;
+    let lastTime = performance.now();
+    const media = defaults.motionPreference === 'RespectSystem' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+    const reduced = () => motionReduced(defaults.motionPreference, media);
+    const setStatic = () => {
+        element.style.removeProperty('--sc-fancy-scroll-velocity');
+        element.style.removeProperty('--sc-fancy-scroll-direction');
+        delete element.dataset.fancyReady;
+    };
+    const settle = () => { idleTimer = null; element.style.setProperty('--sc-fancy-scroll-velocity', '0'); };
+    const update = () => {
+        if (destroyed || !intersecting || !documentVisible || reduced() || frame !== null) return;
+        frame = requestAnimationFrame(() => {
+            frame = null;
+            if (destroyed || !intersecting || !documentVisible || reduced()) return;
+            const now = performance.now();
+            const currentY = window.scrollY;
+            const dt = Math.max(1, now - lastTime);
+            const dy = currentY - lastScrollY;
+            const sensitivity = Math.max(.01, Number(options.sensitivity) || 1);
+            const normalized = clamp(Math.abs(dy) / dt / sensitivity, 0, 1);
+            const direction = dy > 0 ? 1 : dy < 0 ? -1 : 0;
+            lastScrollY = currentY; lastTime = now;
+            element.style.setProperty('--sc-fancy-scroll-velocity', `${normalized}`);
+            element.style.setProperty('--sc-fancy-scroll-direction', `${direction}`);
+            element.dataset.fancyReady = 'true';
+            if (idleTimer !== null) clearTimeout(idleTimer);
+            idleTimer = setTimeout(settle, 150);
+        });
+    };
+    const observer = new IntersectionObserver(entries => {
+        intersecting = entries.some(entry => entry.isIntersecting);
+        if (intersecting) update();
+        else if (frame !== null) { cancelAnimationFrame(frame); frame = null; }
+    }, { threshold: 0 });
+    const mediaHandler = () => { if (reduced()) setStatic(); else update(); };
+    observer.observe(element);
+    addEventListener('scroll', update, { passive: true });
+    media?.addEventListener('change', mediaHandler);
+    update();
+    return {
+        update(next) { options = next; },
+        setDocumentVisible(visible) {
+            documentVisible = visible;
+            if (!visible) { if (frame !== null) cancelAnimationFrame(frame); frame = null; }
+            else update();
+        },
+        hasActiveAnimationFrame() { return frame !== null; },
+        destroy() {
+            destroyed = true;
+            observer.disconnect();
+            removeEventListener('scroll', update);
+            media?.removeEventListener('change', mediaHandler);
+            if (frame !== null) cancelAnimationFrame(frame);
+            if (idleTimer !== null) clearTimeout(idleTimer);
             setStatic();
         },
     };

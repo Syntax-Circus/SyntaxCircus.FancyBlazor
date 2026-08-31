@@ -1,0 +1,15 @@
+@namespace SyntaxCircus.FancyBlazor
+<div @ref="_element" @attributes="RootAttributes">
+    <div class="syntax-circus-fancy-compare-reveal__after">@After</div>
+    <div class="syntax-circus-fancy-compare-reveal__before">@Before</div>
+    <span class="syntax-circus-fancy-compare-reveal__handle" aria-hidden="true"></span>
+    @if (!string.IsNullOrEmpty(BeforeLabel))
+    {
+        <span class="syntax-circus-fancy-compare-reveal__label syntax-circus-fancy-compare-reveal__label--before">@BeforeLabel</span>
+    }
+    @if (!string.IsNullOrEmpty(AfterLabel))
+    {
+        <span class="syntax-circus-fancy-compare-reveal__label syntax-circus-fancy-compare-reveal__label--after">@AfterLabel</span>
+    }
+    <input type="range" class="syntax-circus-fancy-compare-reveal__control" min="0" max="100" step="1" value="@ClampedInitialPosition" disabled="@Disabled" aria-label="@AriaLabel" />
+</div>

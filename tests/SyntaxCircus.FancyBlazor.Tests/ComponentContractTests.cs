@@ -561,6 +561,72 @@ public sealed class ComponentContractTests
         typewriter.ShouldContain("Only");
     }
 
+    [Fact]
+    public void ScrollVelocity_RendersSemanticHost()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<h2>Fast content</h2>");
+
+        var markup = context.Render<ScrollVelocity>(p => p
+            .Add(x => x.ChildContent, content)
+            .Add(x => x.Sensitivity, 999)).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-scroll-velocity");
+        markup.ShouldContain("data-fancy-effect=\"scroll-velocity\"");
+        markup.ShouldContain("<h2>Fast content</h2>");
+    }
+
+    [Fact]
+    public void Lens_RendersSemanticHostAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<img src=\"/photo.jpg\" alt=\"Photo\" />");
+
+        var markup = context.Render<Lens>(p => p
+            .Add(x => x.ImageUrl, "/photo.jpg")
+            .Add(x => x.ChildContent, content)
+            .Add(x => x.Zoom, 99)
+            .Add(x => x.LensSize, 9999)).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-lens__glass");
+        markup.ShouldContain("--sc-fancy-lens-image:url(&quot;/photo.jpg&quot;)");
+        markup.ShouldContain("--sc-fancy-lens-size:480px");
+        markup.ShouldContain("<img src=\"/photo.jpg\" alt=\"Photo\" />");
+    }
+
+    [Fact]
+    public void CompareReveal_RendersBothSidesAndClampsPublicValues()
+    {
+        using var context = CreateContext();
+        RenderFragment before = builder => builder.AddMarkupContent(0, "<img src=\"/before.jpg\" alt=\"Before\" />");
+        RenderFragment after = builder => builder.AddMarkupContent(0, "<img src=\"/after.jpg\" alt=\"After\" />");
+
+        var markup = context.Render<CompareReveal>(p => p
+            .Add(x => x.Before, before)
+            .Add(x => x.After, after)
+            .Add(x => x.Orientation, CompareRevealOrientation.Vertical)
+            .Add(x => x.InitialPosition, 999)
+            .Add(x => x.BeforeLabel, "Before")
+            .Add(x => x.AfterLabel, "After")).Markup;
+
+        markup.ShouldContain("syntax-circus-fancy-compare-reveal__control");
+        markup.ShouldContain("data-fancy-compare-reveal-orientation=\"vertical\"");
+        markup.ShouldContain("--sc-fancy-compare-reveal-position:100%");
+        markup.ShouldContain("<img src=\"/before.jpg\" alt=\"Before\" />");
+        markup.ShouldContain("<img src=\"/after.jpg\" alt=\"After\" />");
+        markup.ShouldContain(">Before</span>");
+        markup.ShouldContain(">After</span>");
+    }
+
+    [Fact]
+    public void CompareReveal_RequiresBeforeAndAfterContent()
+    {
+        using var context = CreateContext();
+        RenderFragment after = builder => builder.AddMarkupContent(0, "<img src=\"/after.jpg\" alt=\"After\" />");
+
+        Should.Throw<InvalidOperationException>(() => context.Render<CompareReveal>(p => p.Add(x => x.After, after)));
+    }
+
     private static BunitContext CreateContext()
     {
         var context = new BunitContext();
