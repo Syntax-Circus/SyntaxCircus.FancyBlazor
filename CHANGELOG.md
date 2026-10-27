@@ -11,6 +11,10 @@ called out clearly as potentially breaking.
 
 ### Added
 
+- Add directional slide-in `RevealEffect` values (`SlideFromLeft`,
+  `SlideFromRight`, `SlideFromTop`, `SlideFromBottom`) for `Reveal`, `Stagger`,
+  and `TextReveal`; they use the existing `Distance`, `Delay`, and `Duration`
+  parameters and honor reduced motion.
 - Add `WordRotate` to the core package: cycles a list of headline words with a
   `Fade`/`SlideUp`/`SlideDown`/`Blur` transition while keeping the visible
   motion decorative and exposing a complete accessible text mirror.

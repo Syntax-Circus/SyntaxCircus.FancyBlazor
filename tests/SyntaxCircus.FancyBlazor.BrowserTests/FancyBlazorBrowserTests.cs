@@ -1039,6 +1039,44 @@ public sealed class FancyBlazorBrowserTests(BrowserHostFixture fixture) : IClass
         (await reveal.GetAttributeAsync("aria-hidden")).ShouldBeNull();
     }
 
+    [Theory]
+    [InlineData("slide-left", -60, 0)]
+    [InlineData("slide-right", 60, 0)]
+    [InlineData("slide-top", 0, -60)]
+    [InlineData("slide-bottom", 0, 60)]
+    public async Task Reveal_SlideEffects_StartOffsetFromTheirSideAndSettleInPlace(string testId, int x, int y)
+    {
+        await using var context = await fixture.Browser.NewContextAsync();
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/reveal");
+        var reveal = page.Locator($"[data-testid='{testId}']");
+        await page.WaitForFunctionAsync($"() => document.querySelector('[data-testid={testId}]')?.dataset.fancyReady === 'true'");
+
+        (await reveal.GetAttributeAsync("data-fancy-visible")).ShouldBe("false");
+        // The hidden offset is reached through the reveal transition, so wait for it to settle.
+        await page.WaitForFunctionAsync($"() => getComputedStyle(document.querySelector('[data-testid={testId}]')).transform === 'matrix(1, 0, 0, 1, {x}, {y})'");
+
+        await reveal.ScrollIntoViewIfNeededAsync();
+        await page.WaitForFunctionAsync($"() => document.querySelector('[data-testid={testId}]')?.dataset.fancyVisible === 'true'");
+        await page.WaitForFunctionAsync($"() => getComputedStyle(document.querySelector('[data-testid={testId}]')).transform === 'none'");
+        (await reveal.GetAttributeAsync("aria-hidden")).ShouldBeNull();
+    }
+
+    [Fact]
+    public async Task Reveal_SlideEffects_ReducedMotionShowsFinalStateImmediately()
+    {
+        await using var context = await fixture.Browser.NewContextAsync(new BrowserNewContextOptions { ReducedMotion = ReducedMotion.Reduce });
+        var page = await context.NewPageAsync();
+        await page.GotoAsync($"{fixture.TestHostUrl}/reveal");
+        var reveal = page.Locator("[data-testid='slide-left']");
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=slide-left]')?.dataset.fancyReady === 'true'");
+        await reveal.ScrollIntoViewIfNeededAsync();
+        await page.WaitForFunctionAsync("() => document.querySelector('[data-testid=slide-left]')?.dataset.fancyVisible === 'true'");
+
+        (await reveal.EvaluateAsync<string>("element => getComputedStyle(element).transitionDuration")).ShouldBe("0s");
+        (await reveal.EvaluateAsync<string>("element => getComputedStyle(element).transform")).ShouldBe("none");
+    }
+
     [Fact]
     public async Task RevealDemo_ReplayButton_RecreatesTheSequencedExamples()
     {

@@ -77,6 +77,27 @@ public sealed class ComponentContractTests
         markup.ShouldNotContain("aria-hidden");
     }
 
+    [Theory]
+    [InlineData(RevealEffect.SlideFromLeft, "slidefromleft")]
+    [InlineData(RevealEffect.SlideFromRight, "slidefromright")]
+    [InlineData(RevealEffect.SlideFromTop, "slidefromtop")]
+    [InlineData(RevealEffect.SlideFromBottom, "slidefrombottom")]
+    public void Reveal_SlideEffects_RenderDirectionalHook(RevealEffect effect, string hook)
+    {
+        using var context = CreateContext();
+        RenderFragment content = builder => builder.AddMarkupContent(0, "<p>Readable now</p>");
+
+        var markup = context.Render<Reveal>(parameters => parameters
+            .Add(component => component.Effect, effect)
+            .Add(component => component.Distance, 48)
+            .Add(component => component.ChildContent, content))
+            .Markup;
+
+        markup.ShouldContain($"data-fancy-reveal=\"{hook}\"");
+        markup.ShouldContain("--sc-fancy-distance:48px");
+        markup.ShouldNotContain("aria-hidden");
+    }
+
     [Fact]
     public void Tilt_WithGlare_PreservesInteractiveChildrenAndHidesOnlyGlare()
     {

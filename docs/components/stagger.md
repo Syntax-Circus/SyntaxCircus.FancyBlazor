@@ -10,7 +10,7 @@
 
 | Parameter | Default | Behavior |
 | --- | --- | --- |
-| `Effect` | `FadeUp` | `Fade`, `FadeUp`, or `BlurUp`. |
+| `Effect` | `FadeUp` | `Fade`, `FadeUp`, `BlurUp`, or a directional slide (`SlideFromLeft`, `SlideFromRight`, `SlideFromTop`, `SlideFromBottom`). |
 | `Delay` | `80 ms` | Nonnegative delay between direct children. |
 | `Duration`, `Distance` | `500 ms`, `16` | Nonnegative transition duration and `0..500` travel distance. |
 | `Once` | `true` | Stops observing after the first viewport entry. |
