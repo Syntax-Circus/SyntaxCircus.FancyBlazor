@@ -1,4 +1,7 @@
 .syntax-circus-fancy-stagger[data-fancy-ready="true"] ::deep > * { transition: opacity var(--sc-fancy-duration) cubic-bezier(.2,.75,.2,1), filter var(--sc-fancy-duration) cubic-bezier(.2,.75,.2,1), transform var(--sc-fancy-duration) cubic-bezier(.2,.75,.2,1); transition-delay: calc(var(--sc-fancy-index, 0) * var(--sc-fancy-stagger-delay)); }
 .syntax-circus-fancy-stagger[data-fancy-ready="true"][data-fancy-visible="false"] ::deep > * { opacity: 0; transform: translateY(var(--sc-fancy-distance)); }
 .syntax-circus-fancy-stagger[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="blurup"] ::deep > * { filter: blur(10px); }
+.syntax-circus-fancy-stagger[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="slidefromleft"] ::deep > * { transform: translateX(calc(var(--sc-fancy-distance) * -1)); }
+.syntax-circus-fancy-stagger[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="slidefromright"] ::deep > * { transform: translateX(var(--sc-fancy-distance)); }
+.syntax-circus-fancy-stagger[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="slidefromtop"] ::deep > * { transform: translateY(calc(var(--sc-fancy-distance) * -1)); }
 @media (prefers-reduced-motion: reduce) { .syntax-circus-fancy-stagger ::deep > * { filter: none !important; opacity: 1 !important; transform: none !important; transition: none !important; } }

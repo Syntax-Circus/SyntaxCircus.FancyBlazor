@@ -11,4 +11,16 @@ public enum RevealEffect
 
     /// <summary>Fade, move upward, and remove blur.</summary>
     BlurUp,
+
+    /// <summary>Fade while sliding in from the left.</summary>
+    SlideFromLeft,
+
+    /// <summary>Fade while sliding in from the right.</summary>
+    SlideFromRight,
+
+    /// <summary>Fade while sliding down from above.</summary>
+    SlideFromTop,
+
+    /// <summary>Fade while sliding up from below.</summary>
+    SlideFromBottom,
 }

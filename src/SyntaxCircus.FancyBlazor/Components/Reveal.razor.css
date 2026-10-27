@@ -18,6 +18,22 @@
     filter: blur(10px);
 }
 
+.syntax-circus-fancy-reveal[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="slidefromleft"] {
+    transform: translateX(calc(var(--sc-fancy-distance) * -1));
+}
+
+.syntax-circus-fancy-reveal[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="slidefromright"] {
+    transform: translateX(var(--sc-fancy-distance));
+}
+
+.syntax-circus-fancy-reveal[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="slidefromtop"] {
+    transform: translateY(calc(var(--sc-fancy-distance) * -1));
+}
+
+.syntax-circus-fancy-reveal[data-fancy-ready="true"][data-fancy-visible="false"][data-fancy-reveal="slidefrombottom"] {
+    transform: translateY(var(--sc-fancy-distance));
+}
+
 .syntax-circus-fancy-reveal[data-fancy-visible="true"] {
     filter: none;
     opacity: 1;

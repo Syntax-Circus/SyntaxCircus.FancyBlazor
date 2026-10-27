@@ -14,7 +14,7 @@
 
 | Parameter | Type | Default | Behavior |
 | --- | --- | --- | --- |
-| `Effect` | `RevealEffect` | `FadeUp` | `Fade`, `FadeUp`, or `BlurUp`. |
+| `Effect` | `RevealEffect` | `FadeUp` | `Fade`, `FadeUp`, `BlurUp`, or a directional slide: `SlideFromLeft`, `SlideFromRight`, `SlideFromTop`, `SlideFromBottom`. Slides travel `Distance` pixels while fading in; raise `Distance` (for example `48`) for a pronounced slide. |
 | `Delay` | `TimeSpan` | zero | Nonnegative transition delay. |
 | `Duration` | `TimeSpan` | `500 ms` | Nonnegative transition duration. |
 | `Distance` | `double` | `16` | CSS pixels, clamped to `0..500`. |
