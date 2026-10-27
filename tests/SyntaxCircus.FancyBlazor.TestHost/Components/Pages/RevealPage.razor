@@ -10,6 +10,13 @@
         <Reveal Effect="RevealEffect.FadeUp" Delay="@TimeSpan.FromMilliseconds(180)" Duration="@TimeSpan.FromMilliseconds(700)"><p>Fade up</p></Reveal>
         <Reveal Effect="RevealEffect.BlurUp" Delay="@TimeSpan.FromMilliseconds(360)" Duration="@TimeSpan.FromMilliseconds(700)"><p>Blur up</p></Reveal>
     </div>
+    <div style="height:200vh" aria-hidden="true"></div>
+    <div data-testid="reveal-slide-examples">
+        <Reveal Effect="RevealEffect.SlideFromLeft" Distance="60" data-testid="slide-left"><p>Slide from left</p></Reveal>
+        <Reveal Effect="RevealEffect.SlideFromRight" Distance="60" data-testid="slide-right"><p>Slide from right</p></Reveal>
+        <Reveal Effect="RevealEffect.SlideFromTop" Distance="60" data-testid="slide-top"><p>Slide from top</p></Reveal>
+        <Reveal Effect="RevealEffect.SlideFromBottom" Distance="60" data-testid="slide-bottom"><p>Slide from bottom</p></Reveal>
+    </div>
 </main>
 
 @code {
